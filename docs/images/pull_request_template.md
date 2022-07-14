@@ -13,7 +13,8 @@
 - [ ] Licensing statement added to new files 
 - [ ] Downstream dependencies have been addressed
 
-- [ ] I have made corresponding changes to the documentation 
+- [ ] Corresponding changes to the documentation have been made
+
 - [ ] Issue is linked under the development section
  
 
