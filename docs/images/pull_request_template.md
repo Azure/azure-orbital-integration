@@ -11,7 +11,8 @@
 - [ ] Properly labeled PR 
 
 - [ ] Licensing statement added to new files 
-- [ ] Downstream dependencies have been addressedone phrase about 
+- [ ] Downstream dependencies have been addressed
+
 - [ ] I have made corresponding changes to the documentation 
 - [ ] Issue is linked under the development section
  
