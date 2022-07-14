@@ -8,7 +8,8 @@
 
 
 ## Checklist before merging
-- [ ] properly labeled pr 
+- [ ] Properly labeled PR 
+
 - [ ] Licensing statement added to new files 
 - [ ] Downstream dependencies have been addressedone phrase about 
 - [ ] I have made corresponding changes to the documentation 
