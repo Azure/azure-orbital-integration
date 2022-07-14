@@ -1,0 +1,89 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "needsIpoppInstallation": {
+            "value": false
+        },
+        "ipoppVirtualMachineName": {
+            "value": "ipoppVM"
+        },
+        "rtstpsVirtualMachineName": {
+            "value": "rtstpsVM"
+        },
+        "ipoppVmDiskSize": {
+            "value": 1023
+        },
+        "rtstpsVmDiskSize": {
+            "value": 300
+        },
+        "networkSecurityGroupRules": {
+            "value": [
+                {
+                    "name": "SSH",
+                    "properties": {
+                        "priority": 300,
+                        "protocol": "TCP",
+                        "access": "Allow",
+                        "direction": "Inbound",
+                        "sourceAddressPrefix": "<your IP address>",
+                        "sourcePortRange": "*",
+                        "destinationAddressPrefix": "*",
+                        "destinationPortRange": "22"
+                    }
+                }
+            ]
+        },
+        "imageReference": {
+            "value": {
+                "publisher": "OpenLogic",
+                "offer": "CentOS",
+                "sku": "7_9-gen2",
+                "version": "latest"
+            }
+        },
+        "subnetName": {
+            "value": "default"
+        },
+        "ipoppOsDiskType": {
+            "value": "Premium_LRS"
+        },
+        "rtstpsOsDiskType": {
+            "value": "Premium_LRS"
+        },
+        "osDiskDeleteOption": {
+            "value": "Delete"
+        },
+        "ipoppVirtualMachineSize": {
+            "value": "Standard_D16ads_v5"
+        },
+        "rtstpsVirtualMachineSize": {
+            "value": "Standard_B2s"
+        },
+        "networkInterfaceDeleteOption": {
+            "value": "Detach"
+        },
+        "adminUsername": {
+            "value": "azureuser"
+        },
+        "ipoppSourceDetails": {
+            "value": {
+                "managedIdentityName": "",
+                "resourceGroupName": "",
+                "storageAccountURL": ""
+            }
+        },
+        "ipoppSyslog": {
+            "value": {
+                "file" : "/var/log/ipoppLogs",
+                "table": "ipoppLogs"
+            }
+        },
+        "rtstpsSyslog": {
+            "value": {
+                "file" : "/var/log/rtstpsLogs",
+                "table": "rtstpsLogs"
+            }
+        }
+    }
+}

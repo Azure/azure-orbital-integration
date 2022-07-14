@@ -1,0 +1,15 @@
+# Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+# Software is licensed under the MIT License. See LICENSE in the project
+# root for license information.
+
+#cloud-config
+package_upgrade: true
+packages:
+    - httpd
+    - java-11-openjdk-devel
+    - azure-cli
+    - tigervnc-server 
+    - xorg-x11-fonts-Type1 
+    - uuid-runtime    
+    - python3
+    - python3-requests
