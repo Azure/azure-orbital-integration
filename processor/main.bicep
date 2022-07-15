@@ -213,7 +213,6 @@ resource nic_rtstps 'Microsoft.Network/networkInterfaces@2021-05-01' = {
 resource id 'Microsoft.ManagedIdentity/userAssignedIdentities@2021-09-30-preview' = if (needsIpoppInstallation){
   name: ipoppSourceDetails.managedIdentityName
   location: location
-  //scope: resourceGroup(ipoppSourceDetails.resourceGroupName)
 }
 
 resource vm_ipopp 'Microsoft.Compute/virtualMachines@2021-07-01' = {
@@ -506,4 +505,3 @@ resource vm_settings_rtstps 'Microsoft.Compute/virtualMachines/extensions@2021-1
 
 
 output adminUsername string = adminUsername
-//output vmIP string = publicIP.properties.dnsSettings.fqdn
