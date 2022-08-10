@@ -1,10 +1,12 @@
-# RT-STPS VM
-This rt-stps virtual machine will be used to process raw binary files from satellites and have PDS files as output.
+# RT-STPS
+This rt-stps will be used to process raw binary files from satellites and have PDS files as output.
 More information about RT-STPS can be found on this link - [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69)
 
-# IPOPP VM
+# IPOPP 
 This ipopp virtual machine will be used to process pds files from satellites and have tif/hdf files as output.
 More information about IPOPP can be found on this link - [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68)
+
+Both processes RT-STPS and IPOPP installed and supported by a single VM instance. 
 
 ## Deploy resources on Azure
 
@@ -84,7 +86,7 @@ You can use `logger` to write rt-stps logs to system log and the agent will auto
 Here is an example:
 
 ```
-logger -p local1.info -f /logs/rtstps.log -t $(uuidgen)
+logger -p local0.info -f /logs/rtstps.log -t $(uuidgen)
 ```
 ## Automatically run RT-STPS everyday
 

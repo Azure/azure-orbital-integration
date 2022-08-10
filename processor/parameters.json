@@ -2,20 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "needsIpoppInstallation": {
-            "value": false
+        "virtualMachineName": {
+            "value": "VM"
         },
-        "ipoppVirtualMachineName": {
-            "value": "ipoppVM"
-        },
-        "rtstpsVirtualMachineName": {
-            "value": "rtstpsVM"
-        },
-        "ipoppVmDiskSize": {
+        "vmDiskSize": {
             "value": 1023
-        },
-        "rtstpsVmDiskSize": {
-            "value": 300
         },
         "networkSecurityGroupRules": {
             "value": [
@@ -45,33 +36,20 @@
         "subnetName": {
             "value": "default"
         },
-        "ipoppOsDiskType": {
-            "value": "Premium_LRS"
-        },
-        "rtstpsOsDiskType": {
+        "osDiskType": {
             "value": "Premium_LRS"
         },
         "osDiskDeleteOption": {
             "value": "Delete"
         },
-        "ipoppVirtualMachineSize": {
+        "virtualMachineSize": {
             "value": "Standard_D16ads_v5"
-        },
-        "rtstpsVirtualMachineSize": {
-            "value": "Standard_B2s"
         },
         "networkInterfaceDeleteOption": {
             "value": "Detach"
         },
         "adminUsername": {
             "value": "azureuser"
-        },
-        "ipoppSourceDetails": {
-            "value": {
-                "managedIdentityName": "",
-                "resourceGroupName": "",
-                "storageAccountURL": ""
-            }
         },
         "ipoppSyslog": {
             "value": {
