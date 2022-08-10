@@ -1,0 +1,1792 @@
+{
+  "lenses": {
+    "0": {
+      "order": 0,
+      "parts": {
+        "completion-status": {
+          "position": {
+            "x": 0,
+            "y": 0,
+            "colSpan": 14,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "PT1H",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "value": {
+                  "scope": "hierarchy"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "Line",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Completion status",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${AKS_NAME}",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "distinct senders",
+                      "type": "long"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": false,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": false,
+                "isOptional": true
+              },
+              {
+                "name": "Query",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "ContainerLog\n | extend _data = parse_json(LogEntry)\n | sort by TimeGenerated desc\n | extend senderIP = tostring(_data.remoteHost)\n | extend sender=tostring(case(senderIP startswith \"10.241\", \"canary\", senderIP startswith \"10.244\", \"orbital\", \"unknown\"))\n | project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error)\n | where event==\"complete\"\n | where subsystem == \"tcp-to-blob\"\n//  | where message==\"✅ BLOB upload complete.\"\n | summarize count=dcount(message) by message, bin(TimeGenerated,15m)",
+                "PartTitle": "Completion status",
+                "Dimensions": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "count",
+                      "type": "long"
+                    }
+                  ],
+                  "splitBy": [
+                    {
+                      "name": "message",
+                      "type": "string"
+                    }
+                  ],
+                  "aggregation": "Sum"
+                },
+                "LegendOptions": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                }
+              }
+            }
+          }
+        },
+        "processing-time": {
+          "position": {
+            "x": 0,
+            "y": 3,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "PT1H",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "value": {
+                  "scope": "hierarchy"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "Line",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${AKS_NAME}",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "distinct senders",
+                      "type": "long"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": false,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": false,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "ContainerLog \n | extend _data = parse_json(LogEntry) \n | sort by TimeGenerated desc \n | extend senderIP = tostring(_data.remoteHost) \n | extend sender=tostring(case(senderIP startswith \"10.241\", \"canary\", senderIP startswith \"10.244\", \"orbital\", \"unknown\")) \n | project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error) \n | where event==\"complete\" \n | where message==\"✅ BLOB upload complete.\" \n | summarize ['max time']=max(seconds/60), ['min time']=min(seconds/60) by bin(TimeGenerated,4hr)\n\n",
+                "PartTitle": "Processing time (minutes)",
+                "Dimensions": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "max time",
+                      "type": "real"
+                    },
+                    {
+                      "name": "min time",
+                      "type": "real"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "LegendOptions": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                }
+              }
+            }
+          }
+        },
+        "performance": {
+          "position": {
+            "x": 7,
+            "y": 3,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "PT1H",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "value": {
+                  "scope": "hierarchy"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "Line",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${AKS_NAME}",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "duration",
+                      "type": "real"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": false,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": false,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "ContainerLog \n  | extend _data = parse_json(LogEntry) \n  | sort by TimeGenerated desc \n  | extend senderIP = tostring(_data.remoteHost) \n  | extend sender=tostring(case(senderIP startswith \"10.241\", \"canary\", senderIP startswith \"10.244\", \"orbital\", \"unknown\")) \n  | project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error) \n  | where event==\"complete\" \n | where message==\"✅ BLOB upload complete.\" \n  | summarize ['mb/second']=min(mb/seconds) by bin(TimeGenerated,4hr)",
+                "PartTitle": "Performance (minimum)",
+                "Dimensions": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "mb/second",
+                      "type": "real"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "LegendOptions": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                }
+              }
+            }
+          }
+        },
+        "blob-size": {
+          "position": {
+            "x": 0,
+            "y": 6,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "PT1H",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "value": {
+                  "scope": "hierarchy"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "Line",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${AKS_NAME}",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "duration",
+                      "type": "real"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": false,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": false,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "ContainerLog \n | extend _data = parse_json(LogEntry) \n | sort by TimeGenerated desc \n | extend senderIP = tostring(_data.remoteHost) \n | extend sender=tostring(case(senderIP startswith \"10.241\", \"canary\", senderIP startswith \"10.244\", \"orbital\", \"unknown\")) \n | project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error) \n | where event==\"complete\" \n | where message==\"✅ BLOB upload complete.\" \n | summarize ['mb']=max(mb) by bin(TimeGenerated,15m)   \n  \n ",
+                "PartTitle": "BLOB size (max)",
+                "Dimensions": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "mb",
+                      "type": "real"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "LegendOptions": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                }
+              }
+            }
+          }
+        },
+        "blob-count": {
+          "position": {
+            "x": 7,
+            "y": 6,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "PT1H",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "value": {
+                  "scope": "hierarchy"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "Line",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${AKS_NAME}",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "distinct senders",
+                      "type": "long"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": false,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": false,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "ContainerLog\n | extend _data = parse_json(LogEntry)\n | sort by TimeGenerated desc\n | extend senderIP = tostring(_data.remoteHost)\n | extend sender=tostring(case(senderIP startswith \"10.241\", \"canary\", senderIP startswith \"10.244\", \"orbital\", \"unknown\"))\n | project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error)\n | where event==\"complete\"\n | where message==\"✅ BLOB upload complete.\"\n | summarize count=dcount(filename) by bin(TimeGenerated,15m)",
+                "PartTitle": "BLOB count",
+                "Dimensions": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "count",
+                      "type": "long"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "LegendOptions": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                }
+              }
+            }
+          }
+        },
+        "top-senders": {
+          "position": {
+            "x": 0,
+            "y": 9,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "PT1H",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "value": {
+                  "scope": "hierarchy"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "Line",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${AKS_NAME}",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "distinct senders",
+                      "type": "long"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": false,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": false,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "ContainerLog\n| extend _data = parse_json(LogEntry)\n| sort by TimeGenerated desc\n| extend senderIP = tostring(_data.remoteHost)\n| extend sender=tostring(case(senderIP startswith \"10.241\", \"canary\", senderIP startswith \"10.244\", \"orbital\", \"unknown\"))\n| project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error)\n| where event==\"complete\"\n| where message==\"✅ BLOB upload complete.\"\n| top-nested 10 of sender  by mb=sum(mb)\n\n",
+                "ControlType": "AnalyticsGrid",
+                "PartTitle": "Top senders",
+                "Dimensions": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "count",
+                      "type": "long"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "LegendOptions": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                }
+              }
+            }
+          }
+        },
+        "data-stored": {
+          "position": {
+            "x": 7,
+            "y": 9,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "resourceTypeMode",
+                "isOptional": true
+              },
+              {
+                "name": "ComponentId",
+                "isOptional": true
+              },
+              {
+                "name": "Scope",
+                "value": {
+                  "resourceIds": [
+                    "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                  ]
+                },
+                "isOptional": true
+              },
+              {
+                "name": "Version",
+                "value": "2.0",
+                "isOptional": true
+              },
+              {
+                "name": "TimeRange",
+                "value": "PT1H",
+                "isOptional": true
+              },
+              {
+                "name": "DashboardId",
+                "isOptional": true
+              },
+              {
+                "name": "DraftRequestParameters",
+                "value": {
+                  "scope": "hierarchy"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "ControlType",
+                "value": "FrameControlChart",
+                "isOptional": true
+              },
+              {
+                "name": "SpecificChart",
+                "value": "Line",
+                "isOptional": true
+              },
+              {
+                "name": "PartTitle",
+                "value": "Analytics",
+                "isOptional": true
+              },
+              {
+                "name": "PartSubTitle",
+                "value": "${AKS_NAME}",
+                "isOptional": true
+              },
+              {
+                "name": "Dimensions",
+                "value": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "duration",
+                      "type": "real"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "LegendOptions",
+                "value": {
+                  "isEnabled": false,
+                  "position": "Bottom"
+                },
+                "isOptional": true
+              },
+              {
+                "name": "IsQueryContainTimeRange",
+                "value": false,
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+            "settings": {
+              "content": {
+                "Query": "ContainerLog\n| extend _data = parse_json(LogEntry)\n| sort by TimeGenerated desc\n| extend senderIP = tostring(_data.remoteHost)\n| extend sender=tostring(case(senderIP startswith \"10.241\", \"canary\", senderIP startswith \"10.244\", \"orbital\", \"unknown\"))\n| project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), _mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error)\n| where event==\"complete\"\n| where message==\"✅ BLOB upload complete.\"\n| summarize mb=sum(_mb) by bin(TimeGenerated,15m)\n\n",
+                "PartTitle": "Data stored",
+                "Dimensions": {
+                  "xAxis": {
+                    "name": "TimeGenerated",
+                    "type": "datetime"
+                  },
+                  "yAxis": [
+                    {
+                      "name": "mb",
+                      "type": "real"
+                    }
+                  ],
+                  "splitBy": [],
+                  "aggregation": "Sum"
+                },
+                "LegendOptions": {
+                  "isEnabled": true,
+                  "position": "Bottom"
+                }
+              }
+            }
+          }
+        },
+        "cluster-health": {
+          "position": {
+            "x": 0,
+            "y": 13,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "cluster_autoscaler_cluster_safe_to_autoscale",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Cluster Health"
+                        }
+                      }
+                    ],
+                    "title": "Avg Cluster Health for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "cluster_autoscaler_cluster_safe_to_autoscale",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Cluster Health"
+                        }
+                      }
+                    ],
+                    "title": "Avg Cluster Health for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "7": {
+          "position": {
+            "x": 7,
+            "y": 13,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "apiserver_current_inflight_requests",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Inflight Requests"
+                        }
+                      }
+                    ],
+                    "title": "Avg Inflight Requests for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "apiserver_current_inflight_requests",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Inflight Requests"
+                        }
+                      }
+                    ],
+                    "title": "Avg Inflight Requests for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "8": {
+          "position": {
+            "x": 0,
+            "y": 16,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "node_memory_working_set_percentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Memory Working Set Percentage"
+                        }
+                      }
+                    ],
+                    "title": "Avg Memory Working Set Percentage for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "node_memory_working_set_percentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Memory Working Set Percentage"
+                        }
+                      }
+                    ],
+                    "title": "Avg Memory Working Set Percentage for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "9": {
+          "position": {
+            "x": 7,
+            "y": 16,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "kube_node_status_allocatable_memory_bytes",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Total amount of available memory in a managed cluster"
+                        }
+                      }
+                    ],
+                    "title": "Avg Total amount of available memory in a managed cluster for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "kube_node_status_allocatable_memory_bytes",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Total amount of available memory in a managed cluster"
+                        }
+                      }
+                    ],
+                    "title": "Avg Total amount of available memory in a managed cluster for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "10": {
+          "position": {
+            "x": 0,
+            "y": 19,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "node_cpu_usage_percentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "CPU Usage Percentage"
+                        }
+                      }
+                    ],
+                    "title": "Avg CPU Usage Percentage for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "node_cpu_usage_percentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "CPU Usage Percentage"
+                        }
+                      }
+                    ],
+                    "title": "Avg CPU Usage Percentage for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "11": {
+          "position": {
+            "x": 7,
+            "y": 19,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "kube_node_status_allocatable_cpu_cores",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Total number of available cpu cores in a managed cluster"
+                        }
+                      }
+                    ],
+                    "title": "Avg Total number of available cpu cores in a managed cluster for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "kube_node_status_allocatable_cpu_cores",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Total number of available cpu cores in a managed cluster"
+                        }
+                      }
+                    ],
+                    "title": "Avg Total number of available cpu cores in a managed cluster for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "12": {
+          "position": {
+            "x": 0,
+            "y": 22,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "node_disk_usage_percentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Disk Used Percentage"
+                        }
+                      }
+                    ],
+                    "title": "Avg Disk Used Percentage for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "node_disk_usage_percentage",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Disk Used Percentage"
+                        }
+                      }
+                    ],
+                    "title": "Avg Disk Used Percentage for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "13": {
+          "position": {
+            "x": 7,
+            "y": 22,
+            "colSpan": 7,
+            "rowSpan": 3
+          },
+          "metadata": {
+            "inputs": [
+              {
+                "name": "options",
+                "value": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "node_network_in_bytes",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Network In Bytes"
+                        }
+                      }
+                    ],
+                    "title": "Avg Network In Bytes for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      }
+                    },
+                    "timespan": {
+                      "relative": {
+                        "duration": 86400000
+                      },
+                      "showUTCTime": false,
+                      "grain": 1
+                    }
+                  }
+                },
+                "isOptional": true
+              },
+              {
+                "name": "sharedTimeRange",
+                "isOptional": true
+              }
+            ],
+            "type": "Extension/HubsExtension/PartType/MonitorChartPart",
+            "settings": {
+              "content": {
+                "options": {
+                  "chart": {
+                    "metrics": [
+                      {
+                        "resourceMetadata": {
+                          "id": "/subscriptions/${AZ_SUBSCRIPTION}/resourceGroups/${AZ_RESOURCE_GROUP}/providers/Microsoft.ContainerService/managedClusters/${AKS_NAME}"
+                        },
+                        "name": "node_network_in_bytes",
+                        "aggregationType": 4,
+                        "namespace": "microsoft.containerservice/managedclusters",
+                        "metricVisualization": {
+                          "displayName": "Network In Bytes"
+                        }
+                      }
+                    ],
+                    "title": "Avg Network In Bytes for ${AKS_NAME}",
+                    "titleKind": 1,
+                    "visualization": {
+                      "chartType": 2,
+                      "legendVisualization": {
+                        "isVisible": true,
+                        "position": 2,
+                        "hideSubtitle": false
+                      },
+                      "axisVisualization": {
+                        "x": {
+                          "isVisible": true,
+                          "axisType": 2
+                        },
+                        "y": {
+                          "isVisible": true,
+                          "axisType": 1
+                        }
+                      },
+                      "disablePinning": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "metadata": {
+    "model": {
+      "timeRange": {
+        "value": {
+          "relative": {
+            "duration": 24,
+            "timeUnit": 1
+          }
+        },
+        "type": "MsPortalFx.Composition.Configuration.ValueTypes.TimeRange"
+      },
+      "filterLocale": {
+        "value": "en-us"
+      },
+      "filters": {
+        "value": {
+          "MsPortalFx_TimeRange": {
+            "model": {
+              "format": "local",
+              "granularity": "auto",
+              "relative": "48h"
+            },
+            "displayCache": {
+              "name": "Local Time",
+              "value": "Past 48 hours"
+            }
+          }
+        }
+      }
+    }
+  }
+}
