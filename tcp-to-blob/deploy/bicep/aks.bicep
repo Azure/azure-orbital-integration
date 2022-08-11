@@ -75,7 +75,7 @@ resource rscVNET 'Microsoft.Network/virtualNetworks@2021-08-01' = {
 
 @description('A Log Analytics Workspace for storing metrics and other log data provided by the AKS cluster.')
 resource laws 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview' = {
-  name: '${namePrefix}-logs'
+  name: '${namePrefix}-law'
   location: location
   properties: {
     sku: {
