@@ -1,0 +1,64 @@
+# Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+# Software is licensed under the MIT License. See LICENSE in the project
+# root for license information.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tcp-to-blob-deployment
+  labels:
+    app: tcp-to-blob
+spec:
+  replicas: ${AKS_NUM_REPLICAS}
+  selector:
+    matchLabels:
+      app: tcp-to-blob
+  template:
+    metadata:
+      labels:
+        app: tcp-to-blob
+    spec:
+      containers:
+        - name: tcp-to-blob
+          image: "${ACR_NAME}.azurecr.io/tcp-to-blob:latest"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env:
+            - name: AKS_ORBITAL_SUBNET_ADDR_PREFIX
+              value: "${AKS_ORBITAL_SUBNET_ADDR_PREFIX}"
+            - name: AKS_POD_SUBNET_ADDR_PREFIX
+              value: "${AKS_POD_SUBNET_ADDR_PREFIX}"
+            - name: SOCKET_TIMEOUT_SECONDS
+              value: "${SOCKET_TIMEOUT_SECONDS}"
+            - name: NUM_BLOCK_LOG_FREQUENCY
+              value: "${NUM_BLOCK_LOG_FREQUENCY}"
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "${PORT}"
+            - name: CONTACT_DATA_STORAGE_CONTAINER
+              value: "${AKS_CONTACT_DATA_STORAGE_CONTAINER}"
+            - name: CONTACT_DATA_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}"
+                  key: "connection-string"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tcp-to-blob-svc
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  loadBalancerIP: "${LB_IP}"
+  externalTrafficPolicy: Local
+  ports:
+    - name: tcp
+      protocol: TCP
+      port: ${PORT}
+      targetPort: ${PORT}
+  sessionAffinity: ClientIP
+  selector:
+    app: tcp-to-blob

@@ -1,0 +1,46 @@
+{
+  "name": "tcp-to-blob",
+  "version": "1.0.0",
+  "description": "TCP to BLOB",
+  "scripts": {
+    "build": "npx esbuild ./src/tcp-*.ts ./src/makeEnvFiles.ts --bundle --platform=node --outdir=./dist/bundle",
+    "make-env-files": "node ./dist/bundle/makeEnvFiles.js",
+    "deploy-fast": "yarn make-env-files && kubectl apply -f ./dist/env/${NAME_PREFIX}/tcp-to-blob.yaml",
+    "deploy": "yarn docker-push && yarn deploy-fast",
+    "deploy-dashboard": "yarn make-env-files && az portal dashboard create --resource-group \"${AZ_RESOURCE_GROUP}\" --name \"${NAME_PREFIX}-dashboard\" --input-path \"./dist/env/${NAME_PREFIX}/dashboard.json\" --location \"${AZ_LOCATION}\"",
+    "run-canary": ". ./deploy/env-defaults.sh && echo \"Sending test data to ${AKS_NAME}.\" && yarn make-env-files && kubectl delete --ignore-not-found=true -f ./dist/env/${NAME_PREFIX}/tcp-to-blob-canary.yaml && kubectl apply -f ./dist/env/${NAME_PREFIX}/tcp-to-blob-canary.yaml",
+    "re-deploy": "yarn docker-push && kubectl patch deployment tcp-to-blob-deployment -p \"{\\\"spec\\\":{\\\"template\\\":{\\\"metadata\\\":{\\\"labels\\\":{\\\"date\\\":\\\"`date +'%s'`\\\"}}}}}\"\n",
+    "docker-build": "yarn build && docker build . -f deploy/Dockerfile -t tcp-to-blob",
+    "docker-build-canary": "yarn build && docker build . -f deploy/Dockerfile-canary -t tcp-to-blob-canary",
+    "docker-run": "docker run --env CONTACT_DATA_STORAGE_CONNECTION_STRING --env HOST --env PORT --env AKS_CONTACT_DATA_STORAGE_CONTAINER  -p $PORT:$PORT tcp-to-blob",
+    "docker-kill-all": "docker kill $(docker ps -q)",
+    "docker-tag": "docker tag tcp-to-blob:latest ${ACR_NAME}.azurecr.io/tcp-to-blob:latest",
+    "docker-tag-canary": "docker tag tcp-to-blob-canary:latest $ACR_NAME.azurecr.io/tcp-to-blob-canary:latest",
+    "az-login": "./deploy/check-required-env.sh && . ./deploy/env-defaults.sh && az aks get-credentials --resource-group ${AZ_RESOURCE_GROUP} --name ${AKS_NAME} && az acr login --name ${ACR_NAME}",
+    "docker-push": "yarn docker-build && yarn docker-tag && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob:latest",
+    "docker-push-canary": "yarn docker-build-canary && yarn docker-tag-canary && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob-canary:latest",
+    "compile-watch": "npx tsc -w",
+    "compile": "npx tsc",
+    "run-server": "yarn build && cd ./dist && node ./bundle/tcp-to-blob.js"
+  },
+  "keywords": [
+    "Azure",
+    "Obrital"
+  ],
+  "author": "micholas",
+  "license": "MIT",
+  "dependencies": {
+    "@azure/storage-blob": "^12.10.0",
+    "ip": "^1.1.8"
+  },
+  "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/ip": "^1.1.0",
+    "@types/lodash": "^4.14.182",
+    "@types/node": "^17.0.41",
+    "commander": "^9.4.0",
+    "esbuild": "^0.14.42",
+    "lodash": "^4.17.21",
+    "typescript": "^4.7.2"
+  }
+}

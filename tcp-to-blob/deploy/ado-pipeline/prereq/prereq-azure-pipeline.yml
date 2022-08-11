@@ -1,0 +1,38 @@
+# Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+# Software is licensed under the MIT License. See LICENSE in the project
+# root for license information.
+
+trigger:
+- main
+
+variables:
+- group: tcp-to-blob-vg
+
+pool:
+  vmImage: ubuntu-latest
+  
+steps:
+  - task: AzureCLI@2
+    displayName: 'Creating Resource Group'
+    inputs:
+      azureSubscription: $(AZ_SUBSCRIPTION)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az group create --name $(AZ_RESOURCE_GROUP) --location $(AZ_LOCATION)'
+      
+  - task: AzureCLI@2
+    displayName: 'Set ENVs/make Env Files. Deploy bicep'
+    env: 
+      AZ_RESOURCE_GROUP: $(AZ_RESOURCE_GROUP)
+      AZ_LOCATION: $(AZ_LOCATION)
+      NAME_PREFIX: $(NAME_PREFIX)
+      ACR_NAME: $(ACR_NAME)
+      ACR_SECRET_NAME: $(ACR_SECRET_NAME)
+      CONTACT_DATA_STORAGE_ACCT: $(CONTACT_DATA_STORAGE_ACCT)
+      CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY: $(CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY)
+      WORKING_DIR: $(System.DefaultWorkingDirectory)
+    inputs:
+      azureSubscription: $(AZ_SUBSCRIPTION)
+      scriptType: 'bash'
+      scriptLocation: 'scriptPath'
+      scriptPath: 'tcp-to-blob/deploy/ado-pipeline/prereq/prereq-azure-cli.sh'
