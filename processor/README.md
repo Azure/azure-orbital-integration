@@ -3,7 +3,7 @@ This rt-stps will be used to process raw binary files from satellites and have P
 More information about RT-STPS can be found on this link - [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69)
 
 # IPOPP 
-This ipopp virtual machine will be used to process pds files from satellites and have tif/hdf files as output.
+This ipopp will be used to process pds files from satellites and have tif/hdf files as output.
 More information about IPOPP can be found on this link - [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68)
 
 Both processes RT-STPS and IPOPP installed and supported by a single VM instance. 
