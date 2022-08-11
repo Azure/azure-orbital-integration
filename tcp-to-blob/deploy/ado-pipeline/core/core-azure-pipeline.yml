@@ -1,0 +1,60 @@
+# Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+# Software is licensed under the MIT License. See LICENSE in the project
+# root for license information.
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+- group: tcp-to-blob-vg
+  
+steps:
+  - task: AzureCLI@2
+    displayName: 'Set ENVs/make Env Files. Deploy bicep'
+    env: 
+      AZ_LOCATION: $(AZ_LOCATION)
+      AZ_RESOURCE_GROUP: $(AZ_RESOURCE_GROUP)
+      ACR_NAME: $(ACR_NAME)
+      CONTACT_DATA_STORAGE_ACCT: $(CONTACT_DATA_STORAGE_ACCT)
+      CONTACT_DATA_STORAGE_ACCT_RESOURCE_GROUP: $(AZ_RESOURCE_GROUP)
+      NAME_PREFIX: $(NAME_PREFIX)
+      AZ_SUBSCRIPTION: $(AZ_SUBSCRIPTION)
+      WORKING_DIR: $(System.DefaultWorkingDirectory)
+    inputs:
+      azureSubscription: $(AZ_SUBSCRIPTION)
+      scriptType: 'bash'
+      scriptLocation: 'scriptPath'
+      scriptPath: 'tcp-to-blob/deploy/ado-pipeline/core/core-azure-cli.sh'
+
+  - task: Docker@2
+    displayName: 'Docker login'
+    inputs:
+      containerRegistry: 'aoi-acr-sc'
+      command: 'login'
+
+  - task: Docker@2
+    displayName: 'docker build and push'
+    inputs:
+      containerRegistry: 'aoi-acr-sc'
+      repository: 'tcp-to-blob'
+      command: 'buildAndPush'
+      Dockerfile: 'tcp-to-blob/deploy/Dockerfile'
+      buildContext: './'
+      tags: |
+        latest
+        $(Build.BuildId)
+
+  - task: Kubernetes@1
+    displayName: 'kubectl apply'
+    inputs:
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(AZ_SUBSCRIPTION)
+      azureResourceGroup: $(AZ_RESOURCE_GROUP)
+      kubernetesCluster: $(NAME_PREFIX)-aks
+      command: 'apply'
+      arguments: '-f $(System.DefaultWorkingDirectory)/dist/env/$(NAME_PREFIX)/tcp-to-blob.yaml'
+      secretType: 'dockerRegistry'
+      containerRegistryType: 'Azure Container Registry' 
