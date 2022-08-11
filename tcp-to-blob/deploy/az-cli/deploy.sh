@@ -56,6 +56,16 @@ else
     echo "Storage account \"${CONTACT_DATA_STORAGE_ACCT}\" exists."
 fi
 
+# Create Log Analytics Workspace if needed
+if [[ -z $(az monitor log-analytics workspace list -g "${AZ_RESOURCE_GROUP}" --query "[?name=='${LOG_ANALYTICS_WORKSPACE_NAME}']" --query "[0].id" -otsv) ]]
+then
+    echo "Log Analytics Workspace doesn't exist. Creating : \"${LOG_ANALYTICS_WORKSPACE_NAME}\""
+    LOG_ANALYTICS_WORKSPACE_ID=$(az monitor log-analytics workspace create -g "${AZ_RESOURCE_GROUP}" -n "${LOG_ANALYTICS_WORKSPACE_NAME}" --query "id" -otsv)
+else
+    echo "Log Analytics Workspace \"${LOG_ANALYTICS_WORKSPACE_NAME}\" exists."
+    LOG_ANALYTICS_WORKSPACE_ID=$(az monitor log-analytics workspace list -g "${AZ_RESOURCE_GROUP}" --query "[?name=='${LOG_ANALYTICS_WORKSPACE_NAME}']" --query "[0].id" -otsv)
+fi
+
 . ./deploy/env-defaults.sh
 set -euo pipefail
 
@@ -101,6 +111,7 @@ az aks create -n "${AKS_NAME}" -g "${AZ_RESOURCE_GROUP}"  \
   --enable-addons monitoring \
   --assign-identity "${AKS_CONTROL_PLANE_IDENTITY_ID}" \
   --assign-kubelet-identity "${KUBELET_IDENTITY_ID}" \
+  --workspace-resource-id "${LOG_ANALYTICS_WORKSPACE_ID}" \
   --max-pods 250 \
   --node-count 2 \
   --network-plugin "azure" \
