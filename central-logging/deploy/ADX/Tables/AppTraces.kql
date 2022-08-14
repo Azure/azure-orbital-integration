@@ -1,0 +1,67 @@
+// Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+// Software is licensed under the MIT License. See LICENSE in the project
+// root for license information.
+
+// Configures staging table, expanded table, expand function and update policies.
+// This will allow external log data to land in staging and get expanded to the final table
+.create-merge table Staging_AppTraces (Records: dynamic)
+.alter-merge table Staging_AppTraces policy update @'[{ "IsTransactional": true}]'
+.alter-merge table Staging_AppTraces policy retention softdelete = 0s recoverability = disabled
+.create-or-alter table Staging_AppTraces ingestion json mapping "AppTraces_Staging_Mapping" '[{"column":"Records","path":"$.records","datatype":"","transform":null}]'
+
+.create-merge table AppTraces (
+    PrimaryCorrelationId: string
+    ,SecondaryCorrelationId: string
+    ,AppRoleInstance: string
+    ,AppVersion: string
+    ,ClientCountryOrRegion: string
+    ,ClientIP: string
+    ,ClientType:string
+    ,IKey: string
+    ,ItemCount: int
+    ,Message: dynamic
+    ,Properties: dynamic
+    ,ResourceGUID: string
+    ,SDKVersion: string
+    ,SeverityLevel: int
+    ,SourceSystem: string
+    ,TenantId: string
+    ,TimeGenerated: datetime
+    ,Type: string
+    ,_BilledSize: real
+    ,_Internal_WorkspaceResourceId: string
+    ,_ResourceId: string)
+
+.create-or-alter function 
+with (docstring = 'Expands Staging_AppTraces to AppTraces', folder='Expands')
+Expand_AppTraces() {
+    Staging_AppTraces
+    | mv-expand Records
+    | extend events = Records
+    | extend message = todynamic(extract_json("$", tostring(events.Message)))
+    | extend properties = todynamic(extract_json("$", tostring(events.Properties)))
+    | project
+        ["PrimaryCorrelationId"] = tostring(properties.PrimaryCorrelationId)
+        ,["SecondaryCorrelationId"] = tostring(message.SecondaryCorrelationId)
+        ,["AppRoleInstance"] = tostring(events.["AppRoleInstance"])
+        ,["AppVersion"] = tostring(events.["AppVersion"])
+        ,["ClientCountryOrRegion"] = tostring(events.["ClientCountryOrRegion"])
+        ,["ClientIP"] = tostring(events.["ClientIP"])
+        ,["ClientType"] = tostring(events.["ClientType"])
+        ,["IKey"] = tostring(events.["IKey"])
+        ,["ItemCount"] = toint(events.["ItemCount"])
+        ,["Message"] = message
+        ,["Properties"] = properties
+        ,["ResourceGUID"] = tostring(events.["ResourceGUID"])
+        ,["SDKVersion"] = tostring(events.["SDKVersion"])
+        ,["SeverityLevel"] = toint(events.["SeverityLevel"])
+        ,["SourceSystem"] = tostring(events.["SourceSystem"])
+        ,["TenantId"] = tostring(events.["TenantId"])
+        ,["TimeGenerated"] = todatetime(events.["TimeGenerated"])
+        ,["Type"] = tostring(events.["Type"])
+        ,["_BilledSize"] = toreal(events.["_BilledSize"])
+        ,["_Internal_WorkspaceResourceId"] = tostring(events.["_Internal_WorkspaceResourceId"])
+        ,["_ResourceId"] = tostring(events.["_ResourceId"]))
+}
+
+.alter table AppTraces policy update @'[{"Source": "Staging_AppTraces", "Query": "Expand_AppTraces()", "IsEnabled": "True", "IsTransactional": true}]'
