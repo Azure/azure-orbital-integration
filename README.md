@@ -1,8 +1,22 @@
 # Project
-Azure Orbital Integration
+Azure Orbital Integration is a solution that enables end users to easily deploy all downstream components necessary to receive and process binary data from [NASA's Aqua Earth-Observing Satellite](https://aqua.nasa.gov/) via [Azure Orbital ground station as a Serivce (GSaaS)](https://docs.microsoft.com/en-us/azure/orbital/overview). This solution contains self start scripts for the tcp-to-blob component (provides an endpoint to receive binary data), Aqua processing VM component (provides a place to consume and run RT-STPS and IPOPP) and the optional central logging component (brings logs from all components to a single place)
 
 # Overview
 ![Azure Orbital Integration Diagram](./docs/images/diagram.png)
+
+## Downstream deployment steps
+1. Deploy [tcp-to-blob](./tcp-to-blob/README.md)
+2. Deploy [Aqua processor](./processor/README.md)
+3. (Optional) Deploy [central-logging](./central-logging/README.md)
+
+## Azure Orbital GSaaS steps
+Once you have the downstream components, you can follow these steps to deploy the Azure Orbital GSaaS components. 
+
+*Please note: during the configuration of the contact profile, you will need to provide endpoint information from the deployment of the tcp-to-blob component.*
+
+1. [Register a spacecraft](https://docs.microsoft.com/en-us/azure/orbital/register-spacecraft).
+2. [Configure a contact profile](https://docs.microsoft.com/en-us/azure/orbital/contact-profile)
+3. [Schedule a contact](https://docs.microsoft.com/en-us/azure/orbital/schedule-contact)
 
 ## Contributing
 
