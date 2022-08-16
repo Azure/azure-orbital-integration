@@ -10,7 +10,7 @@ param namePrefix string = uniqueString(resourceGroup().id)
 
 @description('Name of AKS cluster.')
 @maxLength(27)
-param aksName string = 'aks${uniqueString(resourceGroup().id)}'
+param aksName string = '${uniqueString(resourceGroup().id)}aks'
 
 @description('Resource group for ACR')
 param acrResourceGroup string = resourceGroup().name
