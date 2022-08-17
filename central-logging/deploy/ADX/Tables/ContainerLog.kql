@@ -1,0 +1,48 @@
+// Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+// Software is licensed under the MIT License. See LICENSE in the project
+// root for license information.
+
+// Configures staging table, expanded table, expand function and update policies.
+// This will allow external log data to land in staging and get expanded to the final table
+.create-merge table Staging_ContainerLog (Records: dynamic)
+.alter-merge table Staging_ContainerLog policy update @'[{ "IsTransactional": true}]'
+.alter-merge table Staging_ContainerLog policy retention softdelete = 0s recoverability = disabled
+.create-or-alter table Staging_ContainerLog ingestion json mapping "ContainerLog_Staging_Mapping" '[{"column":"Records","path":"$.records","datatype":"","transform":null}]'
+
+.create-merge table ContainerLog (
+     Computer: string
+    ,ContainerID: string
+    ,LogEntry: dynamic
+    ,LogEntrySource: string
+    ,MG: string
+    ,SourceSystem: string
+    ,TenantId: string
+    ,TimeGenerated: datetime
+    ,TimeOfCommand: string
+    ,Type: string
+    ,_Internal_WorkspaceResourceId: string
+    ,_ResourceId: string)
+
+.create-or-alter function 
+with (docstring = 'Expands Staging_ContainerLog to ContainerLog', folder='Expands')
+Expand_ContainerLog() {
+    Staging_ContainerLog
+    | mv-expand Records
+    | extend events = Records
+    | extend logEntry = todynamic(extract_json("$", tostring(events.LogEntry)))
+    | project
+        ["Computer"] = tostring(events.["Computer"])
+        ,["ContainerID"] = tostring(events.["ContainerID"])
+        ,["LogEntry"] = todynamic(events.["LogEntry"])
+        ,["LogEntrySource"] = tostring(events.["LogEntrySource"])
+        ,["MG"] = tostring(events.["MG"])
+        ,["SourceSystem"] = tostring(events.["SourceSystem"])
+        ,["TenantId"] = tostring(events.["TenantId"])
+        ,["TimeGenerated"] = todatetime(events.["TimeGenerated"])
+        ,["TimeOfCommand"] = tostring(events.["TimeOfCommand"])
+        ,["Type"] = tostring(events.["Type"])
+        ,["_Internal_WorkspaceResourceId"] = tostring(events.["_Internal_WorkspaceResourceId"])
+        ,["_ResourceId"] = tostring(events.["_ResourceId"])
+}
+
+.alter table ContainerLog policy update @'[{"Source": "Staging_ContainerLog", "Query": "Expand_ContainerLog()", "IsEnabled": "True", "IsTransactional": true}]'
