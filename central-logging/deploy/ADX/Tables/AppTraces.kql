@@ -61,7 +61,7 @@ Expand_AppTraces() {
         ,["Type"] = tostring(events.["Type"])
         ,["_BilledSize"] = toreal(events.["_BilledSize"])
         ,["_Internal_WorkspaceResourceId"] = tostring(events.["_Internal_WorkspaceResourceId"])
-        ,["_ResourceId"] = tostring(events.["_ResourceId"]))
+        ,["_ResourceId"] = tostring(events.["_ResourceId"])
 }
 
 .alter table AppTraces policy update @'[{"Source": "Staging_AppTraces", "Query": "Expand_AppTraces()", "IsEnabled": "True", "IsTransactional": true}]'

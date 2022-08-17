@@ -15,7 +15,7 @@ resource aquaLawRef 'Microsoft.OperationalInsights/workspaces@2021-12-01-preview
 
 // The following section will will configure Data Export rules to be exported to the central ADX instance
 // https://docs.microsoft.com/en-us/azure/templates/Microsoft.OperationalInsights/workspaces/dataExports?pivots=deployment-language-bicep
-resource tcpToBlobLawExportAppTraces 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
+resource tcpToBlobLawExportSyslog 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
   name: 'Export-Syslog'
   parent: aquaLawRef
   properties: {
@@ -31,3 +31,38 @@ resource tcpToBlobLawExportAppTraces 'Microsoft.OperationalInsights/workspaces/d
     ]
   }
 }
+
+// Issue # https://github.com/Azure/azure-orbital-integration/issues/28 
+// resource tcpToBlobLawExportAppTraces 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
+//   name: 'Export-AppTraces'
+//   parent: aquaLawRef
+//   properties: {
+//     destination: {
+//       metaData: {
+//         eventHubName: 'apptraces'
+//       }
+//       resourceId: ehNamespaceId
+//     }
+//     enable: true
+//     tableNames: [
+//       'AppTraces'
+//     ]
+//   }
+// }
+
+// resource tcpToBlobLawExportAppExceptions 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
+//   name: 'Export-AppExceptions'
+//   parent: aquaLawRef
+//   properties: {
+//     destination: {
+//       metaData: {
+//         eventHubName: 'appexceptions'
+//       }
+//       resourceId: ehNamespaceId
+//     }
+//     enable: true
+//     tableNames: [
+//       'AppExceptions'
+//     ]
+//   }
+// }

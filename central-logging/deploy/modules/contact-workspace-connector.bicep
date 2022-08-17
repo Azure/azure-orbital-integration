@@ -31,39 +31,3 @@ resource tcpToBlobLawExportContainerLog 'Microsoft.OperationalInsights/workspace
     ]
   }
 }
-
-// TODO Placeholder for the future use of AppTraces and AppExceptions. Once BlobDownloadService
-// is fully integrated, it will spit logs out to AppTraces and AppExceptions
-// resource tcpToBlobLawExportAppTraces 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
-//   name: 'Export-AppTraces'
-//   parent: tcpToBlobLawRef
-//   properties: {
-//     destination: {
-//       metaData: {
-//         eventHubName: 'apptraces'
-//       }
-//       resourceId: ehNamespaceId
-//     }
-//     enable: true
-//     tableNames: [
-//       'AppTraces'
-//     ]
-//   }
-// }
-
-// resource tcpToBlobLawExportAppExceptions 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
-//   name: 'Export-AppExceptions'
-//   parent: tcpToBlobLawRef
-//   properties: {
-//     destination: {
-//       metaData: {
-//         eventHubName: 'appexceptions'
-//       }
-//       resourceId: ehNamespaceId
-//     }
-//     enable: true
-//     tableNames: [
-//       'AppExceptions'
-//     ]
-//   }
-// }

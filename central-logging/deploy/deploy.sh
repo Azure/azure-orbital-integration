@@ -17,5 +17,5 @@ az deployment sub create \
     tcpToBlobRg="${TCP_TO_BLOB_RG}" \
     tcpToBlobLawName="${TCP_TO_BLOB_LAW_NAME}" \
     aquaRg="${AQUA_RG}" \
-    aquaLawName="${AZUA_LAW_NAME}" \
+    aquaLawName="${AQUA_LAW_NAME}" \
   --confirm-with-what-if

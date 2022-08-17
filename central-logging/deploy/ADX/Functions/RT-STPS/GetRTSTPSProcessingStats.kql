@@ -30,12 +30,11 @@ GetRTSTPSProcessingStats(StartTime: datetime, EndTime: datetime, LongRunningThre
         ,CompletionTime = 
             iff(StartTime <= ago(longRunningThresholdMin), StartTime, CompletionTime)
         ,TotalTimeSec = coalesce(
-            iff(StartTime <= ago(longRunningThresholdMin) and Status == 'Processing', (StartTime + longRunningThresholdMin)/1s, TotalTimeSec)
-            ,iff(StartTime <= ago(failedRunningThresholdMin) and Status == 'Processing', (StartTime + failedRunningThresholdMin)/1s, TotalTimeSec)
+            iff(StartTime <= ago(failedRunningThresholdMin) and Status == 'Processing', (StartTime + failedRunningThresholdMin)/1s, TotalTimeSec)
             ,TotalTimeSec)
         ,Status = coalesce(
-            iff(StartTime <= ago(failedRunningThresholdMin) and Status == 'Processing', 'Failed', Status)
-            ,iff(StartTime <= ago(longRunningThresholdMin) and Status == 'Processing', 'LongRunning', Status)
+            iff(StartTime <= ago(failedRunningThresholdMin) and Status == 'Processing', 'Failed', '')
+            ,iff(StartTime <= ago(longRunningThresholdMin) and Status == 'Processing', 'LongRunning', '')
             ,Status)
     | order by CompletionTime desc
 }
