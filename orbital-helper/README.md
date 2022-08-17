@@ -65,13 +65,13 @@ Optional environment variables for overriding TLE provider:
 1. Ensure you've installed and compiled as described above.
 2. `cd arm-orbital-helper`
 
-| Task                                                                    | Command                                                                                                  |
-|:------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------|
-| Create contact profile                                                  | `node ./dist/samples/createContactProfile.js`                                                            |
-| Get next available contact                                              | `node ./dist/samples/getNextAvailableContact.js`                                                         |
-| Schedule contact                                                        | `node ./dist/samples/scheduleContact.js`                                                                 |
-| Schedule next available contact                                         | `node ./dist/samples/scheduleNextAvailableContact.js`                                                    |
-| Search scheduled contacts                                               | `node ./dist/samples/searchScheduledContacts.js`                                                         |
-| Update spacecraft TLE<br/>* Associated Orbital API is currently broken. | `node ./dist/samples/updateSpacecraftTLE.js`<br/>* Associated Orbital API is currently broken.           |
+| Task                            | Command                                               |
+|:--------------------------------|:------------------------------------------------------|
+| Create contact profile          | `node ./dist/samples/createContactProfile.js`         |
+| Get next available contact      | `node ./dist/samples/getNextAvailableContact.js`      |
+| Schedule contact                | `node ./dist/samples/scheduleContact.js`              |
+| Schedule next available contact | `node ./dist/samples/scheduleNextAvailableContact.js` |
+| Search scheduled contacts       | `node ./dist/samples/searchScheduledContacts.js`      |
+| Update spacecraft TLE           | `node ./dist/samples/updateSpacecraftTLE.js`          |
 
 

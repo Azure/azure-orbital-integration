@@ -21,7 +21,7 @@ const updateTLE_cli = async () => {
 /*-----------------------------------------------------------------+
 | Update spacecraft.
 | `spacecrafts.beginCreateOrUpdateAndWait`
-| ⚠️ It's unlikely users will figure out how to update successfully because type definitions don't match required properties for  spacecraft updating.
+| ⚠️ It's unlikely users will figure out how to update successfully because type definitions don't match required properties for spacecraft updating.
 |  • `SpacecraftsCreateOrUpdateOptionalParams`: Is not optional despite it name.
 |  • None of the `SpacecraftsCreateOrUpdateOptionalParams` are defined as being required, even though they are required for both create and update.
 |  • When a user attempts to update the TLE, by only specifying the TLE-related "optional params", a misleading error is thrown indicating the user must delete and re-create the spacecraft.
