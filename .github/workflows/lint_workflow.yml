@@ -30,7 +30,7 @@ jobs:
 
       # Super lint step
       - name: Lint Code Base
-        uses: github/super-linter/slim@v4
+        uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
