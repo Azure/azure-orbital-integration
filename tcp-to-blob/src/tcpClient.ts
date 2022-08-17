@@ -3,8 +3,7 @@
 // root for license information.
 
 import { Socket } from 'net'
-import {EventLogger, sleep} from "./utils";
-
+import { EventLogger, sleep } from './utils'
 
 export interface SendDataParams {
     numLines: number
@@ -13,11 +12,15 @@ export interface SendDataParams {
     logger: EventLogger
 }
 
-export const sendData = async ({numLines, host, port, logger}: SendDataParams) => {
-
+export const sendData = async ({
+    numLines,
+    host,
+    port,
+    logger,
+}: SendDataParams) => {
     const client = new Socket({
-        allowHalfOpen: true
-    });
+        allowHalfOpen: true,
+    })
 
     let linesWritten = 0
     const baseParams = {
@@ -33,7 +36,6 @@ export const sendData = async ({numLines, host, port, logger}: SendDataParams) =
         ...baseParams,
     })
 
-
     let isOkToWrite = true
 
     client.setTimeout(30_000)
@@ -41,8 +43,8 @@ export const sendData = async ({numLines, host, port, logger}: SendDataParams) =
 
     const asyncWrite = (): Promise<void> => {
         return new Promise((resolve, reject) => {
-            isOkToWrite = socket.write(makeBuffer(), err => {
-                if(err) {
+            isOkToWrite = socket.write(makeBuffer(), (err) => {
+                if (err) {
                     reject(err)
                 }
                 resolve()
@@ -65,9 +67,9 @@ export const sendData = async ({numLines, host, port, logger}: SendDataParams) =
             message: 'Connected.',
             ...baseParams,
         })
-        while(linesWritten < numLines) {
+        while (linesWritten < numLines) {
             await asyncWrite()
-            while(!isOkToWrite) {
+            while (!isOkToWrite) {
                 await sleep()
             }
         }
@@ -80,7 +82,7 @@ export const sendData = async ({numLines, host, port, logger}: SendDataParams) =
         })
     })
 
-    socket.on('data', async data => {
+    socket.on('data', async (data) => {
         logger.info({
             event: 'server-message',
             message: 'Server says: ' + data.toString(),
@@ -88,7 +90,7 @@ export const sendData = async ({numLines, host, port, logger}: SendDataParams) =
         })
     })
 
-    socket.on('close', function() {
+    socket.on('close', function () {
         logger.info({
             event: 'close',
             message: 'Connection was closed.',
@@ -96,7 +98,7 @@ export const sendData = async ({numLines, host, port, logger}: SendDataParams) =
         })
     })
 
-    socket.on('error', function(error) {
+    socket.on('error', function (error) {
         logger.info({
             event: 'error',
             message: 'Server emitted error.',
@@ -108,15 +110,15 @@ export const sendData = async ({numLines, host, port, logger}: SendDataParams) =
     const numLinesPerWrite = 10_000
     const makeBuffer = () => {
         let str = ''
-        for(let ii=0; ii<=numLinesPerWrite; ii++) {
-            if(linesWritten >= numLines) {
+        for (let ii = 0; ii <= numLinesPerWrite; ii++) {
+            if (linesWritten >= numLines) {
                 break
             }
-            str += `Hello from Client ${(++linesWritten).toLocaleString()} ${(new Date()).toISOString()}\n`
-            if(linesWritten % 10_000 === 0) {
+            str += `Hello from Client ${(++linesWritten).toLocaleString()} ${new Date().toISOString()}\n`
+            if (linesWritten % 10_000 === 0) {
                 logger.info({
                     event: 'checkpoint',
-                    message: `Client sent ${(linesWritten).toLocaleString()} of ${numLines.toLocaleString()} lines.`,
+                    message: `Client sent ${linesWritten.toLocaleString()} of ${numLines.toLocaleString()} lines.`,
                     ...baseParams,
                 })
             }
