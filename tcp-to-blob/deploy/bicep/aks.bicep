@@ -2,15 +2,15 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
+param location string = resourceGroup().location
+
 @description('A prefix that is used to generate resources in this deployment. This must be specified.')
 @maxLength(20)
-param namePrefix string
-
-param location string = resourceGroup().location
+param namePrefix string = uniqueString(resourceGroup().id)
 
 @description('Name of AKS cluster.')
 @maxLength(27)
-param aksName string = '${namePrefix}-aks'
+param aksName string = '${uniqueString(resourceGroup().id)}aks'
 
 @description('Resource group for ACR')
 param acrResourceGroup string = resourceGroup().name
