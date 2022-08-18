@@ -7,7 +7,7 @@
 param location string = resourceGroup().location
 
 @description('Name prefix for name standardization')
-param namePrefix string
+param namePrefix string = uniqueString(resourceGroup().id)
 
 @description('Name prefix for name standardization of picky resources')
 param namePrefixStripped string = replace(namePrefix, '-', '')

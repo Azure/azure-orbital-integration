@@ -21,6 +21,7 @@
     "docker-push-canary": "yarn docker-build-canary && yarn docker-tag-canary && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob-canary:latest",
     "compile-watch": "npx tsc -w",
     "compile": "npx tsc",
+    "prettier": "npx prettier src/**/*.ts -w",
     "run-server": "yarn build && cd ./dist && node ./bundle/tcp-to-blob.js"
   },
   "keywords": [
@@ -41,6 +42,7 @@
     "commander": "^9.4.0",
     "esbuild": "^0.14.42",
     "lodash": "^4.17.21",
+    "prettier": "^2.7.1",
     "typescript": "^4.7.2"
   }
 }

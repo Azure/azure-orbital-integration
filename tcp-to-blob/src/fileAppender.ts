@@ -5,17 +5,19 @@
 import { appendFileSync, mkdirSync, rmSync } from 'fs'
 import { resolve } from 'path'
 
-
 export interface FileAppender {
     appendFile: (data: string | Uint8Array) => void
     deleteFile: () => void
     filePath: string
 }
 
-export const makeFileAppender = (params: {dirPath: string, filename: string}): FileAppender => {
+export const makeFileAppender = (params: {
+    dirPath: string
+    filename: string
+}): FileAppender => {
     const dirPath = resolve(params.dirPath)
     const filePath = resolve(params.dirPath, params.filename)
-    mkdirSync(dirPath, { recursive: true})
+    mkdirSync(dirPath, { recursive: true })
 
     const appendFile = (data: string | Uint8Array): void => {
         appendFileSync(filePath, data)

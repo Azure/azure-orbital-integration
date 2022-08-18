@@ -1,0 +1,53 @@
+// Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+// Software is licensed under the MIT License. See LICENSE in the project
+// root for license information.
+
+// Configures staging table, expanded table, expand function and update policies.
+// This will allow external log data to land in staging and get expanded to the final table
+.create-merge table Staging_Syslog (Records: dynamic)
+.alter-merge table Staging_Syslog policy update @'[{ "IsTransactional": true}]'
+.alter-merge table Staging_Syslog policy retention softdelete = 0s recoverability = disabled
+.create-or-alter table Staging_Syslog ingestion json mapping "Syslog_Staging_Mapping" '[{"column":"Records","path":"$.records","datatype":"","transform":null}]'
+
+.create-merge table Syslog (
+     Computer: string
+    ,EventTime: string
+    ,Facility: string
+    ,HostIP: string
+    ,HostName: string
+    ,MG: string
+    ,ProcessName: string
+    ,SeverityLevel: string
+    ,SourceSystem: string
+    ,SyslogMessage: dynamic
+    ,TenantId: string
+    ,TimeGenerated: datetime
+    ,Type: string
+    ,_Internal_WorkspaceResourceId: string
+    ,_ResourceId: string)
+
+.create-or-alter function 
+with (docstring = 'Expands Staging_Syslog to Syslog', folder='Expands')
+Expand_Syslog() {
+    Staging_Syslog
+    | mv-expand Records
+    | extend events = Records
+    | project
+         ["Computer"] = tostring(events.["Computer"])
+        ,["EventTime"] = tostring(events.["EventTime"])
+        ,["Facility"] = tostring(events.["Facility"])
+        ,["HostIP"] = tostring(events.["HostIP"])
+        ,["HostName"] = tostring(events.["HostName"])
+        ,["MG"] = tostring(events.["MG"])
+        ,["ProcessName"] = tostring(events.["ProcessName"])
+        ,["SeverityLevel"] = tostring(events.["SeverityLevel"])
+        ,["SourceSystem"] = tostring(events.["SourceSystem"])
+        ,["SyslogMessage"] = todynamic(events.["SyslogMessage"])
+        ,["TenantId"] = tostring(events.["TenantId"])
+        ,["TimeGenerated"] = todatetime(events.["TimeGenerated"])
+        ,["Type"] = tostring(events.["Type"])
+        ,["_Internal_WorkspaceResourceId"] = tostring(events.["_Internal_WorkspaceResourceId"])
+        ,["_ResourceId"] = tostring(events.["_ResourceId"])
+}
+
+.alter table Syslog policy update @'[{"Source": "Staging_Syslog", "Query": "Expand_Syslog()", "IsEnabled": "True", "IsTransactional": true}]'
