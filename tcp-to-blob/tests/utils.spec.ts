@@ -48,8 +48,14 @@ describe('utils.getEnv', () => {
 });
 
 describe('utils.getEnvVar', () => {
+    beforeEach(() => {
+        process.env.CONTACT_DATA_STORAGE_CONTAINER = "connection-string"
+    }),
+    afterEach(() => {
+        delete process.env.CONTACT_DATA_STORAGE_CONTAINER
+    }),
     it('should return a value for PATH', () => {
-        const result = getEnvVar('PATH')
+        const result = getEnvVar('CONTACT_DATA_STORAGE_CONTAINER')
         expect(result).to.be.string
     })
     it('should throw an error becuase THIS_ENV_VAR does not exist', () => {
