@@ -52,6 +52,7 @@ export interface WriteBlobParams {
     blobName: string
     hadError?: boolean
 }
+
 export interface BlobWriter {
     writeBlob: ({
         filePath,
