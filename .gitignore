@@ -339,3 +339,4 @@ reports/
 node_modules/
 dist/
 .env/
+.nyc_output
