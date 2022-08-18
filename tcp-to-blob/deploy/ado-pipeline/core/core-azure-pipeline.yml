@@ -3,18 +3,18 @@
 # root for license information.
 
 trigger:
-- main
+  - main
 
 pool:
   vmImage: ubuntu-latest
 
 variables:
-- group: tcp-to-blob-vg
-  
+  - group: tcp-to-blob-vg
+
 steps:
   - task: AzureCLI@2
     displayName: 'Set ENVs/make Env Files. Deploy bicep'
-    env: 
+    env:
       AZ_LOCATION: $(AZ_LOCATION)
       AZ_RESOURCE_GROUP: $(AZ_RESOURCE_GROUP)
       ACR_NAME: $(ACR_NAME)

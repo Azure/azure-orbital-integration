@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "azure-orbital-integration",
+  "scripts": {
+    "build": "yarn workspaces foreach yarn run build"
+  },
+  "workspaces": [
+    "orbital-helper",
+    "tcp-to-blob"
+  ]
+}
