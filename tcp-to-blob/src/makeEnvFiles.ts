@@ -13,10 +13,12 @@ const defaultTemplateNames = [
     'deploy/tcp-to-blob-canary-template.yaml',
     'deploy/dashboard-template.json',
 ]
+
 export interface MakeEnvFilesParams {
     templateNames?: string[]
     outDir?: string
 }
+
 const makeEnvFiles = ({ templateNames, outDir }: MakeEnvFilesParams = {}) => {
     const namePrefix = process.env.NAME_PREFIX
     if (!namePrefix) {
