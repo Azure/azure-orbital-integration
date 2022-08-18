@@ -18,14 +18,18 @@ export interface LogParams {
     remotePort?: number
     error?: { message: string }
     message: string
+
     [key: string]: any
 }
 
 export interface EventLogger {
     info(params: LogParams): void
+
     warn(params: LogParams): void
+
     error(params: LogParams): void
 }
+
 type ConsoleLoggerFx = (message?: any, ...optionalParams: any[]) => void
 export const makeLogger = ({
     subsystem,

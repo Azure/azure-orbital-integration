@@ -11,16 +11,16 @@ import {
     SpacecraftsCreateOrUpdateOptionalParams,
 } from '@azure/arm-orbital'
 import { DefaultAzureCredential } from '@azure/identity'
-import {getEnvVar, prettyDuration} from './utils';
-import {getTLE, TLE} from './tleHelper';
+import { getEnvVar, prettyDuration } from './utils'
+import { getTLE, TLE } from './tleHelper'
 import {
     makeAquaContactProfileParams,
     MakeAquaContactProfileParams,
-} from "./aquaContactProfileParams";
+} from './aquaContactProfileParams'
 
 export const getEndpointFromEnv = () => {
     const endpointPort = +getEnvVar('ENDPOINT_PORT')
-    if(isNaN(endpointPort)) {
+    if (isNaN(endpointPort)) {
         throw new Error('Env variable "ENDPOINT_PORT" must be a number.')
     }
 
@@ -31,8 +31,6 @@ export const getEndpointFromEnv = () => {
         subnetId: getEnvVar('ENDPOINT_SUBNET_ID'),
     }
 }
-
-
 
 export interface GetNextContactParams {
     spaceCraftName: string
@@ -46,7 +44,7 @@ export interface GetNextContactParams {
 
 interface MakeOrbitalHelperParams {
     resourceGroup: string
-    location: string,
+    location: string
     orbitalClient: AzureOrbital
 }
 
@@ -54,6 +52,7 @@ export interface ContactWithSummary {
     contact: Contact
     summary: ContactSummary
 }
+
 const makeContactSummary = (_contact: Contact): ContactSummary => {
     const contactStart = _contact.rxStartTime ?? _contact.reservationStartTime
     const contactEnd = _contact.rxEndTime ?? _contact.reservationEndTime
@@ -61,27 +60,38 @@ const makeContactSummary = (_contact: Contact): ContactSummary => {
     let startMillis = contactStart?.getTime()
     let startTimeRelative = ''
     const nowMillis = Date.now()
-    if(startMillis) {
+    if (startMillis) {
         if (nowMillis - startMillis > 0) {
-            startTimeRelative = `${prettyDuration({startMillis, endMillis: nowMillis})} (in the past)`
+            startTimeRelative = `${prettyDuration({
+                startMillis,
+                endMillis: nowMillis,
+            })} (in the past)`
         } else {
-            startTimeRelative = `${prettyDuration({startMillis: nowMillis, endMillis})} (in the future)`
+            startTimeRelative = `${prettyDuration({
+                startMillis: nowMillis,
+                endMillis,
+            })} (in the future)`
         }
     }
     const contactProfileId = _contact.contactProfile?.id ?? ''
-    const contactProfileName = contactProfileId.substring(1 + contactProfileId.lastIndexOf('/')).toLowerCase()
+    const contactProfileName = contactProfileId
+        .substring(1 + contactProfileId.lastIndexOf('/'))
+        .toLowerCase()
 
-    const { provisioningState, status, errorMessage} = _contact
+    const { provisioningState, status, errorMessage } = _contact
     return {
         contactProfileName,
         groundStationName: _contact.groundStationName?.toLowerCase() ?? '',
-        duration: startMillis && endMillis ? prettyDuration({startMillis, endMillis}) : '',
+        duration:
+            startMillis && endMillis
+                ? prettyDuration({ startMillis, endMillis })
+                : '',
         startTimeRelative,
         startTime: contactStart?.toLocaleString() ?? '',
         startTimeUTC: contactStart?.toISOString() ?? '',
         provisioningState: provisioningState || undefined,
         status: status || undefined,
-        errorMessage: errorMessage || undefined
+        errorMessage: errorMessage || undefined,
     }
 }
 
@@ -96,7 +106,6 @@ export interface ContactSummary {
     provisioningState?: string
     status?: string
     errorMessage?: string
-
 }
 
 export interface SearchScheduledContactsParams {
@@ -107,7 +116,6 @@ export interface SearchScheduledContactsParams {
     noLaterThan?: Date
     isSuccess?: boolean
 }
-
 
 export interface ScheduleNextContactResponse extends ContactWithSummary {
     contactName: string
@@ -127,15 +135,27 @@ export interface OrbitalHelper {
     resourceGroup: string
     location: string
 
-    scheduleContact(params: ScheduleContactParams): Promise<{ contactName: string }>
-    getNextContact(params: GetNextContactParams): Promise<ContactWithSummary | void>
-    scheduleNextContact(params: GetNextContactParams): Promise<ScheduleNextContactResponse | void>
+    scheduleContact(
+        params: ScheduleContactParams
+    ): Promise<{ contactName: string }>
 
-    searchScheduledContacts(params?: SearchScheduledContactsParams): AsyncGenerator<ContactWithSummary>
+    getNextContact(
+        params: GetNextContactParams
+    ): Promise<ContactWithSummary | void>
 
-    updateTLE(paras: {spacecraftName: string}): Promise<TLE>
+    scheduleNextContact(
+        params: GetNextContactParams
+    ): Promise<ScheduleNextContactResponse | void>
 
-    createContactProfile(_params: MakeAquaContactProfileParams): Promise<ContactProfile>
+    searchScheduledContacts(
+        params?: SearchScheduledContactsParams
+    ): AsyncGenerator<ContactWithSummary>
+
+    updateTLE(params: { spacecraftName: string }): Promise<TLE>
+
+    createContactProfile(
+        _params: MakeAquaContactProfileParams
+    ): Promise<ContactProfile>
 }
 
 export interface ScheduleNextContactResponse extends ContactWithSummary {
@@ -145,18 +165,22 @@ export interface ScheduleNextContactResponse extends ContactWithSummary {
 const checkContactsCreateResponse = (unhelpfulRes: ContactsCreateResponse) => {
     // Ideally if create contact failed, it would throw but...
     // At least if it didn't throw, it would populate the errorMessage defined by the schema...
-    if(unhelpfulRes.errorMessage) {
+    if (unhelpfulRes.errorMessage) {
         // this seems to NEVER be populated... but just in case it's fixed.
         throw new Error(unhelpfulRes.errorMessage)
     }
     // But since it does neither...
     // This isn't part of type that should be returned, but it's sometimes there ! :(
     // @ts-ignore
-    if(unhelpfulRes?.error) {
+    if (unhelpfulRes?.error) {
         // @ts-ignore
         const { code, message } = unhelpfulRes?.error
         // @ts-ignore
-        throw new Error(`${code ? '['+code+'] ' : ''}${unhelpfulRes?.error?.message}`)
+        throw new Error(
+            `${code ? '[' + code + '] ' : ''}${
+                (unhelpfulRes as any)?.error?.message
+            }`
+        )
     }
 }
 
@@ -171,26 +195,49 @@ export const makeHelperParamsFromEnv = (): MakeOrbitalHelperParams => {
     const envParams = getHelperEnvVars()
     return {
         ...envParams,
-        orbitalClient: new AzureOrbital(new DefaultAzureCredential(), envParams.subscription)
+        orbitalClient: new AzureOrbital(
+            new DefaultAzureCredential(),
+            envParams.subscription
+        ),
     }
 }
 
-
-export const makeOrbitalHelper = async ({
-    location,
-    resourceGroup,
-    orbitalClient,
-}: MakeOrbitalHelperParams = makeHelperParamsFromEnv()): Promise<OrbitalHelper> => {
-
-    console.log(`Creating Orbital Helper for: ${JSON.stringify({location, resourceGroup})}`)
-    const makeContactProfileShell = profileName => ({
-        id: `/subscriptions/${orbitalClient.subscriptionId}/resourcegroups/${resourceGroup}/providers/Microsoft.Orbital/contactProfiles/${profileName}`
+export const makeOrbitalHelper = async (
+    {
+        location,
+        resourceGroup,
+        orbitalClient,
+    }: MakeOrbitalHelperParams = makeHelperParamsFromEnv()
+): Promise<OrbitalHelper> => {
+    console.log(
+        `Creating Orbital Helper for: ${JSON.stringify({
+            location,
+            resourceGroup,
+        })}`
+    )
+    const makeContactProfileShell = (profileName) => ({
+        id: `/subscriptions/${orbitalClient.subscriptionId}/resourcegroups/${resourceGroup}/providers/Microsoft.Orbital/contactProfiles/${profileName}`,
     })
 
-    const makeContactName = ({contactProfileName, startTime}: {contactProfileName: string, startTime: Date}) => `${contactProfileName}--${startTime?.toISOString()}`
+    const makeContactName = ({
+        contactProfileName,
+        startTime,
+    }: {
+        contactProfileName: string
+        startTime: Date
+    }) => `${contactProfileName}--${startTime?.toISOString()}`
 
-    const scheduleContact = async ({ groundStationName, spaceCraftName, contactProfileName, reservationStartTime, reservationEndTime}: ScheduleContactParams) => {
-        const contactName = makeContactName({contactProfileName,  startTime: reservationStartTime})
+    const scheduleContact = async ({
+        groundStationName,
+        spaceCraftName,
+        contactProfileName,
+        reservationStartTime,
+        reservationEndTime,
+    }: ScheduleContactParams) => {
+        const contactName = makeContactName({
+            contactProfileName,
+            startTime: reservationStartTime,
+        })
         const lastUnnamedParam: Contact = {
             contactProfile: makeContactProfileShell(contactProfileName),
             groundStationName,
@@ -202,7 +249,7 @@ export const makeOrbitalHelper = async ({
             resourceGroup,
             spaceCraftName,
             contactName,
-            lastUnnamedParam,
+            lastUnnamedParam
         )
         checkContactsCreateResponse(unhelpfulRes)
 
@@ -211,29 +258,47 @@ export const makeOrbitalHelper = async ({
         }
     }
 
-    const getNextContact = async ({ minDurationMinutes=0, maxDurationMinutes, minMinutesFromNow=0, maxMinutesFromNow, ..._parms }: GetNextContactParams): Promise<ContactWithSummary | void> => {
-        const startTime = minMinutesFromNow ? new Date(Date.now() + MILLIS_PER_MINUTE * minMinutesFromNow) : new Date()
-        const contacts = await orbitalClient.spacecrafts.beginListAvailableContactsAndWait(
-            resourceGroup,
-            _parms.spaceCraftName,
-            makeContactProfileShell(_parms.contactProfileName),
-            _parms.groundStationName,
-            startTime,
-            new Date(startTime.getTime() + 48 * 3600 * 1_000),
-        )
+    const getNextContact = async ({
+        minDurationMinutes = 0,
+        maxDurationMinutes,
+        minMinutesFromNow = 0,
+        maxMinutesFromNow,
+        ..._parms
+    }: GetNextContactParams): Promise<ContactWithSummary | void> => {
+        const startTime = minMinutesFromNow
+            ? new Date(Date.now() + MILLIS_PER_MINUTE * minMinutesFromNow)
+            : new Date()
+        const contacts =
+            await orbitalClient.spacecrafts.beginListAvailableContactsAndWait(
+                resourceGroup,
+                _parms.spaceCraftName,
+                makeContactProfileShell(_parms.contactProfileName),
+                _parms.groundStationName,
+                startTime,
+                new Date(startTime.getTime() + 48 * 3600 * 1_000)
+            )
 
-        const minDurMills = minDurationMinutes ? minDurationMinutes * MILLIS_PER_MINUTE : 0
+        const minDurMills = minDurationMinutes
+            ? minDurationMinutes * MILLIS_PER_MINUTE
+            : 0
         const maxDurMillis = maxDurationMinutes * MILLIS_PER_MINUTE
         const minMillisFromNow = minMinutesFromNow * MILLIS_PER_MINUTE
-        const maxMillisFromNow = maxMinutesFromNow ? maxMinutesFromNow * MILLIS_PER_MINUTE : Number.MAX_SAFE_INTEGER
+        const maxMillisFromNow = maxMinutesFromNow
+            ? maxMinutesFromNow * MILLIS_PER_MINUTE
+            : Number.MAX_SAFE_INTEGER
         for await (const _contact of contacts) {
-            if(!_contact?.rxStartTime || !_contact?.rxEndTime){
+            if (!_contact?.rxStartTime || !_contact?.rxEndTime) {
                 continue
             }
-            const endMillis = (new Date(_contact.rxEndTime)).getTime()
-            const startMillis = (new Date(_contact.rxStartTime)).getTime()
+            const endMillis = new Date(_contact.rxEndTime).getTime()
+            const startMillis = new Date(_contact.rxStartTime).getTime()
             const durationMillis = endMillis - startMillis
-            if(durationMillis < maxDurMillis && durationMillis > minDurMills && startMillis < maxMillisFromNow && startMillis > minMillisFromNow) {
+            if (
+                durationMillis < maxDurMillis &&
+                durationMillis > minDurMills &&
+                startMillis < maxMillisFromNow &&
+                startMillis > minMillisFromNow
+            ) {
                 return {
                     contact: _contact,
                     summary: {
@@ -246,24 +311,28 @@ export const makeOrbitalHelper = async ({
         return
     }
 
-    const scheduleNextContact = async (schedParams: GetNextContactParams): Promise<ScheduleNextContactResponse | void> => {
+    const scheduleNextContact = async (
+        schedParams: GetNextContactParams
+    ): Promise<ScheduleNextContactResponse | void> => {
         console.log('   scheduleNextContact: Finding next available contact...')
         const nextContact = await getNextContact(schedParams)
 
-        if(!nextContact) {
+        if (!nextContact) {
             return
         }
 
         const { contact, summary } = nextContact
-        if(!contact.rxStartTime) {
+        if (!contact.rxStartTime) {
             throw new Error('Contact should have a "rxStartTime!') // I think this is just lazy typing... should never be null
         }
         const contactName = makeContactName({
             contactProfileName: schedParams.contactProfileName,
-            startTime: contact?.rxStartTime
+            startTime: contact?.rxStartTime,
         })
         const lastUnnamedParam: Contact = {
-            contactProfile: makeContactProfileShell(schedParams.contactProfileName),
+            contactProfile: makeContactProfileShell(
+                schedParams.contactProfileName
+            ),
             groundStationName: schedParams.groundStationName,
             reservationEndTime: contact.rxEndTime,
             reservationStartTime: contact.rxStartTime,
@@ -273,7 +342,7 @@ export const makeOrbitalHelper = async ({
             resourceGroup,
             schedParams.spaceCraftName,
             contactName,
-            lastUnnamedParam,
+            lastUnnamedParam
         )
 
         checkContactsCreateResponse(unhelpfulRes)
@@ -285,32 +354,48 @@ export const makeOrbitalHelper = async ({
         }
     }
 
-    const searchScheduledContacts = async function* _getScheduledContacts(_params: SearchScheduledContactsParams): AsyncGenerator<ContactWithSummary> {
+    const searchScheduledContacts = async function* _getScheduledContacts(
+        _params: SearchScheduledContactsParams
+    ): AsyncGenerator<ContactWithSummary> {
         const contacts = await orbitalClient.contacts.list(
             resourceGroup,
-            _params.spacecraftName,
-
+            _params.spacecraftName
         )
         for await (const _contact of contacts) {
-            if(_params.contactProfileName && !_contact.contactProfile?.id?.toLowerCase().endsWith(_params.contactProfileName.toLowerCase())) {
+            if (
+                _params.contactProfileName &&
+                !_contact.contactProfile?.id
+                    ?.toLowerCase()
+                    .endsWith(_params.contactProfileName.toLowerCase())
+            ) {
                 continue
             }
-            if(_params.groundStationName && _contact.groundStationName?.toLowerCase() !== _params.groundStationName?.toLowerCase()) {
+            if (
+                _params.groundStationName &&
+                _contact.groundStationName?.toLowerCase() !==
+                    _params.groundStationName?.toLowerCase()
+            ) {
                 continue
             }
             const start = _contact.rxStartTime ?? _contact.reservationStartTime
-            if(start) {
-                if (_params.noEarlierThan && _params.noEarlierThan?.getTime() - start.getTime() > 0) {
+            if (start) {
+                if (
+                    _params.noEarlierThan &&
+                    _params.noEarlierThan?.getTime() - start.getTime() > 0
+                ) {
                     continue
                 }
-                if (_params.noLaterThan && _params.noLaterThan?.getTime() - start.getTime() < 0) {
+                if (
+                    _params.noLaterThan &&
+                    _params.noLaterThan?.getTime() - start.getTime() < 0
+                ) {
                     continue
                 }
-                if(_params.isSuccess !== undefined) {
-                    if(_params.isSuccess && _contact.status !== 'succeeded'){
+                if (_params.isSuccess !== undefined) {
+                    if (_params.isSuccess && _contact.status !== 'succeeded') {
                         continue
                     }
-                    if(!_params.isSuccess && _contact.status === 'succeeded') {
+                    if (!_params.isSuccess && _contact.status === 'succeeded') {
                         continue
                     }
                 }
@@ -319,19 +404,17 @@ export const makeOrbitalHelper = async ({
                 contact: _contact,
                 summary: {
                     contactName: _contact.name,
-                    ...makeContactSummary(_contact)
-                }
+                    ...makeContactSummary(_contact),
+                },
             }
         }
     }
 
     // Title line must match value here: http://celestrak.com/NORAD/elements/active.txt
-    const updateTLE = async ({spacecraftName}) => {
+    const updateTLE = async ({ spacecraftName }) => {
         const newTLE: TLE = await getTLE(spacecraftName)
-        const {location, links, titleLine, noradId} = await orbitalClient.spacecrafts.get(
-            resourceGroup,
-            spacecraftName,
-        )
+        const { location, links, titleLine, noradId } =
+            await orbitalClient.spacecrafts.get(resourceGroup, spacecraftName)
         const optionalParams: SpacecraftsCreateOrUpdateOptionalParams = {
             noradId, // Required even though interface indicates optional. Ideally this would not be required for update.
             links, // Required even though interface indicates optional. Ideally this would not be required for update.
@@ -339,25 +422,35 @@ export const makeOrbitalHelper = async ({
             tleLine1: newTLE.line1,
             tleLine2: newTLE.line2,
         }
-        console.log(`Attempting to update spacecraft with "optionalParams": ${JSON.stringify(optionalParams, null, 2)}`)
+        console.log(
+            `Attempting to update spacecraft with "optionalParams": ${JSON.stringify(
+                optionalParams,
+                null,
+                2
+            )}`
+        )
         await orbitalClient.spacecrafts.beginCreateOrUpdateAndWait(
             resourceGroup,
             spacecraftName,
             location,
-            optionalParams,
+            optionalParams
         )
         return newTLE
     }
 
-    const createContactProfile = async (_params: MakeAquaContactProfileParams): Promise<ContactProfile> => {
-        const opts: ContactProfilesCreateOrUpdateOptionalParams = makeAquaContactProfileParams(_params)
+    const createContactProfile = async (
+        _params: MakeAquaContactProfileParams
+    ): Promise<ContactProfile> => {
+        const opts: ContactProfilesCreateOrUpdateOptionalParams =
+            makeAquaContactProfileParams(_params)
 
-        const profile = await orbitalClient.contactProfiles.beginCreateOrUpdateAndWait(
-            resourceGroup,
-            _params.name,
-            location,
-            opts,
-        );
+        const profile =
+            await orbitalClient.contactProfiles.beginCreateOrUpdateAndWait(
+                resourceGroup,
+                _params.name,
+                location,
+                opts
+            )
 
         return profile
     }
