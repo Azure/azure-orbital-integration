@@ -54,7 +54,7 @@ describe('utils.getEnvVar', () => {
     afterEach(() => {
         delete process.env.CONTACT_DATA_STORAGE_CONTAINER
     }),
-    it('should return a value for PATH', () => {
+    it('should return a value for CONTACT_DATA_STORAGE_CONTAINER', () => {
         const result = getEnvVar('CONTACT_DATA_STORAGE_CONTAINER')
         expect(result).to.be.string
     })
