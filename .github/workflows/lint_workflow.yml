@@ -25,7 +25,7 @@ jobs:
       - name: Prettify code
         uses: creyD/prettier_action@v4.2
         with:
-          prettier_options: --write **/*.{js,md,ts} --trailing-comma=es5 --tab-width=4 --no-semi=true --single-quote=true
+          prettier_options: --write **/*.{md,ts} --trailing-comma=es5 --tab-width=4 --no-semi=true --single-quote=true space-before-function-paren=false
           dry: True
 
       # Super lint step
