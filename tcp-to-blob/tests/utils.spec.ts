@@ -1,14 +1,8 @@
 import * as chai from 'chai'
 const expect = chai.expect
 const asset = chai.assert
-import {Socket} from "net"
-import { getEnv, getEnvVar, makeRemoteToken, sleep} from "../src/utils"
+import { getEnv, getEnvVar} from "../src/utils"
 
-
-// TODO
-// How to properly make a remoteConnection?
-// does sleep sleep within and send an undefined promise back? 
-// Help setup debugging.
 
 describe('utils.getEnv', () => {
     beforeEach(() => {
@@ -63,25 +57,3 @@ describe('utils.getEnvVar', () => {
         expect(testGetEnvVar).to.throw()
     })
 });
-
-// describe('utils.makeRemoteToken', () => {
-//     it('should return null if no values are passed', () => {
-        
-//         let rc = new Socket({
-//             socket: 'localhost',
-//             port: 8080,
-//         })
-//         console.log("SOCKET", rc.remoteAddress, rc.remotePort)
-//         const result = makeRemoteToken(rc)
-//         console.log(result)
-//         expect(result).to.be.null
-//     })
-// })
-
-// describe('utils.sleep', async () => {
-//     it('should return a promise of setTimeout', async () => {
-//         const result = await sleep(1_500)
-//         console.log("RESULT", result, typeof(result)) 
-//         expect(result).to.be.a('promise')
-//     })
-// })
