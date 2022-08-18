@@ -22,11 +22,11 @@ jobs:
           fetch-depth: 0
 
       #Prettify Step
-      # - name: Prettify code
-      #   uses: creyD/prettier_action@v4.2
-      #   with:
-      #     prettier_options: --write **/*.{js,md,ts} --trailing-comma=es5 --tab-width=4 --no-semi=true --single-quote=true
-      #     dry: True
+      - name: Prettify code
+        uses: creyD/prettier_action@v4.2
+        with:
+          prettier_options: --write **/*.{js,md,ts} --trailing-comma=es5 --tab-width=4 --no-semi=true --single-quote=true
+          dry: True
 
       # Super lint step
       - name: Lint Code Base
