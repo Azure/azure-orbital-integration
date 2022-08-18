@@ -10,6 +10,7 @@ interface ArgvParams {
     port: number | string
     numLines: number | string
 }
+
 const runJob = async () => {
     const logger = makeLogger({
         subsystem: 'tcp-to-blob-canary',

@@ -3,14 +3,14 @@
 # root for license information.
 
 trigger:
-- main
+  - main
 
 variables:
-- group: tcp-to-blob-vg
+  - group: tcp-to-blob-vg
 
 pool:
   vmImage: ubuntu-latest
-  
+
 steps:
   - task: AzureCLI@2
     displayName: 'Creating Resource Group'
@@ -19,10 +19,10 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript: 'az group create --name $(AZ_RESOURCE_GROUP) --location $(AZ_LOCATION)'
-      
+
   - task: AzureCLI@2
     displayName: 'Set ENVs/make Env Files. Deploy bicep'
-    env: 
+    env:
       AZ_RESOURCE_GROUP: $(AZ_RESOURCE_GROUP)
       AZ_LOCATION: $(AZ_LOCATION)
       NAME_PREFIX: $(NAME_PREFIX)
