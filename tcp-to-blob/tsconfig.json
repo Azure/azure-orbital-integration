@@ -2,10 +2,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "target": "ES2019",
+    "types": ["mocha"],
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
     "strict": true,
-    "esModuleInterop": true,
+    "esModuleInterop": true
   }
 }
