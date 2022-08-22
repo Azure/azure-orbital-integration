@@ -1,0 +1,40 @@
+// Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+// Software is licensed under the MIT License. See LICENSE in the project
+// root for license information.
+
+// Function used to retrieve RT-STPS processing stats
+.create-or-alter function
+with (docstring = 'Gets RT-STPS Stats', folder='RT-STPS')
+GetRTSTPSProcessingStats(StartTime: datetime, EndTime: datetime, LongRunningThresholdMin: timespan = 45m, FailedRunningThresholdMin: timespan = 60m) {
+    let sTime = StartTime;
+    let eTime = EndTime;
+    let longRunningThresholdMin = LongRunningThresholdMin;
+    let failedRunningThresholdMin = FailedRunningThresholdMin;
+    Syslog
+    | where TimeGenerated between (sTime .. eTime)
+    | where Facility == 'local0'
+    | where SyslogMessage startswith 'Start|' or SyslogMessage startswith 'End|'
+    | extend Filename = tostring(split(SyslogMessage, '|')[1])
+    | where Filename != ""
+    | summarize
+        StartTime = min(TimeGenerated)
+        ,CompletionTime = iff(max(TimeGenerated) == min(TimeGenerated)
+            ,now()
+            ,max(TimeGenerated))
+        ,TotalTimeSec = iff(max(TimeGenerated) == min(TimeGenerated), (now() - min(TimeGenerated))/1s, (max(TimeGenerated) - min(TimeGenerated))/1s)
+        ,Status = iff(max(TimeGenerated) == min(TimeGenerated), 'Processing', 'Completed')
+            by Filename
+    | project
+        StartTime
+        ,Filename
+        ,CompletionTime = 
+            iff(StartTime <= ago(longRunningThresholdMin), StartTime, CompletionTime)
+        ,TotalTimeSec = coalesce(
+            iff(StartTime <= ago(failedRunningThresholdMin) and Status == 'Processing', (StartTime + failedRunningThresholdMin)/1s, TotalTimeSec)
+            ,TotalTimeSec)
+        ,Status = coalesce(
+            iff(StartTime <= ago(failedRunningThresholdMin) and Status == 'Processing', 'Failed', '')
+            ,iff(StartTime <= ago(longRunningThresholdMin) and Status == 'Processing', 'LongRunning', '')
+            ,Status)
+    | order by CompletionTime desc
+}

@@ -7,7 +7,7 @@
 param location string = resourceGroup().location
 
 @description('Name prefix for name standardization')
-param namePrefix string
+param namePrefix string = uniqueString(resourceGroup().id)
 
 @description('Name prefix for name standardization of picky resources')
 param namePrefixStripped string = replace(namePrefix, '-', '')
@@ -25,7 +25,7 @@ param storageAccountResourceGroup string = resourceGroup().name
 @description('Name of storage account')
 param storageAccountName string = '${namePrefixStripped}storage'
 
-// TO support ACR in seperate resource group, it must be created via separate module.
+// TO support ACR in separate resource group, it must be created via separate module.
 module acrModule 'acr.bicep' = {
   name: 'acr-module'
   scope: resourceGroup(acrResourceGroup)
@@ -35,7 +35,7 @@ module acrModule 'acr.bicep' = {
   }
 }
 
-// TO support storage account in seperate resource group, it must be created via separate module.
+// TO support storage account in separate resource group, it must be created via separate module.
 module storageModule 'storage.bicep' = {
   name: 'storage-module'
   scope: resourceGroup(storageAccountResourceGroup)

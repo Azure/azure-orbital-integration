@@ -4,7 +4,7 @@
 
 @description('ACR name.')
 @maxLength(20)
-param name string
+param name string = '${uniqueString(resourceGroup().id)}acr'
 
 @description('ACR location.')
 param location string = resourceGroup().location

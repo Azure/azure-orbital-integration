@@ -2,11 +2,11 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
-import {Socket} from "net";
+import { Socket } from 'net'
 
 export const getEnvVar = (key: string) => {
     const val = process.env[key]
-    if(!val) {
+    if (!val) {
         throw new Error(`[init] Must populate "${key}" env var.`)
     }
     return val
@@ -16,25 +16,34 @@ export interface LogParams {
     event: string
     remoteHost?: string
     remotePort?: number
-    error?:  { message: string }
+    error?: { message: string }
     message: string
+
     [key: string]: any
 }
 
 export interface EventLogger {
     info(params: LogParams): void
+
     warn(params: LogParams): void
+
     error(params: LogParams): void
 }
-type ConsoleLoggerFx = (message?: any, ...optionalParams: any[]) => void
-export const makeLogger = ({subsystem}: {subsystem: string}): EventLogger => {
 
-    const doLog = (log: ConsoleLoggerFx, {error, ...params}: LogParams) => {
-        log(JSON.stringify({
-            subsystem,
-            ...params,
-            error: error ? error.message ?? error.toString() : undefined
-        }))
+type ConsoleLoggerFx = (message?: any, ...optionalParams: any[]) => void
+export const makeLogger = ({
+    subsystem,
+}: {
+    subsystem: string
+}): EventLogger => {
+    const doLog = (log: ConsoleLoggerFx, { error, ...params }: LogParams) => {
+        log(
+            JSON.stringify({
+                subsystem,
+                ...params,
+                error: error ? error.message ?? error.toString() : undefined,
+            })
+        )
     }
     return {
         info: (params: LogParams) => {
@@ -45,7 +54,7 @@ export const makeLogger = ({subsystem}: {subsystem: string}): EventLogger => {
         },
         error: (params: LogParams) => {
             doLog(console.error, params)
-        }
+        },
     }
 }
 
@@ -56,24 +65,27 @@ export const getEnv = () => {
     const connectionString = getEnvVar('CONTACT_DATA_STORAGE_CONNECTION_STRING')
     const host = getEnvVar('HOST')
     const port = +getEnvVar('PORT')
-    const socketTimeoutSeconds = +(process.env.SOCKET_TIMEOUT_SECONDS ?? defaultSocketTimeoutSeconds)
+    const socketTimeoutSeconds = +(
+        process.env.SOCKET_TIMEOUT_SECONDS ?? defaultSocketTimeoutSeconds
+    )
     if (isNaN(socketTimeoutSeconds)) {
-        const errMessage = '[init] Env var "SOCKET_TIMEOUT_SECONDS" must be a number.'
+        const errMessage =
+            '[init] Env var "SOCKET_TIMEOUT_SECONDS" must be a number.'
         throw new Error(errMessage)
     }
-    if(isNaN(port)){
+    if (isNaN(port)) {
         const errMessage = '[init] Env var "PORT" must be a number.'
         throw new Error(errMessage)
     }
 
-    if(!host) {
+    if (!host) {
         const errMessage = 'Must populate "HOST" env var.'
-        console.info(` ${(new Date()).toISOString()} [init] ${errMessage}".`)
+        console.info(` ${new Date().toISOString()} [init] ${errMessage}".`)
         throw new Error(errMessage)
     }
-    if(!port) {
+    if (!port) {
         const errMessage = 'Must populate "PORT" env var.'
-        console.info(` ${(new Date()).toISOString()} [init] ${errMessage}".`)
+        console.info(` ${new Date().toISOString()} [init] ${errMessage}".`)
         throw new Error(errMessage)
     }
 
@@ -88,7 +100,7 @@ export const getEnv = () => {
 
 const defaultSleepMillis = 1_000 // 1 second
 
-export const sleep = async (sleepMillis=defaultSleepMillis) => {
+export const sleep = async (sleepMillis = defaultSleepMillis) => {
     return new Promise((resolve) => {
         setTimeout(resolve, sleepMillis)
     })
@@ -97,7 +109,7 @@ export const sleep = async (sleepMillis=defaultSleepMillis) => {
 type RemoteConnection = Pick<Socket, 'remoteAddress' | 'remotePort'>
 
 export const makeRemoteToken = (remote: RemoteConnection) => {
-    if(!remote?.remoteAddress || !remote?.remotePort) {
+    if (!remote?.remoteAddress || !remote?.remotePort) {
         return null
     }
     return `${remote.remoteAddress}:${remote.remotePort}`

@@ -4,7 +4,7 @@
 
 @description('Storage account name.')
 @maxLength(24)
-param name string
+param name string = 'storage${uniqueString(resourceGroup().id)}'
 
 @description('Storage account location.')
 param location string = resourceGroup().location

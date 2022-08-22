@@ -21,6 +21,9 @@
     "docker-push-canary": "yarn docker-build-canary && yarn docker-tag-canary && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob-canary:latest",
     "compile-watch": "npx tsc -w",
     "compile": "npx tsc",
+    "test": "ts-mocha -p tsconfig.json tests/*.ts",
+    "coverage": "nyc yarn test",
+    "prettier": "npx prettier src/**/*.ts -w",
     "run-server": "yarn build && cd ./dist && node ./bundle/tcp-to-blob.js"
   },
   "keywords": [
@@ -34,13 +37,23 @@
     "ip": "^1.1.8"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.3",
     "@types/commander": "^2.12.2",
+    "@types/expect": "^24.3.0",
     "@types/ip": "^1.1.0",
     "@types/lodash": "^4.14.182",
+    "@types/mocha": "^9.1.1",
     "@types/node": "^17.0.41",
+    "chai": "^4.3.6",
     "commander": "^9.4.0",
     "esbuild": "^0.14.42",
     "lodash": "^4.17.21",
+    "prettier": "^2.7.1",
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0",
+    "sinon": "^14.0.0",
+    "sinon-chai": "^3.7.0",
+    "ts-mocha": "^10.0.0",
     "typescript": "^4.7.2"
   }
 }

@@ -2,9 +2,13 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
-import {AppendBlobClient, BlockBlobClient, ContainerClient} from '@azure/storage-blob'
-import {openSync, readSync} from "fs";
-import {EventLogger} from "./utils";
+import {
+    AppendBlobClient,
+    BlockBlobClient,
+    ContainerClient,
+} from '@azure/storage-blob'
+import { openSync, readSync } from 'fs'
+import { EventLogger } from './utils'
 
 export interface MakeBlobWriterParams {
     containerName: string
@@ -16,18 +20,28 @@ export interface MakeBlobWriterParams {
  *
  * Creates AppendBlobClient, file system, file and returns DataLakeFileClient.
  */
-const initContainer = async ({containerName, connectionString}: {connectionString: string, containerName: string}): Promise<ContainerClient> => {
+const initContainer = async ({
+    containerName,
+    connectionString,
+}: {
+    connectionString: string
+    containerName: string
+}): Promise<ContainerClient> => {
     let containerClient: ContainerClient
     try {
         containerClient = new ContainerClient(connectionString, containerName)
     } catch (error) {
-        const msg = `[init] Failed to create ContainerClient for "${containerName}" from connection string: ${(error as Error)?.message}`
+        const msg = `[init] Failed to create ContainerClient for "${containerName}" from connection string: ${
+            (error as Error)?.message
+        }`
         throw Error(msg)
     }
     try {
         await containerClient.createIfNotExists()
     } catch (error) {
-        const msg = `[init] Failed to create container for "${containerName}": ${(error as Error)?.message}`
+        const msg = `[init] Failed to create container for "${containerName}": ${
+            (error as Error)?.message
+        }`
         throw Error(msg)
     }
     return containerClient
@@ -38,34 +52,56 @@ export interface WriteBlobParams {
     blobName: string
     hadError?: boolean
 }
+
 export interface BlobWriter {
-    writeBlob: ({filePath, blobName, hadError}: WriteBlobParams) => Promise<void>
+    writeBlob: ({
+        filePath,
+        blobName,
+        hadError,
+    }: WriteBlobParams) => Promise<void>
     containerName: string
 }
 
-export const makeBlobContainerCleaner = async ({ containerName, connectionString }: Pick<MakeBlobWriterParams, 'containerName' | 'connectionString'>) => {
+export const makeBlobContainerCleaner = async ({
+    containerName,
+    connectionString,
+}: Pick<MakeBlobWriterParams, 'containerName' | 'connectionString'>) => {
     console.info('Cleaning BLOBs from storage container: ', containerName)
-    const containerClient = await initContainer({ containerName, connectionString })
+    const containerClient = await initContainer({
+        containerName,
+        connectionString,
+    })
 
     /**
      *
      * @param params maxBlobSizeInBytesToDelete: If specified, clean will skip/keep BLOBs larger than maxBlobSizeInBytesToDelete. Otherwise, it will delete all BLOBs regardless of size.
      */
-    const clean = async (params: {maxBlobSizeInBytesToDelete?: number} = {} ) => {
-        let ii=0
-        for await (const {name} of containerClient.listBlobsFlat()) {
-            console.log(`${++ii}: Deleting BLOB: "${name}" from "${containerName}".`)
+    const clean = async (
+        params: { maxBlobSizeInBytesToDelete?: number } = {}
+    ) => {
+        let ii = 0
+        for await (const { name } of containerClient.listBlobsFlat()) {
+            console.log(
+                `${++ii}: Deleting BLOB: "${name}" from "${containerName}".`
+            )
             const blobClient = containerClient.getBlobClient(name)
             const props = await blobClient.getProperties()
-            if(props?.contentLength && params.maxBlobSizeInBytesToDelete && props?.contentLength < params.maxBlobSizeInBytesToDelete){
+            if (
+                props?.contentLength &&
+                params.maxBlobSizeInBytesToDelete &&
+                props?.contentLength < params.maxBlobSizeInBytesToDelete
+            ) {
                 await blobClient.delete({
                     deleteSnapshots: 'include',
                 })
             } else {
-                console.info('Skipping deletion of large BLOB:', JSON.stringify({
-                    name,
-                    size: props?.contentLength?.toLocaleString()
-                }))
+                console.info(
+                    'Skipping deletion of large BLOB:',
+                    JSON.stringify({
+                        name,
+                        size: props?.contentLength?.toLocaleString(),
+                    })
+                )
             }
         }
     }
@@ -75,11 +111,21 @@ export const makeBlobContainerCleaner = async ({ containerName, connectionString
     }
 }
 
-export const makeBlobWriter = async ({ containerName, connectionString, logger }: MakeBlobWriterParams): Promise<BlobWriter> => {
+export const makeBlobWriter = async ({
+    containerName,
+    connectionString,
+    logger,
+}: MakeBlobWriterParams): Promise<BlobWriter> => {
+    const containerClient = await initContainer({
+        containerName,
+        connectionString,
+    })
 
-    const containerClient = await initContainer({ containerName, connectionString  })
-
-    const writeBlob = async ({filePath, blobName, hadError}: WriteBlobParams) => {
+    const writeBlob = async ({
+        filePath,
+        blobName,
+        hadError,
+    }: WriteBlobParams) => {
         const baseLogParams = {
             containerName,
             blobName,
@@ -88,7 +134,9 @@ export const makeBlobWriter = async ({ containerName, connectionString, logger }
         try {
             blobClient = containerClient.getBlockBlobClient(blobName)
         } catch (error) {
-            const msg = `[init] Failed to create BlockBlobClient for "${blobName}": ${(error as Error)?.message}.`
+            const msg = `[init] Failed to create BlockBlobClient for "${blobName}": ${
+                (error as Error)?.message
+            }.`
             throw Error(msg)
         }
         logger.info({
@@ -99,12 +147,12 @@ export const makeBlobWriter = async ({ containerName, connectionString, logger }
         try {
             await blobClient.uploadFile(filePath)
             await blobClient.setTags({
-                isSuccess: hadError ? 'false' : 'true'
+                isSuccess: hadError ? 'false' : 'true',
             })
         } catch (err) {
             try {
                 await blobClient.setTags({
-                    isSuccess: 'false'
+                    isSuccess: 'false',
                 })
             } catch (error) {
                 logger.warn({
@@ -113,7 +161,9 @@ export const makeBlobWriter = async ({ containerName, connectionString, logger }
                     ...baseLogParams,
                 })
             }
-            const errMessage = `[init] Failed to upload "${filePath}" to BLOB "${containerName}/${blobName}": ${(err as Error).message}`
+            const errMessage = `[init] Failed to upload "${filePath}" to BLOB "${containerName}/${blobName}": ${
+                (err as Error).message
+            }`
             throw new Error(errMessage)
         }
     }
@@ -122,19 +172,31 @@ export const makeBlobWriter = async ({ containerName, connectionString, logger }
         writeBlob,
         containerName,
     }
-
 }
 
-export const makeAppendBlobWriter = async ({ containerName, connectionString }: MakeBlobWriterParams): Promise<BlobWriter> => {
+export const makeAppendBlobWriter = async ({
+    containerName,
+    connectionString,
+}: MakeBlobWriterParams): Promise<BlobWriter> => {
+    const containerClient = await initContainer({
+        containerName,
+        connectionString,
+    })
 
-    const containerClient = await initContainer({ containerName, connectionString  })
-
-    const writeBlob = async ({filePath, blobName}: {filePath: string, blobName: string}) => {
+    const writeBlob = async ({
+        filePath,
+        blobName,
+    }: {
+        filePath: string
+        blobName: string
+    }) => {
         let blobClient: AppendBlobClient
         try {
             blobClient = containerClient.getAppendBlobClient(blobName)
         } catch (error) {
-            const msg = `[init] Failed to create AppendBlobClient for "${blobName}": ${(error as Error)?.message}.`
+            const msg = `[init] Failed to create AppendBlobClient for "${blobName}": ${
+                (error as Error)?.message
+            }.`
             throw Error(msg)
         }
 
@@ -155,21 +217,25 @@ export const makeAppendBlobWriter = async ({ containerName, connectionString }: 
                 })
                 await blobClient.appendBlock(readBuffer, bytesRead)
                 position += chunkSize
-            } while(bytesRead)
+            } while (bytesRead)
             await blobClient.setTags({
-                isSuccess: 'true'
+                isSuccess: 'true',
             })
             await blobClient.seal()
         } catch (err) {
             try {
                 await blobClient.setTags({
-                    isSuccess: 'false'
+                    isSuccess: 'false',
                 })
                 await blobClient.seal()
             } catch (error) {
-                console.warn(`Failed to tag and seal BLOB: "${containerName}/${blobName}"`)
+                console.warn(
+                    `Failed to tag and seal BLOB: "${containerName}/${blobName}"`
+                )
             }
-            const errMessage = `[init] Failed to upload "${filePath}" to BLOB "${containerName}/${blobName}": ${(err as Error).message}`
+            const errMessage = `[init] Failed to upload "${filePath}" to BLOB "${containerName}/${blobName}": ${
+                (err as Error).message
+            }`
             throw new Error(errMessage)
         }
     }
@@ -178,5 +244,4 @@ export const makeAppendBlobWriter = async ({ containerName, connectionString }: 
         writeBlob,
         containerName,
     }
-
 }

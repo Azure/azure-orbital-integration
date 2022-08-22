@@ -2,20 +2,20 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
-import {getEnv, getEnvVar, makeRemoteToken} from "./utils";
-import {Server} from "net";
+import { getEnv, getEnvVar, makeRemoteToken } from './utils'
+import { Server } from 'net'
 import { statSync } from 'fs'
-import {FileAppender, makeFileAppender} from './fileAppender';
-import {BlobWriter, makeBlobWriter} from './blobWriter'
-import {cidrSubnet} from 'ip'
+import { FileAppender, makeFileAppender } from './fileAppender'
+import { BlobWriter, makeBlobWriter } from './blobWriter'
+import { cidrSubnet } from 'ip'
 
-import { makeLogger} from './utils'
+import { makeLogger } from './utils'
 
 const logger = makeLogger({
-    subsystem: 'tcp-to-blob'
+    subsystem: 'tcp-to-blob',
 })
 
-process.on('uncaughtException', function(error) {
+process.on('uncaughtException', function (error) {
     logger.error({
         event: 'unknown',
         message: 'Unhandled error.',
@@ -23,7 +23,7 @@ process.on('uncaughtException', function(error) {
     })
 })
 
-if(require.main === module) {
+if (require.main === module) {
     const canarySubnetPrefix = getEnvVar('AKS_POD_SUBNET_ADDR_PREFIX')
     const orbitalSubnetPrefix = getEnvVar('AKS_ORBITAL_SUBNET_ADDR_PREFIX')
     const {
@@ -31,7 +31,7 @@ if(require.main === module) {
         host,
         storageContainer,
         connectionString,
-        socketTimeoutSeconds
+        socketTimeoutSeconds,
     } = getEnv()
     const server = new Server()
     server.listen(port, host, function () {
@@ -43,29 +43,37 @@ if(require.main === module) {
         })
 
         server.on('connection', async function (socket) {
-         const remoteHost = socket.remoteAddress
+            const remoteHost = socket.remoteAddress
             const remotePort = socket.remotePort
             const startMillis = Date.now()
             let numBlocks = 0
             let numBytes = 0
-            const timestampStr = (new Date()).toISOString()
+            const timestampStr = new Date().toISOString()
             const remoteToken = makeRemoteToken(socket)
             let sender = 'unknown'
-            if(cidrSubnet(orbitalSubnetPrefix).contains(socket.remoteAddress ?? '')) {
+            if (
+                cidrSubnet(orbitalSubnetPrefix).contains(
+                    socket.remoteAddress ?? ''
+                )
+            ) {
                 sender = 'orbital'
-            } else if(cidrSubnet(canarySubnetPrefix).contains(socket.remoteAddress ?? '')) {
+            } else if (
+                cidrSubnet(canarySubnetPrefix).contains(
+                    socket.remoteAddress ?? ''
+                )
+            ) {
                 sender = 'canary'
             }
             const filename = `tcp_data_${timestampStr}_${sender}_${remoteToken}`
 
-
-            const makeMsgData = () => ({
-                filename,
-                localPort: port,
-                remoteHost,
-                remotePort,
-                durationInSeconds: (Date.now() - startMillis)/1_000,
-            } as any)
+            const makeMsgData = () =>
+                ({
+                    filename,
+                    localPort: port,
+                    remoteHost,
+                    remotePort,
+                    durationInSeconds: (Date.now() - startMillis) / 1_000,
+                } as any)
 
             logger.info({
                 event: 'socket-connect',
@@ -82,38 +90,47 @@ if(require.main === module) {
                 socket.destroy(new Error('Socket timed out.'))
             })
 
-
             let fileAppender: FileAppender
 
-            let numActiveBlockProcessors  = 0
+            let numActiveBlockProcessors = 0
             const maxBlobSizeInBytesToInspectContent = 1_000
             const httpHeader = 'GET / HTTP/'
-            socket.on('data', data => {
-                if(!data.byteLength) {
+            socket.on('data', (data) => {
+                if (!data.byteLength) {
                     logger.info({
                         event: 'cleanup',
                         message: 'Skipping file append for 0 length data.',
                         ...makeMsgData(),
                     })
                     return
-                } else if (data.byteLength < maxBlobSizeInBytesToInspectContent) {
-                    if(data.slice(0, Math.min(httpHeader.length, data.byteLength)).toString() === httpHeader) {
+                } else if (
+                    data.byteLength < maxBlobSizeInBytesToInspectContent
+                ) {
+                    if (
+                        data
+                            .slice(
+                                0,
+                                Math.min(httpHeader.length, data.byteLength)
+                            )
+                            .toString() === httpHeader
+                    ) {
                         logger.info({
                             event: 'cleanup',
                             message: 'Skipping file append for HTTP data.',
-                            ...makeMsgData()
-                        })
-                        return
-                    }
-                    if(!numBlocks && !data.toString().trim()) {
-                        logger.info({
-                            event: 'cleanup',
-                            message: 'Skipping file append for leading empty/white-space data.',
                             ...makeMsgData(),
                         })
                         return
                     }
-                } else if(!fileAppender) {
+                    if (!numBlocks && !data.toString().trim()) {
+                        logger.info({
+                            event: 'cleanup',
+                            message:
+                                'Skipping file append for leading empty/white-space data.',
+                            ...makeMsgData(),
+                        })
+                        return
+                    }
+                } else if (!fileAppender) {
                     try {
                         fileAppender = makeFileAppender({
                             dirPath: '/tmp/output',
@@ -126,13 +143,13 @@ if(require.main === module) {
                         }
 
                         // Inform caller what BLOB to look for.
-                        socket.write(JSON.stringify(msg, null, 2), error => {
-                            if(error) {
+                        socket.write(JSON.stringify(msg, null, 2), (error) => {
+                            if (error) {
                                 logger.error({
                                     event: 'socket-write-notification',
                                     message: 'Error writing to socket.',
                                     ...makeMsgData(),
-                                    error: error as Error
+                                    error: error as Error,
                                 })
                             }
                         })
@@ -142,9 +159,11 @@ if(require.main === module) {
                             event: 'socket-data',
                             message,
                             ...makeMsgData(),
-                            error: error as Error
+                            error: error as Error,
                         })
-                        socket.destroy(new Error(`${message} ${(error as Error)?.message}`))
+                        socket.destroy(
+                            new Error(`${message} ${(error as Error)?.message}`)
+                        )
                         return
                     }
                 }
@@ -152,14 +171,16 @@ if(require.main === module) {
                     numActiveBlockProcessors++
                     fileAppender.appendFile(data)
                     numBytes += data.byteLength
-                    const logFrequency = +(process.env.NUM_BLOCK_LOG_FREQUENCY ?? 100_000)
-                    if(0 === ++numBlocks % logFrequency) {
+                    const logFrequency = +(
+                        process.env.NUM_BLOCK_LOG_FREQUENCY ?? 100_000
+                    )
+                    if (0 === ++numBlocks % logFrequency) {
                         logger.info({
                             event: 'socket-data',
                             message: 'Appended block to file.',
                             filePath: fileAppender?.filePath,
                             numBlocks,
-                            fileSizeInKB: numBytes/1_000,
+                            fileSizeInKB: numBytes / 1_000,
                             ...makeMsgData(),
                         })
                     }
@@ -174,13 +195,15 @@ if(require.main === module) {
                         ...makeMsgData(),
                         error: error as Error,
                     })
-                    socket.destroy(new Error(`${message} ${(error as Error)?.message}`))
+                    socket.destroy(
+                        new Error(`${message} ${(error as Error)?.message}`)
+                    )
                     numActiveBlockProcessors--
                     return
                 }
             })
 
-            socket.on('error', error => {
+            socket.on('error', (error) => {
                 logger.error({
                     event: 'socket-error',
                     message: error.message,
@@ -189,17 +212,17 @@ if(require.main === module) {
                 })
             })
 
-            socket.on('close', async hadError => {
+            socket.on('close', async (hadError) => {
                 const extraMsgData = {
                     numBlocks,
                     hadError,
                 } as any
-                const event= 'complete'
+                const event = 'complete'
                 let noDataMsg = 'ℹ️ No socket data.'
-                if(hadError) {
+                if (hadError) {
                     noDataMsg = '⚠️ Socket error.'
                 }
-                if(!fileAppender?.filePath) {
+                if (!fileAppender?.filePath) {
                     logger.info({
                         event,
                         message: noDataMsg,
@@ -208,11 +231,10 @@ if(require.main === module) {
                     })
                     return
                 }
-                const fileProps = statSync(
-                    fileAppender.filePath,
-                    {throwIfNoEntry: false}
-                )
-                if(!fileProps) {
+                const fileProps = statSync(fileAppender.filePath, {
+                    throwIfNoEntry: false,
+                })
+                if (!fileProps) {
                     logger.info({
                         event,
                         message: noDataMsg,
@@ -273,7 +295,9 @@ if(require.main === module) {
                     const errorMessage = '⚠️ BLOB uploaded despite errors.'
                     logger.info({
                         event: 'complete',
-                        message: hadError ? errorMessage : '✅ BLOB upload complete.',
+                        message: hadError
+                            ? errorMessage
+                            : '✅ BLOB upload complete.',
                         ...extraMsgData,
                         ...makeMsgData(),
                     })
