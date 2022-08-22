@@ -13,9 +13,9 @@ Both processes RT-STPS and IPOPP installed and supported by a single VM instance
 * Azure CLI
 
 ## Create Environment File
-In the root of the central-logging folder, there is a file named `env-sample.sh`. It is recommended to copy this file to a folder named `.env`. the `.env` folder is part of gitignore so any sensitive information that is in that folder won't accidentally get checked in to any repositories.
+In the root of the central-logging folder, there is a file named `env-sample.sh`. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information that is in that folder won't accidentally get checked in to any repositories.
 
-In the following steps, we will assume that you keep the name of `env-sample.sh`. You are free to adjust as you see fit.
+In the following steps, we will assume that you keep the name of `env-sample.sh`. You are free to pick any name.
 
 1. Change directory to aqua-processor `cd aqua-processor`
 2. Make the .env folder `mkdir -p ./.env`
@@ -35,7 +35,7 @@ requires: Unix-like environment or Mac
 4. Run deploy `./deploy/deploy.sh`
 
 ## Install dependencies
-in the roo of ./aqua-processor/deploy, there is a file called cloud-init.yaml. If you need to add any other dependencies to your VM, you can call them out here. See [Documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cloud-init-deep-dive) for details.
+In the root of ./aqua-processor/deploy, there is a file called cloud-init.yaml. If you need to add any other dependencies to your VM, you can call them out here. See [Documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cloud-init-deep-dive) for details.
 
 ## Install RT-STPS
 To install RT-STPS, follow these instructions:
@@ -78,7 +78,7 @@ ls -la ../data/
 
 ```
 ## Monitor RT-STPS
-You can use `logger` to write rt-stps logs to system log and the agent will automatically collect syslogs. Syslogs will show up in the Log Analytics Workspace.
+You can use `logger` to write RT-STPS logs to system log and the agent will automatically collect syslogs. Syslogs will show up in the Log Analytics Workspace.
 Here is an example:
 
 ```
@@ -86,7 +86,7 @@ logger -p local0.info -f /logs/rtstps.log -t $(uuidgen)
 ```
 
 ## Automatically run RT-STPS everyday
-Assuming the raw input files are stored in a storage container and the rt-stps vm has access to the storage container via a user assigned managed identity, we can use `run_rtstps.sh` to run rt-stps on a random file.
+Assuming the raw input files are stored in a storage container and the RT-STPS vm has access to the storage container via a user assigned managed identity, we can use `run_rtstps.sh` to run RT-STPS on a random file.
 
 `run_rtstps.sh` randomly copies an input file from the raw binary data container and run RT-STPS program against that file. RT-STPS logs will be collected by syslog and show up in the Log Analytics Workspace.
 
