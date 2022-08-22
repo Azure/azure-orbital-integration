@@ -1,5 +1,5 @@
-# Project
-Azure Orbital Integration is a solution that enables end users to easily deploy all downstream components necessary to receive and process binary data from [NASA's Aqua Earth-Observing Satellite](https://aqua.nasa.gov/) via [Azure Orbital ground station as a Serivce (GSaaS)](https://docs.microsoft.com/en-us/azure/orbital/overview). This solution contains self start scripts for the tcp-to-blob component (provides an endpoint to receive binary data), Aqua processing VM component (provides a place to consume and run RT-STPS and IPOPP) and the optional central logging component (brings logs from all components to a single place)
+# Azure Orbital Integration
+Azure Orbital Integration is a solution that enables end users to easily deploy all downstream components necessary to receive and process direct broadcast data from [NASA's Aqua Earth-Observing Satellite](https://aqua.nasa.gov/) using [Azure Orbital Ground Station(AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview). This solution provides self-start scripts to create an endpoint to receive data from the ground station (tcp-to-blob component), deploy a virtual machine to process Aqua data using NASA tools (processing VM component) and an optionally bring logs from all components to a single place (central logging component).
 
 # Overview
 ![Azure Orbital Integration Diagram](./docs/images/diagram.png)
@@ -9,8 +9,8 @@ Azure Orbital Integration is a solution that enables end users to easily deploy 
 2. Deploy [Aqua processor](./processor/README.md)
 3. (Optional) Deploy [central-logging](./central-logging/README.md)
 
-## Azure Orbital GSaaS steps
-Once you have the downstream components, you can follow these steps to deploy the Azure Orbital GSaaS components. 
+## AOGS steps
+Once you have the downstream components, you can follow these steps to deploy the AOGS components. 
 
 *Please note: during the configuration of the contact profile, you will need to provide endpoint information from the deployment of the tcp-to-blob component.*
 
