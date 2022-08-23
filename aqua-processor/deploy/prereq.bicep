@@ -7,13 +7,6 @@ root for license information.
 @description('Location or region for the virtual machine and other resources being created')
 param location string
 
-@description('This is your public IP address so that you are able to SSH into the Aqua processor VM')
-param allowedSshIpAddress string
-
-@description('This is your machines public key. During script execution, this key is automatically retrieved')
-@secure()
-param adminPublicKey string
-
 @description('Name prefix for name standardization')
 param namePrefix string
 
@@ -25,7 +18,7 @@ param aquaProcessorRg string = '${namePrefix}-${location}-rg'
 
 targetScope = 'subscription'
 
-@description('Creates the resource group where the central-logging components will be deployed')
+@description('Creates the resource group where the aqua-processor components will be deployed')
 resource aoiLoggingResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: aquaProcessorRg
   location: location
@@ -41,22 +34,6 @@ module storageAccountModule 'modules/storage-account.bicep' = {
   }
 }
 
-@description('Provisions the Aqua processor VM resource')
-module aquaProcessorVm 'modules/aqua-processor-vm.bicep' = {
-  name: 'aqua-processor-vm'
-  scope: resourceGroup(aoiLoggingResourceGroup.name)
-  params: {
-    location: location
-    namePrefix: namePrefix
-    allowedSshIpAddress: allowedSshIpAddress
-    adminPublicKey: adminPublicKey
-    storageAccountName: storageAccountModule.name
-    storageAccountBlobEndpoint: storageAccountModule.outputs.storageAccountBlobEndpoint
-    storageAccountSasToken: storageAccountModule.outputs.storageAccountSasToken
-    logAnalyticsWorkspaceId: analyticsModule.outputs.logAnalyticsWorkspaceId
-  }
-}
-
 @description('Provisions Log Analytics Workspace and Application Insights resources')
 module analyticsModule 'modules/analytics.bicep' = {
   name: 'analyticsDeployment'
@@ -67,3 +44,7 @@ module analyticsModule 'modules/analytics.bicep' = {
     namePrefixStripped: namePrefixStripped
   }
 }
+
+output storageAccountName string = storageAccountModule.outputs.storageAccountName
+output applicationInsightsName string = analyticsModule.outputs.applicationInsightsName
+output applicationInsightsRg string = analyticsModule.outputs.applicationInsightsRg

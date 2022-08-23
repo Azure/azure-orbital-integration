@@ -10,8 +10,9 @@ param namePrefix string
 param allowedSshIpAddress string
 param adminPublicKey string
 param storageAccountName string
-param storageAccountEndpoint string
-param storageAccountToken string
+param storageAccountBlobEndpoint string
+param storageAccountSasToken string
+param logAnalyticsWorkspaceId string
 
 @description('Name of the VM')
 param vmName string = '${namePrefix}-vm'
@@ -34,10 +35,19 @@ param subnetName string = '${vmName}-sub'
 param vnetName string = '${vmName}-vnet'
 
 @description('Name of the vnet')
-param publicIPAddressName string = '${vmName}-pubip'
+param publicIPAddressName string = '${vmName}-pip'
 
 @description('Name of the network security group')
 param networkSecurityGroupName string = '${vmName}-nsg'
+
+@description('The name of the data collection rule association')
+param dcraName string = '${namePrefix}-dcra'
+
+@description('Name of the data collection rule')
+param dcrName string = '${namePrefix}-dcr'
+
+@description('Name of the data collection endpoint')
+param dceName string = '${namePrefix}-dce'
 
 var subnetRef = '${vnet.id}/subnets/${subnetName}'
 
@@ -184,7 +194,7 @@ resource aquaProcessorVm 'Microsoft.Compute/virtualMachines@2021-07-01' = {
     diagnosticsProfile: {
       bootDiagnostics: {
         enabled: true
-        storageUri: storageAccountEndpoint
+        storageUri: storageAccountBlobEndpoint
       }
     }
   }
@@ -250,8 +260,8 @@ resource vmSettings 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = 
     }
     protectedSettings: {
       storageAccountName: storageAccountName
-      storageAccountEndpoint: storageAccountEndpoint
-      storageAccountSasToken: storageAccountToken
+      storageAccountEndpoint: storageAccountBlobEndpoint
+      storageAccountSasToken: storageAccountSasToken
       sinksConfig: {
         sink: [
           {
@@ -269,6 +279,118 @@ resource vmSettings 'Microsoft.Compute/virtualMachines/extensions@2021-11-01' = 
         ]
       }
     }
+  }
+}
+
+@description('https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionendpoints?pivots=deployment-language-bicep')
+resource dataCollectionEndpoint 'Microsoft.Insights/dataCollectionEndpoints@2021-09-01-preview' = {
+  name: dceName
+  location: location
+  kind: 'Linux'
+  properties: {
+    configurationAccess: {}
+    description: 'Data collection endpoint to get file based logs from the VM'
+    immutableId: uniqueString(resourceGroup().id, deployment().name)
+    logsIngestion: {}
+    networkAcls: {
+      publicNetworkAccess: 'Disabled'
+    }
+  }
+}
+
+@description('https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionrules?pivots=deployment-language-bicep')
+resource dataCollectionRule 'Microsoft.Insights/dataCollectionRules@2021-09-01-preview' = {
+  name: dcrName
+  location: location
+  kind: 'Linux'
+  properties: {
+    dataCollectionEndpointId: dataCollectionEndpoint.id
+    dataSources: {
+      syslog: [
+        {
+          streams: [
+            'Microsoft-Syslog'
+          ]
+          facilityNames: [
+            'auth'
+            'authpriv'
+            'cron'
+            'daemon'
+            'mark'
+            'kern'
+            'local0'
+            'local1'
+            'local2'
+            'local3'
+            'local4'
+            'local5'
+            'local6'
+            'local7'
+            'lpr'
+            'mail'
+            'news'
+            'syslog'
+            'user'
+            'uucp'
+          ]
+          logLevels: [
+            'Debug'
+            'Info'
+            'Notice'
+            'Warning'
+            'Error'
+            'Critical'
+            'Alert'
+            'Emergency'
+          ]
+          name: 'sysLogsDataSource'
+        }
+      ]
+    }
+    destinations: {
+      logAnalytics: [
+        {
+          workspaceResourceId: logAnalyticsWorkspaceId
+          name: 'la-data-destination'
+        }
+      ]
+      azureMonitorMetrics: {
+        name: 'aqua-processor-monitor'
+      }
+    }
+    dataFlows: [
+      {
+        streams: [
+          'Microsoft-Syslog'
+        ]
+        destinations: [
+          'la-data-destination'
+        ]
+      }
+    ]
+  }
+}
+
+@description('https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/datacollectionruleassociations?pivots=deployment-language-bicep')
+resource dcra 'Microsoft.Insights/dataCollectionRuleAssociations@2019-11-01-preview' = {
+  name: dcraName
+  scope: aquaProcessorVm
+  properties: {
+    dataCollectionRuleId: dataCollectionRule.id
+    description: 'Associating log analytics data collection rule to the Aqua Processor VM'
+  }
+}
+
+resource symbolicname 'Microsoft.Compute/virtualMachines/runCommands@2022-03-01' = {
+  name: 'blob-download-service'
+  location: location
+  parent: aquaProcessorVm
+  properties: {
+    asyncExecution: false
+    source: {
+      script: 'curl "${storageAccountBlobEndpoint}artifacts/artifacts.tar.gz?${storageAccountSasToken}" -o artifacts.tar.gz && mkdir -p artifacts && tar -zvxf ./artifacts.tar.gz -C artifacts && ./artifacts/install.sh'
+    }
+    timeoutInSeconds: 600
   }
 }
 

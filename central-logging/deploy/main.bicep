@@ -4,7 +4,6 @@
 
 // Parameters required to be passed in. See README for details
 @description('Name prefix for name standardization')
-@maxLength(20)
 param namePrefix string
 
 @description('Location for region of resources being generated')
