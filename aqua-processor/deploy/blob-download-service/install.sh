@@ -10,16 +10,20 @@ case "$(pidof BlobDownloadService | wc -w)" in
 esac
 
 RUNTIME="linux-x64"
-
 WORKING_DIR="$(dirname "$0")"
+LOCAL_ARTIFACTS_FOLDER="artifacts"
+
+# Extract artifacts
+mkdir -p ${LOCAL_ARTIFACTS_FOLDER}
+tar -zvxf ./artifacts.tar.gz -C ${LOCAL_ARTIFACTS_FOLDER}
 
 # Install BlobDownloadService
 yum install -y libicu
 mkdir -p /usr/share/BlobDownloadService
 
-cp ${WORKING_DIR}/BlobDownloadService /usr/share/BlobDownloadService/
-cp ${WORKING_DIR}/appsettings.json /usr/share/BlobDownloadService/
-cp ${WORKING_DIR}/BlobDownloadService.service /etc/systemd/system/BlobDownloadService.service
+cp ${WORKING_DIR}/${LOCAL_ARTIFACTS_FOLDER}/BlobDownloadService /usr/share/BlobDownloadService/
+cp ${WORKING_DIR}/${LOCAL_ARTIFACTS_FOLDER}/appsettings.json /usr/share/BlobDownloadService/
+cp ${WORKING_DIR}/${LOCAL_ARTIFACTS_FOLDER}/BlobDownloadService.service /etc/systemd/system/BlobDownloadService.service
 
 systemctl enable BlobDownloadService
 systemctl start BlobDownloadService

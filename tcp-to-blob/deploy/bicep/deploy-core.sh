@@ -26,7 +26,6 @@ az deployment group create \
   --template-file "./deploy/bicep/aks.bicep" \
   --parameters \
       namePrefix="${NAME_PREFIX}" \
-      aksName="${AKS_NAME}" \
       acrResourceGroup="${ACR_RESOURCE_GROUP}" \
       acrName="${ACR_NAME}"
 

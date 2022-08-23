@@ -34,7 +34,6 @@ cat ${WORKING_DIR}/appsettings.template.json | \
   envsubst > ${ARTIFACTS_DIR}/appsettings.json
 
 # Stage other scripts in artifacts folder to be copied over
-cp ${WORKING_DIR}/install.sh ${ARTIFACTS_DIR}
 cp ${WORKING_DIR}/BlobDownloadService.service ${ARTIFACTS_DIR}
 
 tar -czvf ${ARTIFACTS_DIR}/artifacts.tar.gz -C ${ARTIFACTS_DIR} .

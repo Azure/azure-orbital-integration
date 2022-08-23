@@ -11,6 +11,8 @@ Both processes RT-STPS and IPOPP installed and supported by a single VM instance
 ## Prerequisites
 * Azure subscription access
 * Azure CLI
+* [jq](https://stedolan.github.io/jq/download/)
+* [envsubst](https://command-not-found.com/envsubst)
 * [.NET 6.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
 ## Create Environment File
@@ -36,7 +38,7 @@ requires: Unix-like environment or Mac
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
    2. `az account set -s "{YOUR_SUBSCRIPTION_ID}"` (see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
 2. Change directory `cd aqua-processor`
-3. Source your environment file `. ./.env/env-template.sh`
+3. Source your environment file `source ./.env/env-template.sh`
 4. Run deploy `./deploy/deploy.sh`
 
 ## Install dependencies

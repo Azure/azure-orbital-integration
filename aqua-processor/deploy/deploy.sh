@@ -22,6 +22,7 @@ ${WORKING_DIR}/blob-download-service/prepare-artifacts.sh $APPLICATION_INSIGHTS_
 
 az storage container create --account-name ${STORAGE_ACCOUNT_NAME} --name ${ARTIFACTS_CONTAINER_NAME}
 az storage blob upload --account-name ${STORAGE_ACCOUNT_NAME} --container-name ${ARTIFACTS_CONTAINER_NAME} --file ${ARTIFACTS_DIR}/artifacts.tar.gz --name artifacts.tar.gz --overwrite
+az storage blob upload --account-name ${STORAGE_ACCOUNT_NAME} --container-name ${ARTIFACTS_CONTAINER_NAME} --file ${WORKING_DIR}/blob-download-service/install.sh --name install.sh --overwrite
 
 az deployment sub create \
   --name "aoi-aqua-main" \

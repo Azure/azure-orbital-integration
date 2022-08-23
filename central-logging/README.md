@@ -16,7 +16,7 @@ In the following steps, we will assume that you keep the name of `env-template.s
 2. Copy the sample env file `cp ./deploy/env-template.sh ./.env/env-template.sh`
 3. Edit `./.env/env-template.sh`
   * NAME_PREFIX: Used as a prefix pattern for generating resource group and resources. Something short simple and descriptive is ideal.
-  * LOCATION: The location where the resources will be deployed.
+  * AZ_LOCATION: The location where the resources will be deployed.
   * TCP_TO_BLOB_RG: The resource group name of the tcp-to-blob component.
   * TCP_TO_BLOB_LAW_NAME: The Log Analytics Workspace name that is deployed to the TCP_TO_BLOB_RG.
   * AQUA_RG: The resource group name of the processor component.

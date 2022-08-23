@@ -49,6 +49,9 @@ param dcrName string = '${namePrefix}-dcr'
 @description('Name of the data collection endpoint')
 param dceName string = '${namePrefix}-dce'
 
+@description('Timestamp to use with custom script extension')
+param epochTimestamp int = dateTimeToEpoch(utcNow('u'))
+
 var subnetRef = '${vnet.id}/subnets/${subnetName}'
 
 @description('https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/components?pivots=deployment-language-bicep')
@@ -381,16 +384,27 @@ resource dcra 'Microsoft.Insights/dataCollectionRuleAssociations@2019-11-01-prev
   }
 }
 
-resource symbolicname 'Microsoft.Compute/virtualMachines/runCommands@2022-03-01' = {
+@description('When using CustomScript, schema should follow: https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux')
+resource installBDS 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
   name: 'blob-download-service'
   location: location
   parent: aquaProcessorVm
   properties: {
-    asyncExecution: false
-    source: {
-      script: 'curl "${storageAccountBlobEndpoint}artifacts/artifacts.tar.gz?${storageAccountSasToken}" -o artifacts.tar.gz && mkdir -p artifacts && tar -zvxf ./artifacts.tar.gz -C artifacts && ./artifacts/install.sh'
+    publisher: 'Microsoft.Azure.Extensions'
+    type: 'CustomScript'
+    typeHandlerVersion: '2.1'
+    autoUpgradeMinorVersion: true
+    settings: {
+      skipDos2Unix: false
+      timestamp: epochTimestamp
     }
-    timeoutInSeconds: 600
+    protectedSettings: {
+      commandToExecute: 'bash ./install.sh'
+      fileUris: [
+        '${storageAccountBlobEndpoint}artifacts/artifacts.tar.gz?${storageAccountSasToken}'
+        '${storageAccountBlobEndpoint}artifacts/install.sh?${storageAccountSasToken}'
+      ]
+    }
   }
 }
 
