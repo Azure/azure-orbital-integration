@@ -5,8 +5,7 @@
 name: Continuous Integration - Prettier & SuperLint
 
 # This action works with pull requests and pushes
-on:
-  push
+on: push
 
 jobs:
   prettier:
@@ -20,13 +19,6 @@ jobs:
           # Make sure the actual branch is checked out when running on pull requests
           ref: ${{ github.head_ref }}
           fetch-depth: 0
-
-      #Prettify Step
-      - name: Prettify code
-        uses: creyD/prettier_action@v4.2
-        with:
-          prettier_options: --write **/*.{js,md,ts} --trailing-comma=es5 --tab-width=4 --no-semi=true --single-quote=true
-          dry: True
 
       # Super lint step
       - name: Lint Code Base
