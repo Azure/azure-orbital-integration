@@ -1,8 +1,22 @@
-# Project
-Azure Orbital Integration
+# Azure Orbital Integration
+Azure Orbital Integration is a solution that enables end users to easily deploy all downstream components necessary to receive and process direct broadcast data from [NASA's Aqua Earth-Observing Satellite](https://aqua.nasa.gov/) using [Azure Orbital Ground Station(AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview). This solution provides self-start scripts to create an endpoint to receive data from the ground station (tcp-to-blob component), deploy a virtual machine to process Aqua data using NASA tools (processing VM component) and an optionally bring logs from all components to a single place (central logging component).
 
 # Overview
 ![Azure Orbital Integration Diagram](./docs/images/diagram.png)
+
+## Downstream deployment steps
+1. Deploy [tcp-to-blob](./tcp-to-blob/README.md)
+2. Deploy [Aqua processor](./processor/README.md)
+3. (Optional) Deploy [central-logging](./central-logging/README.md)
+
+## AOGS steps
+Once you have the downstream components, you can follow these steps to deploy the AOGS components. 
+
+*Please note: during the configuration of the contact profile, you will need to provide endpoint information from the deployment of the tcp-to-blob component.*
+
+1. [Register a spacecraft](https://docs.microsoft.com/en-us/azure/orbital/register-spacecraft).
+2. [Configure a contact profile](https://docs.microsoft.com/en-us/azure/orbital/contact-profile)
+3. [Schedule a contact](https://docs.microsoft.com/en-us/azure/orbital/schedule-contact)
 
 ## Contributing
 

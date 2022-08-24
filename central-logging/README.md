@@ -8,15 +8,15 @@ An optional centralized logging component for the Azure Orbital Integration solu
 * Azure CLI
 
 ## Create Environment File
-In the root of the central-logging folder, there is a file named `env-sample.sh`. It is recommended to copy this file to a folder named `.env`. the `.env` folder is part of gitignore so any sensitive information that is in that folder won't accidentally get checked in to any repositories.
+In the deploy folder, there is a file named `env-template.sh`. It is recommended to copy this file to a folder named `.env`. the `.env` folder is part of gitignore so any sensitive information that is in that folder won't accidentally get checked in to any repositories.
 
-In the following steps, we will assume that you keep the name of `env-sample.sh`. You are free to adjust as you see fit.
+In the following steps, we will assume that you keep the name of `env-template.sh`. You are free to adjust as you see fit.
 
 1. Make the .env folder `mkdir -p ./.env`
-2. Copy the sample env file `cp ./env-sample.sh ./.env/env-sample.sh`
-3. Edit `./.env/env-sample.sh`
+2. Copy the sample env file `cp ./deploy/env-template.sh ./.env/env-template.sh`
+3. Edit `./.env/env-template.sh`
   * NAME_PREFIX: Used as a prefix pattern for generating resource group and resources. Something short simple and descriptive is ideal.
-  * LOCATION: The location where the resources will be deployed.
+  * AZ_LOCATION: The location where the resources will be deployed.
   * TCP_TO_BLOB_RG: The resource group name of the tcp-to-blob component.
   * TCP_TO_BLOB_LAW_NAME: The Log Analytics Workspace name that is deployed to the TCP_TO_BLOB_RG.
   * AQUA_RG: The resource group name of the processor component.
@@ -28,7 +28,7 @@ requires: Unix-like environment or Mac
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
    2. `az account set -s "${SUBSCRIPTION_ID}"` (see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
 2. Change directory `cd central-logging`
-3. Source your environment file `. ./.env/env-sample.sh`
+3. Source your environment file `. ./.env/env-template.sh`
 4. Run deploy `./deploy/deploy.sh`
 
 ## Validate

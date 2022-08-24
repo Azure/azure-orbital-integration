@@ -8,62 +8,64 @@ More information about IPOPP can be found on this link - [NASA DRL](https://dire
 
 Both processes RT-STPS and IPOPP installed and supported by a single VM instance. 
 
-## Deploy resources on Azure
+## Prerequisites
+* Azure subscription access
+* Azure CLI
+* [jq](https://stedolan.github.io/jq/download/)
+* [envsubst](https://command-not-found.com/envsubst)
+* [.NET 6.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
-To deploy all the resources listed in the bicep file, run the following command:
-```
-env DEPLOYMENT_NAME=<deployment-name>\
-    RESOURCE_GROUP_NAME=<resource-group-name> \
-    LOCATION=<location> \
-    SSH_PUBLIC_KEY="$(cat ~/.ssh/id_rsa.pub)" \
-    ./deploy.sh
-```
-### Enable SSH
-You can add the following snippet to the `parameters.json` file under the `value` key in `networkSecurityGroupRules` to enable SSH on your VM. Make sure that you replace the value of `<your IP address>` with your actual IPV4 address
+## Create Environment File
+In the root of the central-logging folder, there is a file named `env-template.sh`. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information that is in that folder won't accidentally get checked in to any repositories.
 
-```
-{
-    "name": "SSH",
-    "properties": {
-        "priority": 300,
-        "protocol": "TCP",
-        "access": "Allow",
-        "direction": "Inbound",
-        "sourceAddressPrefix": "<your_ip>",
-        "sourcePortRange": "*",
-        "destinationAddressPrefix": "*",
-        "destinationPortRange": "22"
-    }
-}
-```
+In the following steps, we will assume that you keep the name of `env-template.sh`. You are free to pick any name.
+
+1. Change directory to aqua-processor `cd aqua-processor`
+2. Make the .env folder `mkdir -p ./.env`
+3. Copy the sample env file `cp ./deploy/env-template.sh ./.env/env-template.sh`
+4. Edit `./.env/env-template.sh`
+  * AZ_LOCATION: The location where the resources will be deployed.
+  * NAME_PREFIX: Used as a prefix pattern for generating resource group and resources. Something short simple and descriptive is ideal.
+  * ALLOWED_SSH_IP_ADDRESS: This is the public IP address that you will be connecting to the Aqua processor VM from.
+  * CONTACT_STORAGE_ACCOUNT_NAME: The storage account where contact data is written to. This is the storage account from the tcp-to-blob deployment.
+  * CONTACT_STORAGE_ACCOUNT_RESOURCE_GROUP: The resource group name for the contact storage account.
+  * SERVICE_BUS_NAMESPACE: The name of the namespace from the tcp-to-blob deployment.
+  * SERVICE_BUS_RESOURCE_GROUP: The resource group name for the Service Bus namespace.
+
+## Deploy
+requires: Unix-like environment or Mac
+1. Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default subscription is set. 
+   1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
+   2. `az account set -s "{YOUR_SUBSCRIPTION_ID}"` (see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
+2. Change directory `cd aqua-processor`
+3. Source your environment file `source ./.env/env-template.sh`
+4. Run deploy `./deploy/deploy.sh`
+
 ## Install dependencies
-The bicep file has a section called `customData` in the `osProfile` of `resource vm`. Use that to add any additional dependencies that you want ot be installed on your vm.
+In the root of ./aqua-processor/deploy, there is a file called cloud-init.yaml. If you need to add any other dependencies to your VM, you can call them out here. See [Documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cloud-init-deep-dive) for details.
 
 ## Install RT-STPS
-
 To install RT-STPS, follow these instructions:
-- Download the installation files from NASA drl https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=263&type=software, you may need to create an account and wait for approval before you can download.
+- Download the installation files from NASA drl https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software, you may need to create an account and wait for approval before you can download.
 - Copy the downloaded installation files to the desired installation directory
 You can use the following command to secure copy the files from downloads to the VM
 
 ```
-scp RT-STPS_6.0*.tar.gz <adminusername>@<vm public ip>:.
+scp RT-STPS_7.0*.tar.gz <adminusername>@<vm public ip>:.
 ```
 
 - Install RT-STPS using the commands:
 
 ```
-# Decompress RT-STPS_6.0.tar.gz
-tar -xzvf RT-STPS_6.0.tar.gz
+# Decompress RT-STPS_7.0.tar.gz
+tar -xzvf RT-STPS_7.0.tar.gz
 # Change to the rt-stps directory
 cd rt-stps/
 ./install.sh
 
-# Install patches
+# Install patches (if available)
 cd ..
-tar -xzvf RT-STPS_6.0_PATCH_1.tar.gz
-tar -xzvf RT-STPS_6.0_PATCH_2.tar.gz
-tar -xzvf RT-STPS_6.0_PATCH_3.tar.gz
+tar -xzvf RT-STPS_7.0_PATCH_*.tar.gz
 
 cd rt-stps/
 ./install.sh
@@ -81,16 +83,15 @@ ls -la ../data/
 
 ```
 ## Monitor RT-STPS
-
-You can use `logger` to write rt-stps logs to system log and the agent will automatically collect syslogs. Syslogs will show up in the Log Analytics Workspace.
+You can use `logger` to write RT-STPS logs to system log and the agent will automatically collect syslogs. Syslogs will show up in the Log Analytics Workspace.
 Here is an example:
 
 ```
 logger -p local0.info -f /logs/rtstps.log -t $(uuidgen)
 ```
-## Automatically run RT-STPS everyday
 
-Assuming the raw input files are stored in a storage container and the rt-stps vm has access to the storage container via a user assigned managed identity, we can use `run_rtstps.sh` to run rt-stps on a random file.
+## Automatically run RT-STPS everyday
+Assuming the raw input files are stored in a storage container and the RT-STPS vm has access to the storage container via a user assigned managed identity, we can use `run_rtstps.sh` to run RT-STPS on a random file.
 
 `run_rtstps.sh` randomly copies an input file from the raw binary data container and run RT-STPS program against that file. RT-STPS logs will be collected by syslog and show up in the Log Analytics Workspace.
 
@@ -108,6 +109,7 @@ Follow the instructions on the [user's guide](https://directreadout.sci.gsfc.nas
 
 ## Install SPA
 Additional SPAs can be installed on IPOPP to generate more data from the raw satellite input feed. Refer Appendix E in the IPOPP user guide for more information.
+
 ## Monitoring IPOPP
 We recommend adding a cron job to export data from IPOPP logs to system logs and based on our bicep configuration, the data from a VM's local logs should show up in log analytics.
 
