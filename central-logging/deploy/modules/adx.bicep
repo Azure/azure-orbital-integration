@@ -111,7 +111,7 @@ resource aoiKustoCentralLoggingDatabaseConfig 'Microsoft.Kusto/clusters/database
   parent: aoiKustoCentralLoggingClusterDatabase
   properties: {
     continueOnErrors: true
-    forceUpdateTag: 'v2'
+    forceUpdateTag: 'v2.1'
     scriptContent: databaseConfig.value
   }
 }]
