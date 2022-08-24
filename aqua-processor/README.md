@@ -1,3 +1,6 @@
+# Aqua Processor
+Aqua Processor provides deployment scripts and instructions for running NASA tools (RT-STPS and IPOPP) for processing Aqua Satellite Direct Broadcast data on an Azure VM. 
+
 # RT-STPS
 RT-STPS will be used to process raw binary files from satellites and have PDS files as output.
 More information about RT-STPS can be found on this link - [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69)
