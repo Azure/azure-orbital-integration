@@ -8,8 +8,8 @@ name: Continuous Integration - Prettier & SuperLint
 on: push
 
 jobs:
-  prettier:
-    name: prettier dry check
+  linters:
+    name: lint files
     runs-on: ubuntu-latest
 
     steps:
