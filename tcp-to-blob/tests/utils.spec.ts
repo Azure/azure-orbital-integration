@@ -1,3 +1,7 @@
+// Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+// Software is licensed under the MIT License. See LICENSE in the project
+// root for license information.
+
 import * as chai from 'chai'
 const expect = chai.expect
 const asset = chai.assert
