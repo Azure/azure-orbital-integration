@@ -15,7 +15,7 @@ param storageAccountName string = namePrefixStripped
 param containerName string = 'logs'
 
 @description('Expiration time of the key')
-param keyExpiration string = dateTimeFromEpoch(dateTimeToEpoch(dateTimeAdd(utcNow('yyyy-MM-dd HH:00:00'), 'PT2H')))
+param keyExpiration string = dateTimeFromEpoch(dateTimeToEpoch(dateTimeAdd(utcNow(), 'PT2H')))
 
 @description('https://docs.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts?pivots=deployment-language-bicep')
 resource aquaProcessingStorageAccount 'Microsoft.Storage/storageAccounts@2021-06-01' = {
@@ -37,14 +37,14 @@ resource container 'Microsoft.Storage/storageAccounts/blobServices/containers@20
 
 @description('https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-functions-resource')
 var storageSasToken = listAccountSas(aquaProcessingStorageAccount.name, '2021-09-01', {
-  signedServices: 'b'
-  signedResourceTypes: 'o'
-  signedPermission: 'rwdlacup'
-  signedProtocol: 'https'
-  signedExpiry: keyExpiration
-  keyToSign: 'key1'
-}).accountSasToken
+    signedServices: 'b'
+    signedResourceTypes: 'o'
+    signedPermission: 'rwdlacup'
+    signedProtocol: 'https'
+    signedExpiry: keyExpiration
+    keyToSign: 'key1'
+  }).accountSasToken
 
-output saName string = aquaProcessingStorageAccount.name
-output saBlob string = aquaProcessingStorageAccount.properties.primaryEndpoints.blob
-output saToken string = storageSasToken
+output storageAccountName string = aquaProcessingStorageAccount.name
+output storageAccountBlobEndpoint string = aquaProcessingStorageAccount.properties.primaryEndpoints.blob
+output storageAccountSasToken string = storageSasToken

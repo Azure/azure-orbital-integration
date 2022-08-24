@@ -8,8 +8,8 @@ packages:
     - httpd
     - java-11-openjdk-devel
     - azure-cli
-    - tigervnc-server 
-    - xorg-x11-fonts-Type1 
-    - uuid-runtime    
+    - tigervnc-server
+    - xorg-x11-fonts-Type1
+    - uuid-runtime
     - python3
     - python3-requests

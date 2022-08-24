@@ -19,13 +19,13 @@ param acrResourceGroup string = resourceGroup().name
 param acrName string = '${namePrefixStripped}acr'
 
 @description('Resource group for storage account')
-@maxLength(24)
 param storageAccountResourceGroup string = resourceGroup().name
 
 @description('Name of storage account')
-param storageAccountName string = '${namePrefixStripped}storage'
+@maxLength(24)
+param storageAccountName string = namePrefixStripped
 
-// TO support ACR in separate resource group, it must be created via separate module.
+@description('Provisions Azure Container Registry to store the required tcp-to-blob image')
 module acrModule 'acr.bicep' = {
   name: 'acr-module'
   scope: resourceGroup(acrResourceGroup)
@@ -35,12 +35,23 @@ module acrModule 'acr.bicep' = {
   }
 }
 
-// TO support storage account in separate resource group, it must be created via separate module.
+@description('Provisions Service Bus for receiving Event Grid messages')
+module serviceBusModule 'modules/service-bus.bicep' = {
+  name: 'service-bus-module'
+  scope: resourceGroup(acrResourceGroup)
+  params: {
+    location: location
+    namePrefixStripped: namePrefixStripped
+  }
+}
+
+@description('Provisions the storage account used for collecting contact data')
 module storageModule 'storage.bicep' = {
   name: 'storage-module'
   scope: resourceGroup(storageAccountResourceGroup)
   params: {
     name: storageAccountName
     location: location
+    serviceBusContactDataQueueId: serviceBusModule.outputs.serviceBusContactDataQueueId
   }
 }

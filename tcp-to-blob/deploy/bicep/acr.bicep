@@ -3,7 +3,6 @@
 // root for license information.
 
 @description('ACR name.')
-@maxLength(20)
 param name string = '${uniqueString(resourceGroup().id)}acr'
 
 @description('ACR location.')
@@ -17,7 +16,7 @@ resource rscContainerRegistry 'Microsoft.ContainerRegistry/registries@2022-02-01
   }
   properties: {
     adminUserEnabled: true
-    policies: { 
+    policies: {
       quarantinePolicy: {
         status: 'disabled'
       }

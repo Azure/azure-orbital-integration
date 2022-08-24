@@ -32,37 +32,36 @@ resource tcpToBlobLawExportSyslog 'Microsoft.OperationalInsights/workspaces/data
   }
 }
 
-// Issue # https://github.com/Azure/azure-orbital-integration/issues/28 
-// resource tcpToBlobLawExportAppTraces 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
-//   name: 'Export-AppTraces'
-//   parent: aquaLawRef
-//   properties: {
-//     destination: {
-//       metaData: {
-//         eventHubName: 'apptraces'
-//       }
-//       resourceId: ehNamespaceId
-//     }
-//     enable: true
-//     tableNames: [
-//       'AppTraces'
-//     ]
-//   }
-// }
+resource tcpToBlobLawExportAppTraces 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
+  name: 'Export-AppTraces'
+  parent: aquaLawRef
+  properties: {
+    destination: {
+      metaData: {
+        eventHubName: 'apptraces'
+      }
+      resourceId: ehNamespaceId
+    }
+    enable: true
+    tableNames: [
+      'AppTraces'
+    ]
+  }
+}
 
-// resource tcpToBlobLawExportAppExceptions 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
-//   name: 'Export-AppExceptions'
-//   parent: aquaLawRef
-//   properties: {
-//     destination: {
-//       metaData: {
-//         eventHubName: 'appexceptions'
-//       }
-//       resourceId: ehNamespaceId
-//     }
-//     enable: true
-//     tableNames: [
-//       'AppExceptions'
-//     ]
-//   }
-// }
+resource tcpToBlobLawExportAppExceptions 'Microsoft.OperationalInsights/workspaces/dataExports@2020-08-01' = {
+  name: 'Export-AppExceptions'
+  parent: aquaLawRef
+  properties: {
+    destination: {
+      metaData: {
+        eventHubName: 'appexceptions'
+      }
+      resourceId: ehNamespaceId
+    }
+    enable: true
+    tableNames: [
+      'AppExceptions'
+    ]
+  }
+}

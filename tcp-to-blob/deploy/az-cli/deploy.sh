@@ -4,7 +4,7 @@
 # root for license information.
 
 # Source the environment file for the stage you wish to deploy.
-# Use deploy/env-sample.sh as a template.
+# Use deploy/env-template.sh as a template.
 # Consider putting your "env-<env-name>.sh" scripts in the ".env" directory which is ignored by git.
 # e.g. `. ./.env/env-dev.sh`
 

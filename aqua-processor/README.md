@@ -11,27 +11,34 @@ Both processes RT-STPS and IPOPP installed and supported by a single VM instance
 ## Prerequisites
 * Azure subscription access
 * Azure CLI
+* [jq](https://stedolan.github.io/jq/download/)
+* [envsubst](https://command-not-found.com/envsubst)
+* [.NET 6.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
 ## Create Environment File
-In the root of the central-logging folder, there is a file named `env-sample.sh`. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information that is in that folder won't accidentally get checked in to any repositories.
+In the root of the central-logging folder, there is a file named `env-template.sh`. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information that is in that folder won't accidentally get checked in to any repositories.
 
-In the following steps, we will assume that you keep the name of `env-sample.sh`. You are free to pick any name.
+In the following steps, we will assume that you keep the name of `env-template.sh`. You are free to pick any name.
 
 1. Change directory to aqua-processor `cd aqua-processor`
 2. Make the .env folder `mkdir -p ./.env`
-3. Copy the sample env file `cp ./env-sample.sh ./.env/env-sample.sh`
-4. Edit `./.env/env-sample.sh`
+3. Copy the sample env file `cp ./deploy/env-template.sh ./.env/env-template.sh`
+4. Edit `./.env/env-template.sh`
+  * AZ_LOCATION: The location where the resources will be deployed.
   * NAME_PREFIX: Used as a prefix pattern for generating resource group and resources. Something short simple and descriptive is ideal.
-  * LOCATION: The location where the resources will be deployed.
   * ALLOWED_SSH_IP_ADDRESS: This is the public IP address that you will be connecting to the Aqua processor VM from.
+  * CONTACT_STORAGE_ACCOUNT_NAME: The storage account where contact data is written to. This is the storage account from the tcp-to-blob deployment.
+  * CONTACT_STORAGE_ACCOUNT_RESOURCE_GROUP: The resource group name for the contact storage account.
+  * SERVICE_BUS_NAMESPACE: The name of the namespace from the tcp-to-blob deployment.
+  * SERVICE_BUS_RESOURCE_GROUP: The resource group name for the Service Bus namespace.
 
 ## Deploy
 requires: Unix-like environment or Mac
 1. Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default subscription is set. 
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
-   2. `az account set -s "${SUBSCRIPTION_ID}"` (see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
+   2. `az account set -s "{YOUR_SUBSCRIPTION_ID}"` (see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
 2. Change directory `cd aqua-processor`
-3. Source your environment file `. ./.env/env-sample.sh`
+3. Source your environment file `source ./.env/env-template.sh`
 4. Run deploy `./deploy/deploy.sh`
 
 ## Install dependencies
