@@ -46,28 +46,26 @@ In the root of ./aqua-processor/deploy, there is a file called cloud-init.yaml. 
 
 ## Install RT-STPS
 To install RT-STPS, follow these instructions:
-- Download the installation files from NASA drl https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=263&type=software, you may need to create an account and wait for approval before you can download.
+- Download the installation files from NASA drl https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software, you may need to create an account and wait for approval before you can download.
 - Copy the downloaded installation files to the desired installation directory
 You can use the following command to secure copy the files from downloads to the VM
 
 ```
-scp RT-STPS_6.0*.tar.gz <adminusername>@<vm public ip>:.
+scp RT-STPS_7.0*.tar.gz <adminusername>@<vm public ip>:.
 ```
 
 - Install RT-STPS using the commands:
 
 ```
-# Decompress RT-STPS_6.0.tar.gz
-tar -xzvf RT-STPS_6.0.tar.gz
+# Decompress RT-STPS_7.0.tar.gz
+tar -xzvf RT-STPS_7.0.tar.gz
 # Change to the rt-stps directory
 cd rt-stps/
 ./install.sh
 
-# Install patches
+# Install patches (if available)
 cd ..
-tar -xzvf RT-STPS_6.0_PATCH_1.tar.gz
-tar -xzvf RT-STPS_6.0_PATCH_2.tar.gz
-tar -xzvf RT-STPS_6.0_PATCH_3.tar.gz
+tar -xzvf RT-STPS_7.0_PATCH_*.tar.gz
 
 cd rt-stps/
 ./install.sh
