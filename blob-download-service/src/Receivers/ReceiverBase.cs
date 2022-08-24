@@ -23,10 +23,10 @@ namespace BlobDownloadService
             ReceiverName = Options.ReceiverName;
         }
 
-        internal async Task<bool> DownloadBlobAsync(BlobMetadata blobMetadata, Guid secondaryCorrelationId)
+        internal async Task DownloadBlobAsync(BlobMetadata blobMetadata, Guid secondaryCorrelationId)
         {
-            bool isSuccess = false;
             var fullLocalFilePath = Path.Combine(Options.LocalBlobDownloadPath, blobMetadata.Filename);
+            var fullLocaltmpFilename = $"{fullLocalFilePath}{_streamingTmpFileExtension}";
             var fullLocalDirPath = Path.GetDirectoryName(fullLocalFilePath);
 
             var evt = $"{nameof(ReceiverBase<TReceiverOptions>)}::{nameof(DownloadBlobAsync)}";
@@ -41,28 +41,26 @@ namespace BlobDownloadService
                     if (!Directory.Exists(fullLocalDirPath)) Directory.CreateDirectory(fullLocalDirPath);
 
                     // Download file with _streamingTmpFileExtension while streaming
-                    var tmpBlobFilename = $"{fullLocalFilePath}{_streamingTmpFileExtension}";
-                    using (FileStream fs = File.OpenWrite(tmpBlobFilename))
+                    using (FileStream fs = File.OpenWrite(fullLocaltmpFilename))
                     {
                         await blobClient.DownloadToAsync(fs, Token).ConfigureAwait(false);
                         fs.Close();
                     }
 
                     // Once the download is complete, rename file to exclude _streamingTmpFileExtension
-                    File.Move(tmpBlobFilename, fullLocalFilePath, true);
-
-                    isSuccess = true;
+                    File.Move(fullLocaltmpFilename, fullLocalFilePath, true);
                 }
                 catch (Exception ex)
                 {
+                    // Clean up tmp file if exists from the failed blob download
+                    if (File.Exists(fullLocaltmpFilename)) File.Delete(fullLocaltmpFilename);
+
                     var receiverException = new ReceiverException($"Unable to download blob, inner exception: {ex.Message}", ex);
                     log.LogLevel = LogLevel.Error;
                     log.Exception = receiverException;
                     throw;
                 }
             }
-
-            return isSuccess;
         }
     }
 }
