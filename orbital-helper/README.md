@@ -55,7 +55,7 @@ Environment variables are checked as needed at runtime and an instructive Error 
 Recommend creating a `./.env/env.sh` to set these and re-load env as needed without risking committing them to version
 control.
 
-For your convenience, you can copy [sample_env.sh](sample_env.sh) to `./.env/env.sh`, set your values there and
+For your convenience, you can copy [env-template.sh](env-template.sh) to `./.env/env.sh`, set your values there and
 run `. .env/env.sh`.
 
 * `AZ_SUBSCRIPTION`

@@ -90,7 +90,7 @@ committing them to version control.
 ## Create environment file
 
 1. `cd tcp-to-blob && mkdir .env`
-2. `cp ./deploy/env-sample.sh .env/env-<name_prefix>.sh`
+2. `cp ./deploy/env-template.sh .env/env-<name_prefix>.sh`
 3. Edit your env file as needed. See: "Environment variables" section above.
 
 # Deploy environment to Azure Kubernetes Service (AKS)

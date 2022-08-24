@@ -5,12 +5,10 @@
 param location string = resourceGroup().location
 
 @description('A prefix that is used to generate resources in this deployment. This must be specified.')
-@maxLength(20)
-param namePrefix string = uniqueString(resourceGroup().id)
+param namePrefix string
 
 @description('Name of AKS cluster.')
-@maxLength(27)
-param aksName string = '${uniqueString(resourceGroup().id)}aks'
+param aksName string = '${namePrefix}-aks'
 
 @description('Resource group for ACR')
 param acrResourceGroup string = resourceGroup().name
@@ -20,7 +18,7 @@ param acrName string
 
 // Resource group specifically for the AKS cluster. Not the same as primary resource group. The convention is how its currently defined.
 @description('Name of azure kubernetes resource group')
-param aksNodeResourceGroup string = 'MC_${aksName}'
+param aksNodeResourceGroup string = 'MC_${namePrefix}-${location}'
 
 param vnetName string = '${namePrefix}-vnet'
 
@@ -37,7 +35,7 @@ resource rscVNET 'Microsoft.Network/virtualNetworks@2021-08-01' = {
     subnets: [
       {
         name: 'vnet-subnet'
-        properties:{
+        properties: {
           addressPrefix: '10.240.0.0/16'
         }
       }
@@ -48,26 +46,26 @@ resource rscVNET 'Microsoft.Network/virtualNetworks@2021-08-01' = {
           delegations: [
             {
               name: 'pod-subnet-delegation'
-               properties: {
+              properties: {
                 serviceName: 'Microsoft.ContainerService/managedClusters'
-               }
+              }
             }
           ]
         }
       }
-      { 
+      {
         name: 'orbital-subnet'
         properties: {
           addressPrefix: '10.244.0.0/16'
           delegations: [
             {
               name: 'orbital-subnet-delegation'
-               properties: {
+              properties: {
                 serviceName: 'Microsoft.Orbital/orbitalGateways'
-               }
+              }
             }
           ]
-        } 
+        }
       }
     ]
   }
@@ -117,7 +115,7 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2022-04-02-previ
     }
   }
   properties: {
-    dnsPrefix:  '${namePrefix}-dns'
+    dnsPrefix: '${namePrefix}-dns'
     agentPoolProfiles: [
       {
         name: 'agentpool'
@@ -137,7 +135,7 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2022-04-02-previ
         mode: 'System'
         osType: 'Linux'
         enableFIPS: false
-        vnetSubnetID:  resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'vnet-subnet')
+        vnetSubnetID: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'vnet-subnet')
         podSubnetID: resourceId('Microsoft.Network/virtualNetworks/subnets', vnetName, 'pod-subnet')
       }
     ]
