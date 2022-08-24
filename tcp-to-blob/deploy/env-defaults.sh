@@ -5,7 +5,7 @@
 
 . ./deploy/env-prereq-defaults.sh
 echo "Loading core env defaults."
-export AKS_CONTACT_DATA_STORAGE_CONTAINER=${AKS_CONTACT_DATA_STORAGE_CONTAINER:-"${NAME_PREFIX}-output"}
+export CONTACT_DATA_STORAGE_CONTAINER=${CONTACT_DATA_STORAGE_CONTAINER:-"${NAME_PREFIX}-output"}
 
 export AKS_VNET=${AKS_VNET:-"${NAME_PREFIX}-vnet"}
 export AKS_VNET_ADDR_PREFIX=${AKS_VNET_ADDR_PREFIX:-'10.0.0.0/8'}

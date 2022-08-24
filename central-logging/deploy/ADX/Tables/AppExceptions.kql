@@ -51,10 +51,10 @@ Expand_AppExceptions() {
     | mv-expand Records
     | extend events = Records
     | extend properties = todynamic(extract_json("$", tostring(events.Properties)))
-    | extend message = todynamic(extract_json("$", tostring(properties.Message)))
+    | extend message = todynamic(extract_json("$", tostring(properties.FormattedMessage)))
     | project
-        ["PrimaryCorrelationId"] = tostring(events.["PrimaryCorrelationId"])
-        ,["SecondaryCorrelationId"] = tostring(events.["SecondaryCorrelationId"])
+        ["PrimaryCorrelationId"] = tostring(properties.["PrimaryCorrelationId"])
+        ,["SecondaryCorrelationId"] = tostring(message.["SecondaryCorrelationId"])
         ,["AppRoleInstance"] = tostring(events.["AppRoleInstance"])
         ,["AppVersion"] = tostring(events.["AppVersion"])
         ,["Assembly"] = tostring(events.["Assembly"])
