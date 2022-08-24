@@ -9,7 +9,18 @@
 Script/docker container/Azure Kubernetes service that listens on a TCP port and writes contents to a BLOB in the
 configured Azure storage container.
 
-## Event lifecycle
+## High level components/functionality
+- Vnet with subnets including:
+  - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
+  - `orbital-subnet`: Delegated to Azure Orbital from which the service can send contact data to TCP to BLOB endpoint.
+- Azure Container Registry.
+- AKS cluster.
+- Storage account and container for storing raw Orbital contact data.
+- TCP to BLOB AKS service that listens for Orbital contact TCP connection and persists the TCP data to Azure BLOB storage.
+- Orbital Contact profile configured with the appropriate endpoint and subnet for TCP to BLOB service.
+- ADO Dashboard providing temporal view of TCP to BLOB activity and AKS cluster health.
+
+## TCP to BLOB Service event lifecycle
 
 1. `server-init`: Server starting up.
 2. `socket-connect`: Client socket connected to server. (1 per socket)
@@ -31,7 +42,7 @@ configured Azure storage container.
 
 ## Install NodeJS dependencies
 
-`yarn install`
+`yarn install && yarn compile`
 
 ## New to NodeJS?
 
@@ -102,11 +113,12 @@ requires: Unix-like environment or Mac
     1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
     2. `az account set -s "${SUBSCRIPTION_ID}"` (
        see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
-2. Ensure docker is running.
-3. `cd tcp-to-blob`
-4. Create `.env/env-<name_prefix>.sh` environment file as described above.
-5. `. .env/env-<name_prefix>.sh`
-6. Deploy (to AZ CLI's current subscription):
+2. From `azure-orbital-integration` directory: `yarn install && yarn compile`
+3. Ensure docker is running.
+4. `cd tcp-to-blob`
+5. Create `.env/env-<name_prefix>.sh` environment file as described above.
+6. `. .env/env-<name_prefix>.sh`
+7. Deploy (to AZ CLI's current subscription):
     * With AZ CLI: `./deploy/az-cli/deploy.sh`  or
     * With Bicep: `./deploy/bicep/deploy.sh`
 
@@ -132,7 +144,7 @@ requires: Unix-like environment or Mac
 2. `cd tcp-to-blob`
 3. `yarn install`
 4. `yarn compile-watch`
-5. `node ./dist/tcp-to-blob.js`
+5. `node ./dist/src/tcp-to-blob.js`
 
 ## Run service locally with Docker
 
@@ -149,6 +161,12 @@ requires: Unix-like environment or Mac
 
 Or run `yarn docker-kill-all` (instead of 1 & 2)
 
+## View TCP to BLOB Shared Dashboard
+
+1. Login to [Azure Portal](https://portal.azure.com/).
+2. Select the tenant where TCP to BLOB is deployed.
+3. Either navigate to Shared Dashboards or to your resource group (`AZ_RESOURCE_GROUP`).
+4. Open the dashboard named `${NAME_PREFIX}-dashboard`.
 ## View AKS logs
 
 1. Navigate to your service in AKS portal.

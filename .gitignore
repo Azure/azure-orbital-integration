@@ -340,4 +340,5 @@ node_modules/
 dist/
 .env/
 .nyc_output
-*.js.map
+**/*.js.map
+**/*.spec.js

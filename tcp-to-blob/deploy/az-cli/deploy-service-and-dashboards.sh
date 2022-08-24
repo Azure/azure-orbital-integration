@@ -52,6 +52,8 @@ yarn deploy-dashboard
 echo "Publishing canary image."
 yarn docker-push-canary
 
+yarn make-contact-profile
+
 SLEEP_SECONDS_BEFORE_CANARY=60
 echo "Waiting ${SLEEP_SECONDS_BEFORE_CANARY} seconds for service to initialize before running canary."
 sleep $SLEEP_SECONDS_BEFORE_CANARY;# TODO: Experiment with wait that works best or better way to run upon service initialization.
