@@ -1,16 +1,18 @@
+# Aqua Processor
+Aqua Processor provides deployment scripts and instructions for running NASA tools (RT-STPS and IPOPP) for processing Aqua Satellite Direct Broadcast data on an Azure VM. 
+
 # RT-STPS
-RT-STPS will be used to process raw binary files from satellites and have PDS files as output.
-More information about RT-STPS can be found on this link - [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69)
+[RT-STPS](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69) is used to process the raw satellite payload. RT-STPS produces a Level-0 Production Data Set (PDS) product as output.
+
 
 # IPOPP 
-IPOPP will be used to process pds files from satellites and have tif/hdf files as output.
-More information about IPOPP can be found on this link - [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68)
+[IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68) is used to process the Level-0 product produced by RT-STPS to higher level products.
 
-Both processes RT-STPS and IPOPP installed and supported by a single VM instance. 
+In our architecture both RT-STPS and IPOPP are installed and run on the same Azure VM. 
 
 ## Prerequisites
 * Azure subscription access
-* Azure CLI
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/)
 * [jq](https://stedolan.github.io/jq/download/)
 * [envsubst](https://command-not-found.com/envsubst)
 * [.NET 6.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
@@ -33,8 +35,8 @@ In the following steps, we will assume that you keep the name of `env-template.s
   * SERVICE_BUS_RESOURCE_GROUP: The resource group name for the Service Bus namespace.
 
 ## Deploy
-requires: Unix-like environment or Mac
-1. Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default subscription is set. 
+Requires: Unix-like environment or Mac
+1. Ensure that you are [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and your default subscription is set. 
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
    2. `az account set -s "{YOUR_SUBSCRIPTION_ID}"` (see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
 2. Change directory `cd aqua-processor`
@@ -46,10 +48,8 @@ In the root of ./aqua-processor/deploy, there is a file called cloud-init.yaml. 
 
 ## Install RT-STPS
 To install RT-STPS, follow these instructions:
-- Download the installation files from NASA drl https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software, you may need to create an account and wait for approval before you can download.
-- Copy the downloaded installation files to the desired installation directory
-You can use the following command to secure copy the files from downloads to the VM
-
+- Download the RT-STPS installation files from [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software), you may need to create an account and wait for approval before you can download.
+- Copy the downloaded installation files to the home directory on the Azure VM
 ```
 scp RT-STPS_7.0*.tar.gz <adminusername>@<vm public ip>:.
 ```
@@ -59,31 +59,34 @@ scp RT-STPS_7.0*.tar.gz <adminusername>@<vm public ip>:.
 ```
 # Decompress RT-STPS_7.0.tar.gz
 tar -xzvf RT-STPS_7.0.tar.gz
-# Change to the rt-stps directory
+
+# Install
 cd rt-stps/
 ./install.sh
 
-# Install patches (if available)
-cd ..
+# Install patches 
+cd ~
 tar -xzvf RT-STPS_7.0_PATCH_*.tar.gz
-
 cd rt-stps/
 ./install.sh
 
-# Validate with test file
-cd ..
-tar -xzvf RT-STPS_6.0_testdata.tar.gz
-# empty data directory
+# Validate
+cd ~
+tar -xzvf RT-STPS_7.0_testdata.tar.gz
+
+# Empty data directory
 rm data/*
 cd rt-stps/
 
+# Process test data
 ./bin/batch.sh config/npp.xml testdata/input/rt-stps_npp_testdata.dat
-# verify that output files exist
+
+# Verify that output files exist
 ls -la ../data/ 
 
 ```
 ## Enable INotifyRTSTPS Service
-This service provides event driven processing of contact data files as they are downloaded using BlobDownloadService. Once RT-STPS is installed, you can simply enable and start the service and as soon as contact data starts to land on the aqua-processor VM, [inotifywait](https://linux.die.net/man/1/inotifywait) will pick up the new file and automatically trigger RT-STPS. The service will automatically export any logs output by RT-STPS and land in Log Analytics Workspace.
+This service provides event driven processing of contact data files as they are downloaded using the BlobDownloadService. Once RT-STPS is installed, you can simply enable and start the service and as soon as contact data starts to land on the aqua-processor VM, [inotifywait](https://linux.die.net/man/1/inotifywait) will pick up the new file and automatically trigger RT-STPS. The service will automatically export any logs output by RT-STPS and land in Log Analytics Workspace.
 
 - Enable the service: `sudo systemctl enable INotifyRTSTPS.service`
 - Start the service: `sudo systemctl start INotifyRTSTPS.service`

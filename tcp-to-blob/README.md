@@ -4,10 +4,10 @@
   root for license information.
 -->
 
-# TCP to BLOB
+# TCP-to-BLOB
 
-Script/docker container/Azure Kubernetes service that listens on a TCP port and writes contents to a BLOB in the
-configured Azure storage container.
+TCP-to-BLOB is a kubernetes service that provides a TCP endpoint for [Azure Orbital Ground Station(AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) to send satellite downlink data to. It also uploads the captured data stream to an Azure Storage container.
+
 
 ## Event lifecycle
 
