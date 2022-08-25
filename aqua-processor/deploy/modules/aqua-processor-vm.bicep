@@ -399,10 +399,12 @@ resource installBDS 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = 
       timestamp: epochTimestamp
     }
     protectedSettings: {
-      commandToExecute: 'bash ./install.sh'
+      commandToExecute: 'bash ./install-blob-download-service.sh && bash install-inotify-rtstps.sh'
       fileUris: [
-        '${storageAccountBlobEndpoint}artifacts/artifacts.tar.gz?${storageAccountSasToken}'
-        '${storageAccountBlobEndpoint}artifacts/install.sh?${storageAccountSasToken}'
+        '${storageAccountBlobEndpoint}artifacts/blob-download-service-artifacts.tar.gz?${storageAccountSasToken}'
+        '${storageAccountBlobEndpoint}artifacts/install-blob-download-service.sh?${storageAccountSasToken}'
+        '${storageAccountBlobEndpoint}artifacts/inotify-rtstps-artifacts.tar.gz?${storageAccountSasToken}'
+        '${storageAccountBlobEndpoint}artifacts/install-inotify-rtstps.sh?${storageAccountSasToken}'        
       ]
     }
   }
