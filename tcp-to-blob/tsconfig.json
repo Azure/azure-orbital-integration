@@ -4,9 +4,13 @@
     "target": "ES2019",
     "types": ["mocha"],
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true
-  }
+  },
+  "include": ["src/**/*", "tests/**/*"],
+  "references": [
+    { "path": "../orbital-helper" }
+  ]
 }
