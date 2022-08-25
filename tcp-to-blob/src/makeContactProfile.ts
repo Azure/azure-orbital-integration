@@ -21,11 +21,7 @@ const makeContactProfile = async () => {
 }
 
 if (require.main === module) {
-    makeContactProfile()
-        .catch((error) => {
-            console.error(
-                'Failure creating contact profile:',
-                error.message
-            )
-        })
+    makeContactProfile().catch((error) => {
+        console.error('Failure creating contact profile:', error.message)
+    })
 }
