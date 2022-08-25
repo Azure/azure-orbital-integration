@@ -2,7 +2,7 @@
   "private": true,
   "name": "azure-orbital-integration",
   "scripts": {
-    "build": "yarn --cwd orbital-helper build && yarn --cwd tcp-to-blob build",
+    "build": "yarn compile && yarn --cwd orbital-helper build && yarn --cwd tcp-to-blob build",
     "compile": "yarn --cwd orbital-helper compile && yarn --cwd tcp-to-blob compile"
   },
   "workspaces": [
