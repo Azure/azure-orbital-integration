@@ -6,8 +6,7 @@
 
 # ARM Orbital Helper
 
-The package provides user-friendly helper for accomplishing day-to-day Azure Orbital tasks.
-It also serves as a proof of concept for using the `@azure/arm-orbital` NodeJS SDK.
+ARM Orbital Helper package provides a user-friendly helper for accomplishing tasks related to [Azure Orbital Ground Station(AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview). It also serves as a proof of concept for using the `@azure/arm-orbital` NodeJS SDK.
 
 ## Functionality
 
