@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "TCP to BLOB",
   "scripts": {
-    "build": "npx esbuild ./src/tcp-*.ts ./src/makeEnvFiles.ts --bundle --platform=node --outdir=./dist/bundle",
+    "build": "npx esbuild ./src/tcp-*.ts ./src/makeEnvFiles.ts ./src/makeContactProfile.ts --bundle --platform=node --outdir=./dist/bundle",
     "make-env-files": "node ./dist/bundle/makeEnvFiles.js",
+    "make-contact-profile": "node ./dist/bundle/makeContactProfile.js",
     "deploy-fast": "yarn make-env-files && kubectl apply -f ./dist/env/${NAME_PREFIX}/tcp-to-blob.yaml",
     "deploy": "yarn docker-push && yarn deploy-fast",
     "deploy-dashboard": "yarn make-env-files && az portal dashboard create --resource-group \"${AZ_RESOURCE_GROUP}\" --name \"${NAME_PREFIX}-dashboard\" --input-path \"./dist/env/${NAME_PREFIX}/dashboard.json\" --location \"${AZ_LOCATION}\"",
@@ -20,10 +21,10 @@
     "docker-push": "yarn docker-build && yarn docker-tag && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob:latest",
     "docker-push-canary": "yarn docker-build-canary && yarn docker-tag-canary && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob-canary:latest",
     "compile-watch": "npx tsc -w",
-    "compile": "npx tsc",
+    "compile": "yarn prettier && npx tsc",
     "test": "ts-mocha -p tsconfig.json tests/*.ts",
     "coverage": "nyc yarn test",
-    "prettier": "npx prettier src/**/*.ts -w",
+    "prettier": "npx prettier src/**/*.ts tests/**/*.ts -w",
     "run-server": "yarn build && cd ./dist && node ./bundle/tcp-to-blob.js"
   },
   "keywords": [

@@ -3,7 +3,7 @@
 // root for license information.
 
 import { Socket } from 'net'
-import {EventLogger, makeLogger, sleep} from './utils'
+import { EventLogger, makeLogger, sleep } from './utils'
 
 export interface SendDataParams {
     numLines: number
@@ -127,15 +127,17 @@ export const sendData = async ({
     }
 }
 
-if(require.main === module) {
+if (require.main === module) {
     sendData({
         numLines: 3_000,
-        logger: makeLogger({ subsystem: 'localhost'}),
+        logger: makeLogger({ subsystem: 'localhost' }),
         port: 50111,
-        host: 'localhost'
-    }).then(()=> {
-        console.log('done')
-    }).catch(err => {
-        console.error(err)
+        host: 'localhost',
     })
+        .then(() => {
+            console.log('done')
+        })
+        .catch((err) => {
+            console.error(err)
+        })
 }
