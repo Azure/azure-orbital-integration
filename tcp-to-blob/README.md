@@ -6,12 +6,12 @@
 
 # TCP-to-BLOB
 
-TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and store it as BLOBs in an Azure Storage container.
+TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and persists it in Azure BLOB Storage.
 
 ## High level components
 - Vnet with subnets including:
-  - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
-  - `orbital-subnet`: Delegated to Azure Orbital from which the service can send contact data to TCP to BLOB endpoint.
+    - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
+    - `orbital-subnet`: Delegated to Azure Orbital from which the service can send contact data to TCP to BLOB endpoint.
 - Azure Container Registry.
 - AKS cluster.
 - Storage account and container for storing raw Orbital contact data.
@@ -118,9 +118,8 @@ requires: Unix-like environment or Mac
 4. `cd tcp-to-blob`
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
 6. `. .env/env-<name_prefix>.sh`
-7. Deploy (to AZ CLI's current subscription):
-    * With AZ CLI: `./deploy/az-cli/deploy.sh`  or
-    * With Bicep: `./deploy/bicep/deploy.sh`
+7. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh`
+    * Note: An Azure CLI `deploy.sh` script is available in `./deploy/az-cli` for reference. However, the `./deploy/bicep` scripts are the most up-to-date and complete deployment mechanism.
 
 ## Login/switch environments
 
