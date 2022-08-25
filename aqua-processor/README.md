@@ -82,26 +82,11 @@ cd rt-stps/
 ls -la ../data/ 
 
 ```
-## Monitor RT-STPS
-You can use `logger` to write RT-STPS logs to system log and the agent will automatically collect syslogs. Syslogs will show up in the Log Analytics Workspace.
-Here is an example:
+## Enable INotifyRTSTPS Service
+This service provides event driven processing of contact data files as they are downloaded using BlobDownloadService. Once RT-STPS is installed, you can simply enable and start the service and as soon as contact data starts to land on the aqua-processor VM, [inotifywait](https://linux.die.net/man/1/inotifywait) will pick up the new file and automatically trigger RT-STPS. The service will automatically export any logs output by RT-STPS and land in Log Analytics Workspace.
 
-```
-logger -p local0.info -f /logs/rtstps.log -t $(uuidgen)
-```
-
-## Automatically run RT-STPS everyday
-Assuming the raw input files are stored in a storage container and the RT-STPS vm has access to the storage container via a user assigned managed identity, we can use `run_rtstps.sh` to run RT-STPS on a random file.
-
-`run_rtstps.sh` randomly copies an input file from the raw binary data container and run RT-STPS program against that file. RT-STPS logs will be collected by syslog and show up in the Log Analytics Workspace.
-
-Remember to add the url of the source blob and clientID of your user-assigned managed identity as environment variables.
-You can create a cron job to run the script at 9am everyday, here is an example:
-```
-0 9 * * * env UAMI_CLIENT_ID=<the client id of your user-assigned managed identity>\
-              INPUT_CONTAINER_URL=<url of your storage account container which contains the raw binary files> \ 
-              bash /home/<admin user name>/run_rtstps.sh
-```
+- Enable the service: `sudo systemctl enable INotifyRTSTPS.service`
+- Start the service: `sudo systemctl start INotifyRTSTPS.service`
 
 ## Install IPOPP
 Sign up on NASA's DRL to download a copy of [IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68)

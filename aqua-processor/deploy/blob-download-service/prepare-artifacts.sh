@@ -10,7 +10,7 @@ APPLICATION_INSIGHTS_RG=${2}
 
 WORKING_DIR="$(dirname "$0")"
 BLOB_DOWNLOAD_SERVICE_SRC_DIR="${WORKING_DIR}/../../../blob-download-service/src"
-ARTIFACTS_DIR="${WORKING_DIR}/../artifacts/linux-x64"
+ARTIFACTS_DIR="${WORKING_DIR}/../artifacts/linux-x64/blob-download-service"
 mkdir -p ${ARTIFACTS_DIR}
 
 # Build the binaries and stage them in the artifacts folder
@@ -36,4 +36,4 @@ cat ${WORKING_DIR}/appsettings.template.json | \
 # Stage other scripts in artifacts folder to be copied over
 cp ${WORKING_DIR}/BlobDownloadService.service ${ARTIFACTS_DIR}
 
-tar -czvf ${ARTIFACTS_DIR}/artifacts.tar.gz -C ${ARTIFACTS_DIR} .
+tar -czvf "${ARTIFACTS_DIR}/blob-download-service-artifacts.tar.gz" -C ${ARTIFACTS_DIR} .
