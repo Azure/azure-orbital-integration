@@ -1,5 +1,5 @@
 # Central Logging
-An optional centralized logging component for the Azure Orbital Integration solution that brings logging together from the tcp-to-blob and Aqua processing components. This will provide storage of all logs backed by [Azure Data Explorer](https://docs.microsoft.com/en-us/azure/data-explorer/data-explorer-overview)
+Central Logging is an optional centralized logging component for the Azure Orbital Integration solution that brings logging together from the tcp-to-blob and Aqua processing components. This will provide storage of all logs backed by [Azure Data Explorer](https://docs.microsoft.com/en-us/azure/data-explorer/data-explorer-overview)
 
 ## Prerequisites
 * tcp-to-blob deployed
