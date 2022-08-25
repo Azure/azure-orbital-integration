@@ -83,7 +83,7 @@ ls -la ../data/
 
 ```
 ## Enable INotifyRTSTPS Service
-This service provides event driven processing of contact data files as they are downloaded using BlobDownloadService. Once RT-STPS is installed, you can simply enable and start the service and as soon as contact data starts to land on the aqua-processor VM, inotifywait will pick up the new file and automatically trigger RT-STPS. The service will automatically export any logs output by RT-STPS and land in Log Analytics Workspace.
+This service provides event driven processing of contact data files as they are downloaded using BlobDownloadService. Once RT-STPS is installed, you can simply enable and start the service and as soon as contact data starts to land on the aqua-processor VM, [inotifywait](https://linux.die.net/man/1/inotifywait) will pick up the new file and automatically trigger RT-STPS. The service will automatically export any logs output by RT-STPS and land in Log Analytics Workspace.
 
 - Enable the service: `sudo systemctl enable INotifyRTSTPS.service`
 - Start the service: `sudo systemctl start INotifyRTSTPS.service`

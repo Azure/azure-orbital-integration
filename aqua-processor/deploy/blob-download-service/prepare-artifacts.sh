@@ -36,4 +36,4 @@ cat ${WORKING_DIR}/appsettings.template.json | \
 # Stage other scripts in artifacts folder to be copied over
 cp ${WORKING_DIR}/BlobDownloadService.service ${ARTIFACTS_DIR}
 
-tar -czvf ${ARTIFACTS_DIR}/blob-download-service-artifacts.tar.gz -C ${ARTIFACTS_DIR} .
+tar -czvf "${ARTIFACTS_DIR}/blob-download-service-artifacts.tar.gz" -C ${ARTIFACTS_DIR} .

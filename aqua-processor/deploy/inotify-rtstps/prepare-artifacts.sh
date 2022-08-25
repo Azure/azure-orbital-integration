@@ -13,4 +13,4 @@ mkdir -p ${ARTIFACTS_DIR}
 cp ${WORKING_DIR}/INotifyRTSTPS.service ${ARTIFACTS_DIR}
 cp ${WORKING_DIR}/inotify-rtstps.sh ${ARTIFACTS_DIR}
 
-tar -czvf ${ARTIFACTS_DIR}/inotify-rtstps-artifacts.tar.gz -C ${ARTIFACTS_DIR} .
+tar -czvf "${ARTIFACTS_DIR}/inotify-rtstps-artifacts.tar.gz" -C ${ARTIFACTS_DIR} .
