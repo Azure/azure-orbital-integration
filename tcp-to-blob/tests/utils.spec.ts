@@ -1,6 +1,5 @@
 import * as chai from 'chai'
 const expect = chai.expect
-const asset = chai.assert
 import { getEnv, getEnvVar } from '../src/utils'
 
 describe('utils.getEnv', () => {
@@ -10,14 +9,14 @@ describe('utils.getEnv', () => {
         process.env.HOST = 'localhost'
         process.env.PORT = '8080'
         process.env.SOCKET_TIMEOUT_SECONDS = '60'
-    }),
-        afterEach(() => {
-            delete process.env.CONTACT_DATA_STORAGE_CONTAINER
-            delete process.env.CONTAINER_DATA_STORAGE_CONNECTION_STRING
-            delete process.env.HOST
-            delete process.env.PORT
-            delete process.env.SOCKET_TIMEOUT_SECONDS
-        })
+    })
+    afterEach(() => {
+        delete process.env.CONTACT_DATA_STORAGE_CONTAINER
+        delete process.env.CONTAINER_DATA_STORAGE_CONNECTION_STRING
+        delete process.env.HOST
+        delete process.env.PORT
+        delete process.env.SOCKET_TIMEOUT_SECONDS
+    })
     it('should return the correct object and properties within', () => {
         const result = getEnv()
         expect(result.storageContainer).to.be.string
