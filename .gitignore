@@ -339,14 +339,13 @@ reports/
 appsettings*.*.json
 !appsettings.sample.json
 
-# orbital-helper
+# orbital-helper & # tcp-to-blob
 node_modules/
 dist/
 .env/
-
-# tcp-to-blob
 .nyc_output
-*.js.map
+**/*.js.map
+**/*.spec.js
 
 # general
-.DS_Store
+**/.DS_Store
