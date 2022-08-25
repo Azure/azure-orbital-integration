@@ -335,10 +335,17 @@ coveragetool
 reports/
 *.cobertura.xml
 
-.DS_Store
+# blob-download-service
+appsettings*.*.json
+!appsettings.sample.json
+
+# orbital-helper & # tcp-to-blob
 node_modules/
 dist/
 .env/
 .nyc_output
 **/*.js.map
 **/*.spec.js
+
+# general
+**/.DS_Store

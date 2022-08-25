@@ -216,6 +216,7 @@ if (require.main === module) {
                 const extraMsgData = {
                     numBlocks,
                     hadError,
+                    receiveDurationInSeconds: (Date.now() - startMillis) / 1_000
                 } as any
                 const event = 'complete'
                 let noDataMsg = 'ℹ️ No socket data.'
@@ -253,6 +254,7 @@ if (require.main === module) {
                 })
                 let blobWriter: BlobWriter
                 extraMsgData.containerName = storageContainer
+                const blobWriteStartMillis = Date.now()
                 try {
                     blobWriter = await makeBlobWriter({
                         containerName: storageContainer,
@@ -281,6 +283,7 @@ if (require.main === module) {
                         blobName: filename,
                         hadError,
                     })
+                    extraMsgData.blobUploadDurationInSeconds = (Date.now() - blobWriteStartMillis) / 1_000
                     try {
                         fileAppender.deleteFile()
                     } catch (error) {
@@ -308,6 +311,7 @@ if (require.main === module) {
                         ...extraMsgData,
                         ...makeMsgData(),
                         error: error as Error,
+                        blobUploadDurationInSeconds: (Date.now() - blobWriteStartMillis) / 1_000,
                     })
                 }
             })

@@ -11,11 +11,11 @@ esac
 
 RUNTIME="linux-x64"
 WORKING_DIR="$(dirname "$0")"
-LOCAL_ARTIFACTS_FOLDER="artifacts"
+LOCAL_ARTIFACTS_FOLDER="blob-download-service-artifacts"
 
 # Extract artifacts
 mkdir -p ${LOCAL_ARTIFACTS_FOLDER}
-tar -zvxf ./artifacts.tar.gz -C ${LOCAL_ARTIFACTS_FOLDER}
+tar -zvxf ./blob-download-service-artifacts.tar.gz -C ${LOCAL_ARTIFACTS_FOLDER}
 
 # Install BlobDownloadService
 yum install -y libicu
