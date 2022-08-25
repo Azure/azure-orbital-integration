@@ -119,7 +119,7 @@ requires: Unix-like environment or Mac
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
 6. `. .env/env-<name_prefix>.sh`
 7. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh`
-    * Note: An Azure CLI `deploy.sh` script is available in `./deploy/az-cli` for reference, however; the `bicep` scripts are the most up-to-date deployment mechanism.
+    * Note: An Azure CLI `deploy.sh` script is available in `./deploy/az-cli` for reference. However, the `./deploy/bicep` scripts are the most up-to-date and complete deployment mechanism.
 
 ## Login/switch environments
 
