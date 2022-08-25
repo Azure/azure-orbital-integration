@@ -2,6 +2,7 @@
 # Software is licensed under the MIT License. See LICENSE in the project
 # root for license information.
 
+# Matching-pattern owners
 *.js @micholas
 *.ts @micholas
 *.cs @scschneider
