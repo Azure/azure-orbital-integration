@@ -6,10 +6,10 @@
 
 # TCP to BLOB
 
-Script/docker container/Azure Kubernetes service that listens on a TCP port and writes contents to a BLOB in the
+Azure Kubernetes service that listens for Azure Orbital Contact TCP connections and writes contents to a BLOB in the
 configured Azure storage container.
 
-## High level components/functionality
+## High level components
 - Vnet with subnets including:
   - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
   - `orbital-subnet`: Delegated to Azure Orbital from which the service can send contact data to TCP to BLOB endpoint.
@@ -42,6 +42,7 @@ configured Azure storage container.
 
 ## Install NodeJS dependencies
 
+From `azure-orbital-integration` project root directory, run:
 `yarn install && yarn compile`
 
 ## New to NodeJS?
