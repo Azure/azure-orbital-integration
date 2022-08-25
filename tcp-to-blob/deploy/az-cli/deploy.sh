@@ -8,6 +8,10 @@
 # Consider putting your "env-<env-name>.sh" scripts in the ".env" directory which is ignored by git.
 # e.g. `. ./.env/env-dev.sh`
 
+###############################################################
+# Note: This script is for demonstration purposes only.       #
+# We recommend using `deploy/bicep/deploy.sh` for deployment. #
+###############################################################
 set -eo pipefail
 
 PROJECT_DIR="$(dirname -- "$0")/../.."
