@@ -6,11 +6,7 @@ import { getEnv, getEnvVar, makeRemoteToken } from './utils'
 import { Server } from 'net'
 import { statSync } from 'fs'
 import { FileAppender, makeFileAppender } from './fileAppender'
-import {
-    BlobWriter,
-    makeBlobWriter,
-    makeContainerClient,
-} from './blobWriter'
+import { BlobWriter, makeBlobWriter, makeContainerClient } from './blobWriter'
 import { cidrSubnet } from 'ip'
 
 import { makeLogger } from './utils'

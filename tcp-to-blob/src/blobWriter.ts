@@ -31,7 +31,7 @@ export const makeContainerClient = (): {
     let authType: AuthType
     let connectionString =
         process.env.CONTACT_DATA_STORAGE_CONNECTION_STRING?.trim()
-    const { storageContainer} = getEnv()
+    const { storageContainer } = getEnv()
     if (connectionString && connectionString !== defaultSecretValue) {
         authType = 'Connection String'
         return {
@@ -184,77 +184,6 @@ export const makeBlobWriter = async ({
             const errMessage = `[init] Failed to upload "${filePath}" to BLOB "${
                 containerClient.containerName
             }/${blobName}": ${(err as Error).message}`
-            throw new Error(errMessage)
-        }
-    }
-
-    return {
-        writeBlob,
-        containerName,
-    }
-}
-
-export const makeAppendBlobWriter = async ({
-    containerClient,
-    logger,
-}: MakeBlobWriterParams): Promise<BlobWriter> => {
-    await initContainer({ containerClient })
-    const containerName = containerClient.containerName
-
-    const writeBlob = async ({
-        filePath,
-        blobName,
-    }: {
-        filePath: string
-        blobName: string
-    }) => {
-        const containerName = containerClient.containerName
-        let blobClient: AppendBlobClient
-        try {
-            blobClient = containerClient.getAppendBlobClient(blobName)
-        } catch (error) {
-            const msg = `[init] Failed to create AppendBlobClient for "${blobName}": ${
-                (error as Error)?.message
-            }.`
-            throw Error(msg)
-        }
-
-        await blobClient.create()
-        console.log('Writing to BLOB using appendBlob....')
-        try {
-            const fd = openSync(filePath, 'r')
-            const chunkSize = 1 * 1024 * 1024
-
-            let position = 0
-            let bytesRead = 0
-
-            let readBuffer = Buffer.alloc(chunkSize)
-            do {
-                bytesRead = readSync(fd, readBuffer, {
-                    position,
-                    length: chunkSize,
-                })
-                await blobClient.appendBlock(readBuffer, bytesRead)
-                position += chunkSize
-            } while (bytesRead)
-            await blobClient.setTags({
-                isSuccess: 'true',
-            })
-            await blobClient.seal()
-        } catch (err) {
-            try {
-                await blobClient.setTags({
-                    isSuccess: 'false',
-                })
-                await blobClient.seal()
-            } catch (error) {
-                console.warn(
-                    `Failed to tag and seal BLOB: "${containerName}/${blobName}"`
-                )
-            }
-            const errMessage = `[init] Failed to upload "${filePath}" to BLOB "${containerName}/${blobName}": ${
-                (err as Error).message
-            }`
             throw new Error(errMessage)
         }
     }
