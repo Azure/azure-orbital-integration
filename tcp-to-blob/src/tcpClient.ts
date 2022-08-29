@@ -127,17 +127,29 @@ export const sendData = async ({
     }
 }
 
-if (require.main === module) {
-    sendData({
+const runMain = async () => {
+    const params = {
         numLines: 3_000,
-        logger: makeLogger({ subsystem: 'localhost' }),
         port: 50111,
         host: 'localhost',
+    }
+    const logger = makeLogger({
+        subsystem: 'canary',
+        ...params,
     })
-        .then(() => {
-            console.log('done')
+    try {
+        await sendData({
+            logger,
+            ...params,
         })
-        .catch((err) => {
-            console.error(err)
+        logger.info({
+            event: 'complete',
+            message: 'Finished sending canary data',
         })
+    } catch (err) {
+        logger.error({
+            event: 'error',
+            message: `Error sending canary data: ${(err as Error)?.message}`,
+        })
+    }
 }

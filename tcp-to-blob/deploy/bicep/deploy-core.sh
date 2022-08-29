@@ -17,6 +17,13 @@ pushd "${PROJECT_DIR}"
 
 ./deploy/check-required-env.sh
 . ./deploy/env-defaults.sh
+
+# Create resource group if needed
+if [[ $(az group exists -n "${AZ_RESOURCE_GROUP}") -eq 'false' ]];
+then
+  echo "Creating resource group: \"${AZ_RESOURCE_GROUP}\""
+  az group create --location "${AZ_LOCATION}" --name "${AZ_RESOURCE_GROUP}"
+fi
 set -euo pipefail
 
 echo "Deploying AKS \"${AKS_NAME}\" to \"${AZ_RESOURCE_GROUP}\" resource group"

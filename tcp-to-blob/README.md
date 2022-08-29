@@ -69,17 +69,10 @@ Optional:
   endpoint).
 * `CONTACT_DATA_STORAGE_CONTAINER`: Name of storage container for saving BLOBs.
   default: `"tcp-to-blob-output-${NAME_PREFIX}"`
-* `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Storage
-  BLOB [connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string).
-    * Via AZ
-      CLI: `CONTACT_DATA_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --resource-group "${CONTACT_DATA_STORAGE_ACCT_RESOURCE_GROUP}" -n "${CONTACT_DATA_STORAGE_ACCT}" --query "connectionString" -otsv)`
-    * Via Azure Portal
-        1. Navigate to Azure Storage Account portal.
-        2. Select the storage account where you want to write BLOBs.
-        3. Open the "Access Keys" tab.
-        4. Click the "Show" button to display Connection string.
-        5. Copy the connection string into your clipboard.
-        6. `export CONTACT_DATA_STORAGE_CONNECTION_STRING="<pasted_value>"`
+* `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Contact data storage
+  BLOB connection string. You may use either:
+    * [Storage BLOB connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string): (default) Long living credentials for accessing storage container. This gets populated automatically if `CONTACT_DATA_STORAGE_CONNECTION_STRING` is not already set. 
+    * [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner.
 * `AKS_VNET`: default: `"${AKS_CLUSTER_NAME}-vnet"`
 * `AKS_NUM_REPLICAS`: default: 2
 * `HOST`: default: "0.0.0.0".
@@ -104,7 +97,7 @@ committing them to version control.
 2. `cp ./deploy/env-template.sh .env/env-<name_prefix>.sh`
 3. Edit your env file as needed. See: "Environment variables" section above.
 
-# Deploy environment to Azure Kubernetes Service (AKS)
+## Deploy environment to Azure Kubernetes Service (AKS)
 
 requires: Unix-like environment or Mac
 
@@ -119,7 +112,16 @@ requires: Unix-like environment or Mac
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
 6. `. .env/env-<name_prefix>.sh`
 7. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh`
-    * Note: An Azure CLI `deploy.sh` script is available in `./deploy/az-cli` for reference. However, the `./deploy/bicep` scripts are the most up-to-date and complete deployment mechanism.
+
+### Advanced deployment 
+If you wish to utilize an existing ACR and Storage container: 
+1. Update your `.env/env-<name_prefix>.sh` to include:
+   * ACR info: `ACR_NAME` and `ACR_RESOURCE_GROUP`
+   * Storage account info: `CONTACT_DATA_STORAGE_ACCT`, `CONTACT_DATA_STORAGE_ACCT_RESOURCE_GROUP` and optionally `CONTACT_DATA_STORAGE_CONNECTION_STRING` (consider SAS connection string).
+   * Resource group for other generated resources: `AZ_RESOURCE_GROUP`
+2. `./deploy/bicep/deploy-core.sh && ./deploy/az-cli/deploy-service-and-dashboards.sh`
+      
+* Note: An Azure CLI `deploy.sh` script is available in `./deploy/az-cli` for reference. However, the `./deploy/bicep` scripts are the most up-to-date and complete deployment mechanism.
 
 ## Login/switch environments
 
@@ -166,6 +168,7 @@ Or run `yarn docker-kill-all` (instead of 1 & 2)
 2. Select the tenant where TCP to BLOB is deployed.
 3. Either navigate to Shared Dashboards or to your resource group (`AZ_RESOURCE_GROUP`).
 4. Open the dashboard named `${NAME_PREFIX}-dashboard`.
+
 ## View AKS logs
 
 1. Navigate to your service in AKS portal.
