@@ -2,7 +2,9 @@
 BlobDownloadService is an event driven tool that listens for storage events on Event Grid using Event Hubs or Service Bus. Once an event is received, the recently created blob will be downloaded to a configured folder on the local file system.
 
 # Integration with aqua-processor
-BlobDownloadService retrieves new contact data for RT-STPS to process. Once contact data is written to blob using the tcp-to-blob component, an Event Grid alert is sent and BlobDownloadService receives that event via Service Bus. The blob is then downloaded to the users home directory under a folder named `blobdata`, i.e., (`/home/azureuser/blobdata`)
+BlobDownloadService runs as a systemd service on the aqua processor VM. It retrieves new contact data for RT-STPS to process. Once contact data is written to blob using the tcp-to-blob component, an Event Grid alert is sent and BlobDownloadService receives that event via Service Bus. The blob is then downloaded to the users home directory under the `~/blobdata` folder.
+
+During deployment of the aqua-processor component, we leverage a predefined `appsettings.template.json` file under `aqua-processor/deploy/blob-download-service` and use envsubst to replace tokens in the template with the appropriate values. This file is then packaged up and sent to blob store where it will get downloaded and used by the VM deployment.
 
 # BlobDownloadService configuration
 BlobDownloadService supports receiving Event Grid messages from Service Bus or Event Hubs. You can configure as many Service Bus and/or Event Hub connections as required.

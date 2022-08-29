@@ -82,7 +82,7 @@ cd rt-stps/
 ./bin/batch.sh config/npp.xml testdata/input/rt-stps_npp_testdata.dat
 
 # Verify that output files exist
-ls -la /home/azureuser/data/
+ls -la ~/data/
 
 ```
 ## Enable INotifyRTSTPS Service
