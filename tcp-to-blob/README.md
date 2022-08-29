@@ -118,7 +118,7 @@ If you wish to utilize an existing ACR and Storage container:
 1. Update your `.env/env-<name_prefix>.sh` to include:
    * ACR info: `ACR_NAME` and `ACR_RESOURCE_GROUP`
    * Storage account info: `CONTACT_DATA_STORAGE_ACCT`, `CONTACT_DATA_STORAGE_ACCT_RESOURCE_GROUP` and optionally `CONTACT_DATA_STORAGE_CONNECTION_STRING` (consider SAS connection string).
-   * Resource roup for other generated resources: `AZ_RESOURCE_GROUP`
+   * Resource group for other generated resources: `AZ_RESOURCE_GROUP`
 2. `./deploy/bicep/deploy-core.sh && ./deploy/az-cli/deploy-service-and-dashboards.sh`
       
 * Note: An Azure CLI `deploy.sh` script is available in `./deploy/az-cli` for reference. However, the `./deploy/bicep` scripts are the most up-to-date and complete deployment mechanism.
