@@ -28,18 +28,19 @@ export interface EventLogger {
     warn(params: LogParams): void
 
     error(params: LogParams): void
+    extendContext: (params: { [key: string]: any }) => void
 }
 
 type ConsoleLoggerFx = (message?: any, ...optionalParams: any[]) => void
-export const makeLogger = ({
-    subsystem,
-}: {
+export const makeLogger = (makeLoggerParams: {
     subsystem: string
+    [key: string]: any
 }): EventLogger => {
+    let context = makeLoggerParams
     const doLog = (log: ConsoleLoggerFx, { error, ...params }: LogParams) => {
         log(
             JSON.stringify({
-                subsystem,
+                ...context,
                 ...params,
                 error: error ? error.message ?? error.toString() : undefined,
             })
@@ -55,6 +56,12 @@ export const makeLogger = ({
         error: (params: LogParams) => {
             doLog(console.error, params)
         },
+        extendContext: (params: { [key: string]: any }) => {
+            context = {
+                ...context,
+                ...params,
+            }
+        },
     }
 }
 
@@ -62,7 +69,6 @@ const defaultSocketTimeoutSeconds = 60
 
 export const getEnv = () => {
     const storageContainer = getEnvVar('CONTACT_DATA_STORAGE_CONTAINER')
-    const connectionString = getEnvVar('CONTACT_DATA_STORAGE_CONNECTION_STRING')
     const host = getEnvVar('HOST')
     const port = +getEnvVar('PORT')
     const socketTimeoutSeconds = +(
@@ -91,7 +97,6 @@ export const getEnv = () => {
 
     return {
         storageContainer,
-        connectionString,
         host,
         port,
         socketTimeoutSeconds,

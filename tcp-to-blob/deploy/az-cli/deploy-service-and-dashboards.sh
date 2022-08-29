@@ -12,7 +12,6 @@ echo "PROJECT_DIR: \"${PROJECT_DIR}\""
 pushd "${PROJECT_DIR}"
 
 . ./deploy/env-defaults.sh
-set -euo pipefail
 
 # Login to AKS
 echo "Getting credentials for \"${AKS_NAME}\" AKS cluster."
@@ -25,15 +24,16 @@ az acr login --name "${ACR_NAME}"
 
 # Create storage connection string secret
 echo "Checking for AKS storage secret: \"${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}\""
-if [ -z $(kubectl get secret "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --ignore-not-found) ];
+if [ -n "$(kubectl get secret "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --ignore-not-found)" ];
 then
-    echo "Creating storage secret."
-    kubectl create secret generic "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --from-literal=connection-string="${CONTACT_DATA_STORAGE_CONNECTION_STRING}"
-else
-    echo "Storage secret exists. Deleting and re-creating."
-    kubectl delete secret "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --ignore-not-found
-    kubectl create secret generic "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --from-literal=connection-string="${CONTACT_DATA_STORAGE_CONNECTION_STRING}"
+  echo "Storage connection string secret exists. Deleting before re-creating."
+  kubectl delete secret "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --ignore-not-found
 fi
+echo "Creating storage connection string secrets."
+kubectl create secret generic "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" \
+  --from-literal=connection-string="${CONTACT_DATA_STORAGE_CONNECTION_STRING}"
+
+set -euo pipefail
 
 echo "Installing dependencies"
 yarn install
@@ -56,7 +56,8 @@ yarn make-contact-profile
 
 SLEEP_SECONDS_BEFORE_CANARY=60
 echo "Waiting ${SLEEP_SECONDS_BEFORE_CANARY} seconds for service to initialize before running canary."
-sleep $SLEEP_SECONDS_BEFORE_CANARY;# TODO: Experiment with wait that works best or better way to run upon service initialization.
+sleep $SLEEP_SECONDS_BEFORE_CANARY;
+# TODO: Experiment with wait that works best or better way to run upon service initialization.
 echo "Running Canary Kubernetes Job."
 yarn run-canary
 

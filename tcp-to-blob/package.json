@@ -13,7 +13,7 @@
     "re-deploy": "yarn docker-push && kubectl patch deployment tcp-to-blob-deployment -p \"{\\\"spec\\\":{\\\"template\\\":{\\\"metadata\\\":{\\\"labels\\\":{\\\"date\\\":\\\"`date +'%s'`\\\"}}}}}\"\n",
     "docker-build": "yarn build && docker build . -f deploy/Dockerfile -t tcp-to-blob --platform linux/amd64",
     "docker-build-canary": "yarn build && docker build . -f deploy/Dockerfile-canary -t tcp-to-blob-canary --platform linux/amd64",
-    "docker-run": "docker run --env CONTACT_DATA_STORAGE_CONNECTION_STRING --env HOST --env PORT --env CONTACT_DATA_STORAGE_CONTAINER  --env AKS_ORBITAL_SUBNET_ADDR_PREFIX --env AKS_POD_SUBNET_ADDR_PREFIX -p $PORT:$PORT tcp-to-blob",
+    "docker-run": ". ./deploy/env-defaults.sh && docker run --env CONTACT_DATA_STORAGE_CONNECTION_STRING --env HOST --env PORT --env CONTACT_DATA_STORAGE_CONTAINER  --env AKS_ORBITAL_SUBNET_ADDR_PREFIX --env AKS_POD_SUBNET_ADDR_PREFIX -p $PORT:$PORT tcp-to-blob",
     "docker-kill-all": "docker kill $(docker ps -q)",
     "docker-tag": "docker tag tcp-to-blob:latest ${ACR_NAME}.azurecr.io/tcp-to-blob:latest",
     "docker-tag-canary": "docker tag tcp-to-blob-canary:latest $ACR_NAME.azurecr.io/tcp-to-blob-canary:latest",
