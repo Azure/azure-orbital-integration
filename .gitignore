@@ -340,9 +340,9 @@ appsettings*.*.json
 !appsettings.sample.json
 
 # orbital-helper & # tcp-to-blob
-dist/
-.env/
-.nyc_output
+**/dist/
+**/.env
+**/.nyc_output
 **/*.js.map
 **/*.spec.js
 **/tsconfig.tsbuildinfo

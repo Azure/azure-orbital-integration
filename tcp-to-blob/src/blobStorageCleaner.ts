@@ -2,16 +2,12 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
-import { getEnv } from './utils'
-import { makeBlobContainerCleaner } from './blobWriter'
+import { makeBlobContainerCleaner, makeContainerClient } from './blobWriter'
 
 if (require.main === module) {
     // WARNING: This deletes all BLOBs in the specified storage container.
-    const containerName = 'contact-data-aks'
-    const { connectionString } = getEnv()
     makeBlobContainerCleaner({
-        containerName,
-        connectionString,
+        containerClient: makeContainerClient().containerClient,
     })
         .then(async ({ clean }) => {
             await clean({

@@ -6,7 +6,11 @@ import { getEnv, getEnvVar, makeRemoteToken } from './utils'
 import { Server } from 'net'
 import { statSync } from 'fs'
 import { FileAppender, makeFileAppender } from './fileAppender'
-import { BlobWriter, makeBlobWriter } from './blobWriter'
+import {
+    BlobWriter,
+    makeBlobWriter,
+    makeContainerClient,
+} from './blobWriter'
 import { cidrSubnet } from 'ip'
 
 import { makeLogger } from './utils'
@@ -26,13 +30,7 @@ process.on('uncaughtException', function (error) {
 if (require.main === module) {
     const canarySubnetPrefix = getEnvVar('AKS_POD_SUBNET_ADDR_PREFIX')
     const orbitalSubnetPrefix = getEnvVar('AKS_ORBITAL_SUBNET_ADDR_PREFIX')
-    const {
-        port,
-        host,
-        storageContainer,
-        connectionString,
-        socketTimeoutSeconds,
-    } = getEnv()
+    const { port, host, socketTimeoutSeconds } = getEnv()
     const server = new Server()
     server.listen(port, host, function () {
         logger.info({
@@ -65,13 +63,16 @@ if (require.main === module) {
                 sender = 'canary'
             }
             const filename = `tcp_data_${timestampStr}_${sender}_${remoteToken}`
+            const logger = makeLogger({
+                subsystem: 'tcp-to-blob',
+                filename,
+                localPort: port,
+                remoteHost,
+                remotePort,
+            })
 
             const makeMsgData = () =>
                 ({
-                    filename,
-                    localPort: port,
-                    remoteHost,
-                    remotePort,
                     durationInSeconds: (Date.now() - startMillis) / 1_000,
                 } as any)
 
@@ -139,6 +140,7 @@ if (require.main === module) {
                         const msg = {
                             message: 'Creating file.',
                             event: 'socket-data',
+                            filename,
                             ...makeMsgData(),
                         }
 
@@ -213,11 +215,12 @@ if (require.main === module) {
             })
 
             socket.on('close', async (hadError) => {
-                const extraMsgData = {
+                logger.extendContext({
                     numBlocks,
                     hadError,
-                    receiveDurationInSeconds: (Date.now() - startMillis) / 1_000
-                } as any
+                    receiveDurationInSeconds:
+                        (Date.now() - startMillis) / 1_000,
+                })
                 const event = 'complete'
                 let noDataMsg = 'ℹ️ No socket data.'
                 if (hadError) {
@@ -227,7 +230,6 @@ if (require.main === module) {
                     logger.info({
                         event,
                         message: noDataMsg,
-                        ...extraMsgData,
                         ...makeMsgData(),
                     })
                     return
@@ -240,32 +242,34 @@ if (require.main === module) {
                         event,
                         message: noDataMsg,
                         filePath: fileAppender.filePath,
-                        ...extraMsgData,
                         ...makeMsgData(),
                     })
                     return
                 }
-                extraMsgData.fileSizeInKB = fileProps.size / 1_000
+                logger.extendContext({
+                    fileSizeInKB: fileProps.size / 1_000,
+                })
                 logger.info({
                     event: 'socket-close',
                     message: 'Local file write complete. Sending to BLOB.',
-                    ...extraMsgData,
                     ...makeMsgData(),
                 })
                 let blobWriter: BlobWriter
-                extraMsgData.containerName = storageContainer
                 const blobWriteStartMillis = Date.now()
                 try {
+                    const { authType, containerClient } = makeContainerClient()
+                    logger.extendContext({
+                        authType,
+                        storageContainer: containerClient.containerName,
+                    })
                     blobWriter = await makeBlobWriter({
-                        containerName: storageContainer,
-                        connectionString,
+                        containerClient,
                         logger,
                     })
                 } catch (error) {
                     logger.error({
                         event: 'socket-close',
                         message: 'Error creating BLOB writer.',
-                        ...extraMsgData,
                         ...makeMsgData(),
                         error: error as Error,
                     })
@@ -275,7 +279,6 @@ if (require.main === module) {
                     logger.info({
                         event: 'socket-close',
                         message: 'Writing to BLOB.',
-                        ...extraMsgData,
                         ...makeMsgData(),
                     })
                     await blobWriter.writeBlob({
@@ -283,7 +286,10 @@ if (require.main === module) {
                         blobName: filename,
                         hadError,
                     })
-                    extraMsgData.blobUploadDurationInSeconds = (Date.now() - blobWriteStartMillis) / 1_000
+                    logger.extendContext({
+                        blobUploadDurationInSeconds:
+                            (Date.now() - blobWriteStartMillis) / 1_000,
+                    })
                     try {
                         fileAppender.deleteFile()
                     } catch (error) {
@@ -291,7 +297,6 @@ if (require.main === module) {
                             event: 'cleanup',
                             message: 'Failed to delete local file.',
                             filePath: fileAppender?.filePath,
-                            ...extraMsgData,
                             ...makeMsgData(),
                         })
                     }
@@ -301,17 +306,16 @@ if (require.main === module) {
                         message: hadError
                             ? errorMessage
                             : '✅ BLOB upload complete.',
-                        ...extraMsgData,
                         ...makeMsgData(),
                     })
                 } catch (error) {
                     logger.error({
                         event: 'complete',
                         message: '⚠️ BLOB upload failed.',
-                        ...extraMsgData,
                         ...makeMsgData(),
                         error: error as Error,
-                        blobUploadDurationInSeconds: (Date.now() - blobWriteStartMillis) / 1_000,
+                        blobUploadDurationInSeconds:
+                            (Date.now() - blobWriteStartMillis) / 1_000,
                     })
                 }
             })
