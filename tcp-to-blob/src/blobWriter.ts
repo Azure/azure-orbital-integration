@@ -3,11 +3,9 @@
 // root for license information.
 
 import {
-    AppendBlobClient,
     BlockBlobClient,
     ContainerClient,
 } from '@azure/storage-blob'
-import { openSync, readSync } from 'fs'
 import { EventLogger, getEnv } from './utils'
 
 export interface WithContainerClient {
@@ -19,7 +17,6 @@ export interface MakeBlobWriterParams extends WithContainerClient {
 }
 
 export type AuthType =
-    | 'SASS URL'
     | 'Connection String'
     | 'DefaultAzureCredential'
 

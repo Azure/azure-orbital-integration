@@ -72,7 +72,7 @@ Optional:
 * `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Contact data storage
   BLOB connection string. You may use either:
     * [Storage BLOB connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string): (default) Long living credentials for accessing storage container. This gets populated automatically if `CONTACT_DATA_STORAGE_CONNECTION_STRING` is not already set. 
-    * [SASS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner.
+    * [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner.
 * `AKS_VNET`: default: `"${AKS_CLUSTER_NAME}-vnet"`
 * `AKS_NUM_REPLICAS`: default: 2
 * `HOST`: default: "0.0.0.0".
@@ -168,6 +168,7 @@ Or run `yarn docker-kill-all` (instead of 1 & 2)
 2. Select the tenant where TCP to BLOB is deployed.
 3. Either navigate to Shared Dashboards or to your resource group (`AZ_RESOURCE_GROUP`).
 4. Open the dashboard named `${NAME_PREFIX}-dashboard`.
+
 ## View AKS logs
 
 1. Navigate to your service in AKS portal.
