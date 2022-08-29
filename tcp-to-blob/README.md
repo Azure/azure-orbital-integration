@@ -262,7 +262,7 @@ docker image and pushes the image to our ACR created in step 1.
     - ### sample variables:
         - `ACR_NAME: $(ORG_NAME)$(AZ_LOCATION)acr`
         - `CONTACT_DATA_STORAGE_ACCT: $(ORG_NAME)$(AZ_LOCATION)`
-        - `CONTACT_DATA_STORAGE_SECRET_NAME: $(ORG_NAME)-$(AZ_LOCATION)-storage`
+        - `CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY: $(ORG_NAME)-$(AZ_LOCATION)-storage`
         - `AZ_LOCATION: westus2`
         - `AZ_RESOURCE_GROUP: $(ORG_NAME)-test`
         - `AZ_SUBSCRIPTION: {This is the name of the Azure Resource Manager Service Connection created in step 1}`

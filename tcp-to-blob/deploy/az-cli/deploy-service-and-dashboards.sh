@@ -23,14 +23,14 @@ az acr login --name "${ACR_NAME}"
 # az acr login -n "${ACR_NAME}" --expose-token # or this
 
 # Create storage connection string secret.
-echo "Checking for AKS storage secrets: \"${CONTACT_DATA_STORAGE_SECRET_NAME}\""
-if [ -n "$(kubectl get secret "${CONTACT_DATA_STORAGE_SECRET_NAME}" --ignore-not-found)" ];
+echo "Checking for AKS storage secrets: \"${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}\""
+if [ -n "$(kubectl get secret "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --ignore-not-found)" ];
 then
   echo "Storage connection string secret exists. Deleting before re-creating."
-  kubectl delete secret "${CONTACT_DATA_STORAGE_SECRET_NAME}" --ignore-not-found
+  kubectl delete secret "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --ignore-not-found
 fi
 echo "Creating storage connection string secrets."
-kubectl create secret generic "${CONTACT_DATA_STORAGE_SECRET_NAME}" \
+kubectl create secret generic "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" \
   --from-literal=connection-string="${CONTACT_DATA_STORAGE_CONNECTION_STRING}"
 
 set -euo pipefail
