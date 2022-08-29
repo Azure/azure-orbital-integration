@@ -22,8 +22,8 @@ echo "Logging into \"${ACR_NAME}\" ACR."
 az acr login --name "${ACR_NAME}"
 # az acr login -n "${ACR_NAME}" --expose-token # or this
 
-# Create storage connection string secret.
-echo "Checking for AKS storage secrets: \"${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}\""
+# Create storage connection string secret
+echo "Checking for AKS storage secret: \"${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}\""
 if [ -n "$(kubectl get secret "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}" --ignore-not-found)" ];
 then
   echo "Storage connection string secret exists. Deleting before re-creating."
