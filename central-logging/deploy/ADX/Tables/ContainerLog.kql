@@ -33,7 +33,7 @@ Expand_ContainerLog() {
     | project
         ["Computer"] = tostring(events.["Computer"])
         ,["ContainerID"] = tostring(events.["ContainerID"])
-        ,["LogEntry"] = todynamic(events.["LogEntry"])
+        ,["LogEntry"] = logEntry
         ,["LogEntrySource"] = tostring(events.["LogEntrySource"])
         ,["MG"] = tostring(events.["MG"])
         ,["SourceSystem"] = tostring(events.["SourceSystem"])
