@@ -69,10 +69,11 @@ Optional:
   endpoint).
 * `CONTACT_DATA_STORAGE_CONTAINER`: Name of storage container for saving BLOBs.
   default: `"tcp-to-blob-output-${NAME_PREFIX}"`
-* `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Contact data storage
-  BLOB connection string. You may use either:
+* `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Connection string for contact data storage. Grants `tcp-to-blob` the ability to create the storage container if needed and create/write to BLOBs. This is stored as an AKS secret which is exposed as an environment variable in the `tcp-to-blob` container. You may use either:
     * [Storage BLOB connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string): (default) Long living credentials for accessing storage container. This gets populated automatically if `CONTACT_DATA_STORAGE_CONNECTION_STRING` is not already set. 
-    * [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner.
+    * [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner. Things to consider for SAS:
+      * It is the responsibility of the storage account owner to create the SAS since it's not auto-created during TCP to BLOB deployment.
+      * Storage account owner must coordinate with TCP to BLOB AKS cluster owner to rotate the `CONTACT_DATA_STORAGE_CONNECTION_STRING` AKS secret otherwise TCP to BLOB will fail to write to blob storage upon SAS expiration.
 * `AKS_VNET`: default: `"${AKS_CLUSTER_NAME}-vnet"`
 * `AKS_NUM_REPLICAS`: default: 2
 * `HOST`: default: "0.0.0.0".
@@ -112,6 +113,15 @@ requires: Unix-like environment or Mac
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
 6. `. .env/env-<name_prefix>.sh`
 7. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh`
+8. Set demodulation configuration for generated contact profile:
+   1. Open Azure Portal and navigate to Orbital Service.
+   2. Navigate to Contact Profiles (left-side panel).
+   3. Select the generated contact profile (default name is `${NAME_PREFIX}-aks-cp`).
+   4. Navigate to Links (left-side panel).
+   5. Click "Edit Link".
+   6. Click "Edit Channel".
+   7. Enter the desired Demodulation Configuration.
+   8. Click the Submit button.
 
 ### Advanced deployment 
 If you wish to utilize an existing ACR and Storage container: 
