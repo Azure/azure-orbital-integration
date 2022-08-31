@@ -21,7 +21,7 @@ cp ./deploy/env-template.sh ./.env/env-template.sh
 ```
 Set the following parameters in your `.env/env-template.sh` file:
 * AZ_LOCATION: Region where the resources will be deployed.
-* NAME_PREFIX: Prefix for generating names for resources to prevent conflict between multiple deployments. Please limit to 8 characters or less. 
+* NAME_PREFIX: Prefix for generating names for resources to prevent conflict between multiple deployments. Please limit to 11 characters or less. 
 * ALLOWED_SSH_IP_ADDRESS: Source IP address that you will be connecting to the `aoi-aqua-vm` from.
 * CONTACT_STORAGE_ACCOUNT_NAME: Storage the storage account from the [tcp-to-blob](/tcp-to-blob) deployment.
 * CONTACT_STORAGE_ACCOUNT_RESOURCE_GROUP: Resource group name for contact storage account.
