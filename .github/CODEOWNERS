@@ -11,13 +11,3 @@
 *.ts @micholas
 *.cs @scschneider @srajtiwari
 *.bicep @scschneider @srajtiwari  @CheyYeary 
-
-# Directory owners
-/tcp-to-blob/                @micholas
-/orbital-helper/             @micholas
-/central-logging/            @scschneider
-/blob-download-service/      @scschneider
-/aqua-processor/             @scschneider
-/.github/workflows/          @CheyYeary
-
-# File owners
