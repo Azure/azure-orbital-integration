@@ -10,7 +10,7 @@
 *.js @micholas
 *.ts @micholas
 *.cs @scschneider @srajtiwari
-*.bicep @scschneider @srajtiwari 
+*.bicep @scschneider @srajtiwari  @CheyYeary 
 
 # Directory owners
 /tcp-to-blob/                @micholas
