@@ -70,7 +70,7 @@ Start VNC server:
  On your local machine, download and install [TightVNC Viewer](https://www.tightvnc.com/download.php). Start the TightVNC Viewer and connect to ```localhost:5901```. Enter the vncserver password you entered in the previous step. You should see the GNOME Desktop running on the VM.
 
 ### Download RT-STPS and IPOPP installation files
-Go to **Applications** > **Internet** > **Firefox** to start a browser. 
+From the GNOME Desktop, go to **Applications** > **Internet** > **Firefox** to start a browser. 
 
 Log on to the [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software) website and download the RT-STPS installation files and the IPOPP downloader script under software downloads. The downloaded file will land under ~/Downloads.
 
