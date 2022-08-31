@@ -1,105 +1,157 @@
 # Aqua Processor
-Aqua Processor provides deployment scripts and instructions for running NASA tools (RT-STPS and IPOPP) for processing Aqua Satellite Direct Broadcast data on an Azure VM. 
-
-# RT-STPS
-[RT-STPS](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69) is used to process the raw satellite payload. RT-STPS produces a Level-0 Production Data Set (PDS) product as output.
-
-
-# IPOPP 
-[IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68) is used to process the Level-0 product produced by RT-STPS to higher level products.
-
-In our architecture both RT-STPS and IPOPP are installed and run on the same Azure VM. 
+Aqua Processor deploys an Azure VM (`aoi-aqua-vm`) for processing Aqua data stored in Azure Blob Storage. This readme includes instructions for installing and running [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software) tools [RT-STPS](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69) and [IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68) on the `aoi-aqua-vm` to process Aqua data fetched from Azure Blob Storage.
 
 ## Prerequisites
-* Azure subscription access
+The [tcp-to-blob](/tcp-to-blob) component must be deployed before deploying the Aqua Processor.
+
+Install the following on your local machine before proceeding:
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/)
 * [jq](https://stedolan.github.io/jq/download/)
 * [envsubst](https://command-not-found.com/envsubst)
 * [.NET 6.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
-## Create Environment File
-In the root of the central-logging folder, there is a file named `env-template.sh`. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information that is in that folder won't accidentally get checked in to any repositories.
-
-In the following steps, we will assume that you keep the name of `env-template.sh`. You are free to pick any name.
-
-1. Change directory to aqua-processor `cd aqua-processor`
-2. Make the .env folder `mkdir -p ./.env`
-3. Copy the sample env file `cp ./deploy/env-template.sh ./.env/env-template.sh`
-4. Edit `./.env/env-template.sh`
-  * AZ_LOCATION: The location where the resources will be deployed.
-  * NAME_PREFIX: Used as a prefix pattern for generating resource group and resources. Something short simple and descriptive is ideal.
-  * ALLOWED_SSH_IP_ADDRESS: This is the public IP address that you will be connecting to the Aqua processor VM from.
-  * CONTACT_STORAGE_ACCOUNT_NAME: The storage account where contact data is written to. This is the storage account from the tcp-to-blob deployment.
-  * CONTACT_STORAGE_ACCOUNT_RESOURCE_GROUP: The resource group name for the contact storage account.
-  * SERVICE_BUS_NAMESPACE: The name of the namespace from the tcp-to-blob deployment.
-  * SERVICE_BUS_RESOURCE_GROUP: The resource group name for the Service Bus namespace.
-
-## Deploy
-Requires: Unix-like environment or Mac
-1. Ensure that you are [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and your default subscription is set. 
-   1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
-   2. `az account set -s "{YOUR_SUBSCRIPTION_ID}"` (see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
-2. Change directory `cd aqua-processor`
-3. Source your environment file `source ./.env/env-template.sh`
-4. Run deploy `./deploy/deploy.sh`
-
-## Install dependencies
-In the root of ./aqua-processor/deploy, there is a file called cloud-init.yaml. If you need to add any other dependencies to your VM, you can call them out here. See [Documentation](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cloud-init-deep-dive) for details.
-
-## Install RT-STPS
-To install RT-STPS, follow these instructions:
-- Download the RT-STPS installation files from [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software), you may need to create an account and wait for approval before you can download.
-- Copy the downloaded installation files to the home directory on the Azure VM
-```
-scp RT-STPS_7.0*.tar.gz <adminusername>@<vm public ip>:.
-```
-
-- Install RT-STPS using the commands:
+## Deployment Steps 
+### Configure environment
+The [env-template](deploy/env-template.sh) file contains the configuration parameters needed for this deployment. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information in it won't get accidently checked in to any repository.
 
 ```
-# Decompress RT-STPS_7.0.tar.gz
-tar -xzvf RT-STPS_7.0.tar.gz
+cd aqua-processor
+mkdir -p ./.env
+cp ./deploy/env-template.sh ./.env/env-template.sh
+```
+Set the following parameters in your `.env/env-template.sh` file:
+* AZ_LOCATION: Region where the resources will be deployed.
+* NAME_PREFIX: Prefix for generating names for resources to prevent conflict between multiple deployments. Please limit to 11 characters or less. 
+* ALLOWED_SSH_IP_ADDRESS: Source IP address that you will be connecting to the `aoi-aqua-vm` from.
+* CONTACT_STORAGE_ACCOUNT_NAME: The storage account from the [tcp-to-blob](/tcp-to-blob) deployment.
+* CONTACT_STORAGE_ACCOUNT_RESOURCE_GROUP: Resource group name for contact storage account.
+* SERVICE_BUS_NAMESPACE: Service bus namespace from the [tcp-to-blob](/tcp-to-blob) deployment.
+* SERVICE_BUS_RESOURCE_GROUP: Resource group name for the service bus namespace.
 
-# Install
-cd rt-stps/
+### Deploy
+Deploy from your local machine (requires an ssh client).
+
+[Login using Azure CLI](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) and set your default subscription: 
+```
+az login
+az account set -s "{YOUR_SUBSCRIPTION_ID}"
+```
+Initiate the deployment script:
+```
+cd aqua-processor
+source ./.env/env-template.sh`
+./deploy/deploy.sh
+```
+
+This will deploy the Aqua Processor VM. 
+
+## Install NASA DRL tools
+
+To install NASA DRL tools, we first need to add support for GUI applications by installing desktop tools and a VNC server on `aoi-aqua-vm` to remotely run GUI applications. 
+
+### Install Desktop and VNC Server
+Install desktop tools and vncserver on the `aoi-aqua-vm`.
+```
+sudo yum install tigervnc-server
+sudo yum groups install "GNOME Desktop"
+```
+Start VNC server:
+ ```
+ vncsever
+ ```
+ Enter a password when prompted.
+
+### Remotely access the VM Desktop
+
+ Port forward the vncserver port (5901) over SSH to your local machine:
+ ```
+ ssh -L 5901:localhost:5901 azureuser@aoi-aqua-vm
+ ```
+ On your local machine, download and install [TightVNC Viewer](https://www.tightvnc.com/download.php). Start the TightVNC Viewer and connect to ```localhost:5901```. Enter the vncserver password you entered in the previous step. You should see the GNOME Desktop running on the VM.
+
+### Download RT-STPS and IPOPP installation files
+From the GNOME Desktop, go to **Applications** > **Internet** > **Firefox** to start a browser. 
+
+Log on to the [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software) website and download the RT-STPS installation files and the IPOPP downloader script under software downloads. The downloaded file will land under ~/Downloads.
+
+### Install RT-STPS:
+```
+tar -xvzf ~/Downloads/RT-STPS_7.0.tar.gz --directory ~/
+tar -xvzf ~/Downloads/RT-STPS_7.0_testdata.tar.gz --directory ~/
+cd ~/rt-stps
 ./install.sh
+```
 
-# Install patches 
-cd ~
-tar -xzvf RT-STPS_7.0_PATCH_*.tar.gz
-cd rt-stps/
-./install.sh
-
-# Validate
-cd ~
-tar -xzvf RT-STPS_7.0_testdata.tar.gz
-
-# Empty data directory
-rm data/*
-cd rt-stps/
-
-# Process test data
-./bin/batch.sh config/npp.xml testdata/input/rt-stps_npp_testdata.dat
-
-# Verify that output files exist
+Validate your RT-STPS install by processing the test data supplied with the installation:
+```
+cd ~/rt-stps
+./bin/batch.sh config/jpss1.xml ./testdata/input/rt-stps_jpss1_testdata.dat
+```
+Verify that output files exist in the data folder:
+```
 ls -la ~/data/
-
 ```
+
+This completes the RT-STPS installation.
+
+### Install IPOPP
+Run the dowloader script to download the IPOPP installation files. 
+```
+cd ~/Downloads
+./downloader_DRL-IPOPP_4.1.sh
+tar -xvzf ~/Downloads/DRL-IPOPP_4.1.tar.gz --directory ~/
+cd ~/IPOPP
+./install_ipopp.sh
+```
+
+### Configure and start IPOPP services
+IPOPP services are configured using its Dashboard GUI.
+
+[Go to the VM Desktop](#remotely-access-the-vm-desktop) and start a new terminal under **Applications** > **Utilities** > **Terminal** 
+Start the IPOPP dashboard from the terminal:
+```
+~/drl/tools/dashboard.sh
+```
+
+IPOPP starts in the process monitoring mode. Switch to **Configuration Mode** by the using the menu option. 
+
+Enable the following under the **EOS** tab:
+* gbad
+* MODISL1DB l0l1aqua 
+* MODISL1DB l1atob 
+* IMAPP
+
+Swith back to **Process Monitoring** mode using the menu option. 
+
+Start IPOPP services:
+```
+~/drl/tools/services.sh start
+~/drl/tools/services.sh status
+```
+
+This completes the IPOPP installation and configuration. 
+
 ## Enable INotifyRTSTPS Service
-This service provides event driven processing of contact data files as they are downloaded using the BlobDownloadService. Once RT-STPS is installed, you can simply enable and start the service and as soon as contact data starts to land on the aqua-processor VM, [inotifywait](https://linux.die.net/man/1/inotifywait) will pick up the new file and automatically trigger RT-STPS. The service will automatically export any logs output by RT-STPS and land in Log Analytics Workspace.
+
+The INotifyRTSTPS service provides event driven processing of contact data files as they are downloaded using the BlobDownloadService. Once RT-STPS is installed, you can enable and start the service and as soon as contact data starts to land on the aqua-processor VM, [inotifywait](https://linux.die.net/man/1/inotifywait) will pick up the new file and automatically trigger RT-STPS. The service will automatically export any logs output by RT-STPS and land in Log Analytics Workspace.
 
 - Enable the service: `sudo systemctl enable INotifyRTSTPS.service`
 - Start the service: `sudo systemctl start INotifyRTSTPS.service`
 
-## Install IPOPP
-Sign up on NASA's DRL to download a copy of [IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68)
-Follow the instructions on the [user's guide](https://directreadout.sci.gsfc.nasa.gov/links/rsd_eosdb/PDF/IPOPP_4.1_Users_Guide.pdf) to install IPOPP.
+Once this service is enabled, Aqua data files will be automatically processed by RT-STPS as soon as they are written to local disk at `~/blobdata` by the BlobDownloadService.
 
-## Install SPA
-Additional SPAs can be installed on IPOPP to generate more data from the raw satellite input feed. Refer Appendix E in the IPOPP user guide for more information.
+## Run IPOPP ingest 
+RT-STPS writes its output to the `~/data` folder as `PDS` files. Copy these files to the IPOPP landing zone and start the ingest:
+```
+cp ~/data/* ~/drl/data/dsm/ingest/.
+~/drl/tools/ingest_ipopp.sh
+```
+IPOPP writes its output to the `~/drl/data/pub/gsfcdata/aqua/modis` directory.
+
+To persist the processed data in Azure Blob Storage, upload it from the above directory to a container using [AzCopy](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10). 
 
 ## Monitoring IPOPP
-We recommend adding a cron job to export data from IPOPP logs to system logs and based on our bicep configuration, the data from a VM's local logs should show up in log analytics.
+Adding the CRON job below will export data from IPOPP logs to system logs and based on our bicep configuration, the data from a VM's local logs should show up in log analytics.
 
 Here's a sample cron to collect metrics every 5 minutes:
 ```
