@@ -5,7 +5,7 @@
 # Order is important. Place least specific rules first and most specific last. 
 
 # Global owners. These are default owners unless a later match takes precedence. 
-
+* @CheyYeary @micholas @scschneider @srajtiwari @jfrazee 
 # Matching-pattern owners
 *.js @micholas
 *.ts @micholas
