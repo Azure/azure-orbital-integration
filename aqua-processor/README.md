@@ -12,7 +12,7 @@ Install the following on your local machine before proceeding:
 
 ## Deployment Steps 
 ### Configure environment
-The [env_template](deploy/env-template.sh) file contains the configuration parameters needed for this deployment. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information in it won't get accidently checked in to any repository.
+The [env-template](deploy/env-template.sh) file contains the configuration parameters needed for this deployment. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information in it won't get accidently checked in to any repository.
 
 ```
 cd aqua-processor
