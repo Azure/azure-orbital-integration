@@ -1,0 +1,13 @@
+# Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+# Software is licensed under the MIT License. See LICENSE in the project
+# root for license information.
+
+# Order is important. Place least specific rules first and most specific last. 
+
+# Global owners. These are default owners unless a later match takes precedence. 
+* @CheyYeary @micholas @scschneider @srajtiwari @jfrazee 
+# Matching-pattern owners
+*.js @micholas
+*.ts @micholas
+*.cs @scschneider @srajtiwari
+*.bicep @scschneider @srajtiwari  @CheyYeary 
