@@ -291,4 +291,7 @@ docker image and pushes the image to our ACR created in step 1.
     - First run of the pipeline you will need to grant permission for your service connection
     - If this pipeline has been previously ran and resources exist another run will fail because the role assignment
       already exists. If another run is needed first delete the aoi-westus2-aks-agentpool acr pull role assignment. 
-   
+
+## License
+
+Copyright &copy; 2022 Microsoft. This Software is licensed under the MIT License. See [LICENSE](./LICENSE) in the project root for more information.
