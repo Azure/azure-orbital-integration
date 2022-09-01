@@ -69,3 +69,7 @@ Provides functionality to receive Event Grid messages from Event Hub, specifical
 |blobConnectionString|The connection string used for authenticating to the storage account where BlobDownloadService will download blobs from.|
 |localBlobDownloadPath|The local file system path where blobs will be downloaded to.|
 |allowedEventTypes|This filters Event Grid event types. The default is the `Microsoft.Storage.BlobCreated` event that gets triggered when a new blob is created and BlobDownloadService will then download it to the local file system.|
+
+## License
+
+Copyright &copy; 2022 Microsoft. This Software is licensed under the MIT License. See [LICENSE](./LICENSE) in the project root for more information.

@@ -179,3 +179,7 @@ Syslog
 | parse-where SyslogMessage with "SPA: /ipopp/drl/ncs/stations/" SPAName "/station.stationlog Outputs:  " OutputFiles " Elapsed time: " ElapsedTime
 | project SPAName, OutputFiles=split(OutputFiles, ' '), ElapsedTime
 ```
+
+## License
+
+Copyright &copy; 2022 Microsoft. This Software is licensed under the MIT License. See [LICENSE](./LICENSE) in the project root for more information.

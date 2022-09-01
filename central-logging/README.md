@@ -35,3 +35,7 @@ requires: Unix-like environment or Mac
 Once the deployment is complete, it could take some time for the logs to start showing up in Azure Data Explorer. The initial logs could take up to 30 minutes and once flowing, log latency will be 5 - 10 minutes.
 
 Browse to the central logging resource -> Azure Data Explorer -> Query on the left hand side. If you are receiving contact data via tcp-to-blob and processing via processor, you should see logs under Syslog and ContainerLog.
+
+## License
+
+Copyright &copy; 2022 Microsoft. This Software is licensed under the MIT License. See [LICENSE](./LICENSE) in the project root for more information.

@@ -89,3 +89,6 @@ Optional environment variables for overriding TLE provider:
 | Update spacecraft TLE           | `node ./dist/samples/updateSpacecraftTLE.js`          |
 
 
+## License
+
+Copyright &copy; 2022 Microsoft. This Software is licensed under the MIT License. See [LICENSE](./LICENSE) in the project root for more information.
