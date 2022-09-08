@@ -2,7 +2,7 @@
 # Software is licensed under the MIT License. See LICENSE in the project
 # root for license information.
 
-name: Continuous Integration - Prettier & SuperLint
+name: CI - lint project
 
 # This action works with pull requests and pushes
 on: push
