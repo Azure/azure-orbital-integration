@@ -1,5 +1,5 @@
-# Aqua Processor
-Aqua Processor deploys an Azure VM (`aoi-aqua-vm`) for processing Aqua data stored in Azure Blob Storage. This readme includes instructions for installing and running [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software) tools [RT-STPS](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69) and [IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68) on the `aoi-aqua-vm` to process Aqua data fetched from Azure Blob Storage.
+# Example Aqua Processor
+Aqua Processor deploys an Azure VM (`aoi-aqua-vm`) for processing data stored in Azure Blob Storage. As an example, this readme includes instructions for installing and running [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software) tools [RT-STPS](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69) and [IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68) on the `aoi-aqua-vm` to process Aqua data fetched from Azure Blob Storage. For processing data from other satellites, you can replace the NASA DRL tools with the spacecraft instrumentation specific processing tools.  
 
 ## Prerequisites
 The [tcp-to-blob](/tcp-to-blob) component must be deployed before deploying the Aqua Processor.
@@ -15,7 +15,7 @@ Install the following on your local machine before proceeding:
 The [env-template](deploy/env-template.sh) file contains the configuration parameters needed for this deployment. It is recommended to copy this file to a folder named `.env`. The `.env` folder is part of gitignore so any sensitive information in it won't get accidently checked in to any repository.
 
 ```
-cd aqua-processor
+cd examples/aqua-processor
 mkdir -p ./.env
 cp ./deploy/env-template.sh ./.env/env-template.sh
 ```
@@ -38,7 +38,7 @@ az account set -s "{YOUR_SUBSCRIPTION_ID}"
 ```
 Initiate the deployment script:
 ```
-cd aqua-processor
+cd examples/aqua-processor
 source ./.env/env-template.sh`
 ./deploy/deploy.sh
 ```

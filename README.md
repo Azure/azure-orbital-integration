@@ -1,14 +1,15 @@
 # Azure Orbital Integration
-Azure Orbital Integration is a solution that enables end users to easily deploy all downstream components necessary to receive and process direct broadcast data from [NASA's Aqua Earth-Observing Satellite](https://aqua.nasa.gov/) using [Azure Orbital Ground Station(AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview). This solution provides self-start scripts to create an endpoint to receive data from the ground station (TCP to BLOB component), deploy a virtual machine to process Aqua data using NASA tools (Aqua Processor VM component) and an optionally bring logs from all components to a single place (Central Logging component).
+Azure Orbital Integration is a solution that enables end users to easily deploy downstream components necessary to receive and process space-born Earth Observation (EO) data using [Azure Orbital Ground Station(AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview). This solution provides self-start scripts to create an endpoint to receive data from the ground station (TCP to BLOB component), deploy a virtual machine to process the data (Processor component), and an optionally bring logs from all components to a single place (Central Logging component).
 
 # Overview
-An architecture diagram showing the flow of logs and data. 
+The diagram below shows an example of capturing and processing direct broadcast data from [NASA's Aqua Earth-Observing Satellite](https://aqua.nasa.gov/) using the components provided in this repo. The general architecture shown here can be adapted to process space-born data from other EO satellites as well. This can be done by installing processing software on the virutal machine that is specfic to the onboard instruments on the spacecraft.  
+
 ![Azure Orbital Integration Diagram](./docs/images/diagram.png)
 
 ## Deployment Steps
 1. [Register and authorize a spacecraft](https://docs.microsoft.com/en-us/azure/orbital/register-spacecraft) - Creates a spacecraft resource containing the required information to identify the spacecraft and verifies that you are authorized to communicate with it. 
 2. Deploy [tcp-to-blob](/tcp-to-blob/README.md) - Deploys a TCP endpoint for receiving data from the ground station. 
-3. Deploy [aqua-processor](/aqua-processor/README.md) - Creates an Azure VM for processing the downlinked satellite data.
+3. Deploy [aqua-processor](/examples/aqua-processor/README.md) - Creates an Azure VM for processing the downlinked satellite data.
 4. Deploy [central-logging](/central-logging/README.md) (Optional) Creates a single central store for logs, backed by Azure Data Explorer. 
 5. [Schedule a contact](https://docs.microsoft.com/en-us/azure/orbital/schedule-contact) Once the above components have been deployed, schedule a contact to downlink data from the spacecraft. 
 
