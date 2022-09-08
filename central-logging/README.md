@@ -3,7 +3,7 @@ Central Logging is an optional centralized logging component for the Azure Orbit
 
 ## Prerequisites
 * tcp-to-blob deployed
-* processor deployed
+* aqua-processor deployed
 * Azure subscription access
 * Azure CLI
 
