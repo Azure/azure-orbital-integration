@@ -2,7 +2,7 @@
 Azure Orbital Integration is a solution that enables end users to easily deploy downstream components necessary to receive and process space-borne Earth Observation (EO) data using [Azure Orbital Ground Station(AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview). This solution provides self-start scripts to create an endpoint to receive data from the ground station (TCP to BLOB component), deploy a virtual machine to process the data (Processor component), and optionally bring logs from all components to a single place (Central Logging component).
 
 # Overview
-The diagram below shows an example of capturing and processing direct broadcast data from [NASA's Aqua Earth-Observing Satellite](https://aqua.nasa.gov/) using the components provided in this repo. The general architecture shown here can be adapted to process space-born data from other EO satellites as well. This can be done by installing processing software on the virutal machine that is specfic to the onboard instruments on the spacecraft.  
+The diagram below shows an example of capturing and processing direct broadcast data from [NASA's Aqua Earth-Observing Satellite](https://aqua.nasa.gov/) using the components provided in this repo. The general architecture shown here can be adapted to process space-borne data from other EO satellites as well. This can be done by installing processing software on the virutal machine that is specfic to the onboard instruments on the spacecraft.  
 
 ![Azure Orbital Integration Diagram](./docs/images/diagram.png)
 
