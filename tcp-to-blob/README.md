@@ -36,7 +36,8 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 * [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
   uses `yarn`
 * Azure subscription access
-* Azure CLI
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+* [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. 
 * Docker
 
 ## Install NodeJS dependencies
