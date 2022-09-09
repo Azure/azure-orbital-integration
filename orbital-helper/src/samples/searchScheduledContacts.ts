@@ -53,7 +53,10 @@ const searchScheduledContacts_cli = async () => {
     )
     const searchResults = orbitalHelper.searchScheduledContacts(searchParams)
     for await (const searchResultItem of searchResults) {
-        console.log(`${ii++}:`, JSON.stringify(searchResultItem, null, 2))
+        console.log(
+            `${ii++}:`,
+            JSON.stringify(searchResultItem.summary, null, 2)
+        )
     }
 }
 

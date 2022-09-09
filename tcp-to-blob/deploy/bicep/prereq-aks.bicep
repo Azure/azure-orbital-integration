@@ -27,7 +27,7 @@ param storageAccountName string = namePrefixStripped
 
 @description('Provisions Azure Container Registry to store the required tcp-to-blob image')
 module acrModule 'acr.bicep' = {
-  name: 'acr-module'
+  name: '${namePrefix}-acr-module'
   scope: resourceGroup(acrResourceGroup)
   params: {
     name: acrName
@@ -37,7 +37,7 @@ module acrModule 'acr.bicep' = {
 
 @description('Provisions Service Bus for receiving Event Grid messages')
 module serviceBusModule 'modules/service-bus.bicep' = {
-  name: 'service-bus-module'
+  name: '${namePrefix}-service-bus-module'
   scope: resourceGroup(acrResourceGroup)
   params: {
     location: location
@@ -47,7 +47,7 @@ module serviceBusModule 'modules/service-bus.bicep' = {
 
 @description('Provisions the storage account used for collecting contact data')
 module storageModule 'storage.bicep' = {
-  name: 'storage-module'
+  name: '${namePrefix}-storage-module'
   scope: resourceGroup(storageAccountResourceGroup)
   params: {
     name: storageAccountName
