@@ -2,10 +2,7 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
-import {
-    BlockBlobClient,
-    ContainerClient,
-} from '@azure/storage-blob'
+import { BlockBlobClient, ContainerClient } from '@azure/storage-blob'
 import { EventLogger, getEnv } from './utils'
 
 export interface WithContainerClient {
@@ -16,9 +13,7 @@ export interface MakeBlobWriterParams extends WithContainerClient {
     logger: EventLogger
 }
 
-export type AuthType =
-    | 'Connection String'
-    | 'DefaultAzureCredential'
+export type AuthType = 'Connection String' | 'DefaultAzureCredential'
 
 const defaultSecretValue = '-'
 export const makeContainerClient = (): {
@@ -35,7 +30,7 @@ export const makeContainerClient = (): {
             authType,
             containerClient: new ContainerClient(
                 connectionString,
-                storageContainer,
+                storageContainer
             ),
         }
     } else {

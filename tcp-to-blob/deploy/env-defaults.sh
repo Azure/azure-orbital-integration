@@ -49,3 +49,6 @@ if [[ -z "${CONTACT_DATA_STORAGE_CONNECTION_STRING}" ]]; then
     export CONTACT_DATA_STORAGE_CONNECTION_STRING=$(az storage account show-connection-string --resource-group "${CONTACT_DATA_STORAGE_ACCT_RESOURCE_GROUP}" -n "${CONTACT_DATA_STORAGE_ACCT}" --query "connectionString" -otsv)
 fi
 echo "CONTACT_DATA_STORAGE_CONNECTION_STRING = \"<MASKED>\""
+
+export DEMODULATION_CONFIG=${DEMODULATION_CONFIG:-'aqua_direct_broadcast'}
+echo "DEMODULATION_CONFIG = \"${DEMODULATION_CONFIG}\""

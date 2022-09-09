@@ -60,7 +60,7 @@ run `. .env/env.sh`.
 * `AZ_SUBSCRIPTION`
 * `AZ_LOCATION`: e.g. "westus2"
 * `SPACECRAFT_NAME`: e.g. "AQUA"
-* `GROUND_STATION_NAME`: e.g. "WESTUS2_0".
+* `GROUND_STATION_NAME`: e.g. "microsoft_quincy".
 * `CONTACT_PROFILE_NAME`: e.g. "tcp-to-blob"
 * `ENDPOINT_NAME`: e.g. "tcp-to-blob"
 * `ENDPOINT_IP`

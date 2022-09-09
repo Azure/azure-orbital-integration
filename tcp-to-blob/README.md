@@ -75,6 +75,7 @@ Optional:
     * [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner. Things to consider for SAS:
       * It is the responsibility of the storage account owner to create the SAS since it's not auto-created during TCP to BLOB deployment.
       * Storage account owner must coordinate with TCP to BLOB AKS cluster owner to rotate the `CONTACT_DATA_STORAGE_CONNECTION_STRING` AKS secret otherwise TCP to BLOB will fail to write to blob storage upon SAS expiration.
+* `AKS_NAME`: Name of AKS cluster.
 * `AKS_VNET`: default: `"${AKS_CLUSTER_NAME}-vnet"`
 * `AKS_NUM_REPLICAS`: default: 2
 * `HOST`: default: "0.0.0.0".
@@ -89,6 +90,7 @@ Optional:
 * `AKS_POD_SUBNET_ADDR_PREFIX`: Subnet for AKS pods. default:  "10.241.0.0/16"
 * `AKS_ORBITAL_SUBNET_ADDR_PREFIX`: Subnet delegated to Orbital. default:  "10.244.0.0/16"
 * `CANARY_NUM_LINES`: Number of lines of text canary will send to TCP to BLOB. default: 65000
+* `DEMODULATION_CONFIG`: Raw XML or named modem for the contact profile downlink [demodulation configuration](https://docs.microsoft.com/en-us/azure/orbital/modem-chain#specifying-a-named-modem-configuration-using-the-api). default: "aqua_direct_broadcast"
 
 Recommend creating a `tcp-to-blob/.env/env-${stage}.sh` to set these and re-load env as needed without risking
 committing them to version control.

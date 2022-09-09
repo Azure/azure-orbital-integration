@@ -53,7 +53,7 @@ resource rscStorage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
 
 @description('https://docs.microsoft.com/en-us/azure/templates/microsoft.eventgrid/systemtopics?pivots=deployment-language-bicep')
 resource eventGridSystemTopic 'Microsoft.EventGrid/systemTopics@2022-06-15' = {
-  name: 'contact-data-created'
+  name: '${name}-contact-data-created'
   location: location
   properties: {
     source: rscStorage.id
@@ -64,7 +64,7 @@ resource eventGridSystemTopic 'Microsoft.EventGrid/systemTopics@2022-06-15' = {
 @description('https://docs.microsoft.com/en-us/azure/templates/microsoft.eventgrid/systemtopics/eventsubscriptions?pivots=deployment-language-bicep')
 resource eventSubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@2021-12-01' = {
   parent: eventGridSystemTopic
-  name: 'ContactDataCreated'
+  name: '${name}-ContactDataCreated'
   properties: {
     destination: {
       endpointType: 'ServiceBusQueue'

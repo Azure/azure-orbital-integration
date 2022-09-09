@@ -12,7 +12,7 @@ export AZ_RESOURCE_GROUP=""
 export TLE_TITLE=""
 
 export SPACECRAFT_NAME="AQUA"
-export GROUND_STATION_NAME="WESTUS2_0"
+export GROUND_STATION_NAME="microsoft_quincy"
 export CONTACT_PROFILE_NAME=""
 
 export ENDPOINT_NAME=""

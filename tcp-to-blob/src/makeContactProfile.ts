@@ -5,11 +5,13 @@ import { MakeAquaContactProfileParams } from 'arm-orbital-helper/dist/aquaContac
 const makeContactProfile = async () => {
     const { createContactProfile } = await makeOrbitalHelper()
     const aksName = getEnvVar('AKS_NAME')
+    const demodConfig = getEnvVar('DEMODULATION_CONFIG')
     const params: MakeAquaContactProfileParams = {
         name: `${aksName}-cp`,
         endpointIP: getEnvVar('LB_IP'),
         endpointPort: +getEnvVar('PORT'),
         endpointName: aksName,
+        demodConfig,
         subnetId: `${getEnvVar('AKS_VNET_ID')}/subnets/orbital-subnet`,
     }
     console.log(
