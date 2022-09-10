@@ -339,6 +339,10 @@ reports/
 appsettings*.*.json
 !appsettings.sample.json
 
+# file-event-service
+file-event-service/src/appsettings*
+!appsettings.template.json
+
 # orbital-helper & # tcp-to-blob
 **/dist/
 **/.env
