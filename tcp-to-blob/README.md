@@ -191,7 +191,7 @@ Or run `yarn docker-kill-all` (instead of 1 & 2)
 **Filter recent activity:**
 
 ```
-let FindString = "<filter-term-here>";
+let FindString = "";
 ContainerLog 
 | where LogEntry has FindString
 // | where not(LogEntry has "No socket data.") 
