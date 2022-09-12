@@ -12,7 +12,7 @@ INOTIFY_RTSTPS_ARTIFACTS_DIR="${WORKING_DIR}/artifacts/linux-x64/inotify-rtstps"
 ARTIFACTS_CONTAINER_NAME="artifacts"
 
 # Deploy some prerequisites, capture the outputs from the deployment and create vars from the required outputs
-PREREQ_DEPLOYMENT_OUTPUT=$(az deployment sub create --name "aoi-aqua-prereq" --location ${AZ_LOCATION} --template-file ${WORKING_DIR}/prereq.bicep --parameters location="${AZ_LOCATION}" namePrefix="${NAME_PREFIX}" --query "properties.outputs" -o json)
+PREREQ_DEPLOYMENT_OUTPUT=$(az deployment sub create --name "${NAME_PREFIX}-prereq" --location ${AZ_LOCATION} --template-file ${WORKING_DIR}/prereq.bicep --parameters location="${AZ_LOCATION}" namePrefix="${NAME_PREFIX}" --query "properties.outputs" -o json)
 
 APPLICATION_INSIGHTS_APP_NAME=$(echo ${PREREQ_DEPLOYMENT_OUTPUT} | jq -r '.applicationInsightsName.value')
 APPLICATION_INSIGHTS_RG=$(echo ${PREREQ_DEPLOYMENT_OUTPUT} | jq -r '.applicationInsightsRg.value')
@@ -30,7 +30,7 @@ az storage blob upload --account-name ${STORAGE_ACCOUNT_NAME} --container-name $
 
 
 az deployment sub create \
-  --name "aoi-aqua-main" \
+  --name "${NAME_PREFIX}-main" \
   --location ${AZ_LOCATION} \
   --template-file ${WORKING_DIR}/main.bicep \
   --parameters \

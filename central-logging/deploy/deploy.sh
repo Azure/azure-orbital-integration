@@ -8,7 +8,7 @@ set -eo pipefail
 WORKING_DIR="$(dirname "$0")"
 
 az deployment sub create \
-  --name "aoi-central-logging" \
+  --name "${NAME_PREFIX}-deployment" \
   --location ${AZ_LOCATION} \
   --template-file ${WORKING_DIR}/main.bicep \
   --parameters \
