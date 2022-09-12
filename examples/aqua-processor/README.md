@@ -1,5 +1,5 @@
 # Example Aqua Processor
-Aqua Processor deploys an Azure VM (`aoi-aqua-vm`) for processing data stored in Azure Blob Storage. As an example, this readme includes instructions for installing and running [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software) tools [RT-STPS](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69) and [IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68) on the `aoi-aqua-vm` to process Aqua data fetched from Azure Blob Storage. For processing data from other satellites, you can replace the NASA DRL tools with the spacecraft instrumentation specific processing tools.  
+Aqua Processor deploys an Azure VM (processor VM) for processing data stored in Azure Blob Storage. As an example, this readme includes instructions for installing and running [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software) tools [RT-STPS](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=69) and [IPOPP](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=68) on the processor VM to process Aqua data fetched from Azure Blob Storage. For processing data from other satellites, you can replace the NASA DRL tools with the spacecraft instrumentation specific processing tools.  
 
 ## Prerequisites
 The [tcp-to-blob](/tcp-to-blob) component must be deployed before deploying the Aqua Processor.
@@ -22,7 +22,7 @@ cp ./deploy/env-template.sh ./.env/env-template.sh
 Set the following parameters in your `.env/env-template.sh` file:
 * AZ_LOCATION: Region where the resources will be deployed.
 * NAME_PREFIX: Prefix for generating names for resources to prevent conflict between multiple deployments. Please limit to 11 characters or less. 
-* ALLOWED_SSH_IP_ADDRESS: Source IP address that you will be connecting to the `aoi-aqua-vm` from.
+* ALLOWED_SSH_IP_ADDRESS: Source IP address that you will be connecting to the processor VM from. This would normally be the public IP of your local machine.
 * CONTACT_STORAGE_ACCOUNT_NAME: The storage account from the [tcp-to-blob](/tcp-to-blob) deployment.
 * CONTACT_STORAGE_ACCOUNT_RESOURCE_GROUP: Resource group name for contact storage account.
 * SERVICE_BUS_NAMESPACE: Service bus namespace from the [tcp-to-blob](/tcp-to-blob) deployment.
@@ -36,20 +36,31 @@ Deploy from your local machine (requires an ssh client).
 az login
 az account set -s "{YOUR_SUBSCRIPTION_ID}"
 ```
+Create an SSH key pair on your local machine:
+```
+ssh-keygen -t rsa
+```
+This will generate an ssh key pair in the ~/.ssh directory of your local machine. 
+
 Initiate the deployment script:
 ```
 cd examples/aqua-processor
 source ./.env/env-template.sh`
 ./deploy/deploy.sh
 ```
+This will deploy the processor VM.
 
-This will deploy the Aqua Processor VM. 
+Please note that in the following steps, the deployed processor VM is named `aoi-aqua-vm` based on a NAME_PREFIX chosen for illustration. Depending on the prefix you choose, the VM will be deployed with the name `{NAME_PREFIX}-vm`.
 
 ## Install NASA DRL tools
 
 To install NASA DRL tools, we first need to add support for GUI applications by installing desktop tools and a VNC server on `aoi-aqua-vm` to remotely run GUI applications. 
 
 ### Install Desktop and VNC Server
+Please note that initial ssh authentication will only work from your local machine because the deployment script run in the previous step uses your local public key (id_rsa.pub) to set up passwordless authentication to the processor VM. 
+
+After loggin on from your local machine, you can add public keys to the ~/.ssh/authorized_keys file on the processor VM to allow authentication from differnet machines.  
+
 Install desktop tools and vncserver on the `aoi-aqua-vm`.
 ```
 sudo yum install tigervnc-server
