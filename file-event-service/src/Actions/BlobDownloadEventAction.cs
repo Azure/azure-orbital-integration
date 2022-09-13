@@ -58,7 +58,7 @@ namespace FileEventService.Actions.Options
             {
                 log.ExtendedMessage = eventGridMessage;
                 log.Write(_logger);
-                
+
                 var blobClient = new BlobClient(_options.ConnectionString, containerName, blobName);
                 if (!Directory.Exists(fullLocalDirPath)) Directory.CreateDirectory(fullLocalDirPath);
 

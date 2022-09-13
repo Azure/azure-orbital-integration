@@ -22,12 +22,12 @@ Actions are used for consuming events either received from Event Grid or by cons
 # File Event Service options
 ```json
 "environmentName": "string",
-"eventListeners": [objects],
-"eventDispatchers": [objects]
+"eventListeners": [/* Array of event listener objects */],
+"eventDispatchers": [/* Array of event dispatcher objects */]
 ```
 |Property|Description|
 |-|-|
-|environmentName|A unique name that would distinguish one FileEventService instance from another. This name is helpful for parsing logs.|
+|environmentName|Since you can run multiple instances of FileEventService, this is a unique name that would distinguish one FileEventService instance from another. This name is helpful for parsing logs.|
 |eventListeners|A collection of `eventListeners` that Event Grid messages will be received from. [See Event Listeners](#event-listeners)|
 |eventDispatchers|A collection of `eventDispatchers` that Event Grid messages will be received from. [See Event Dispatchers](#event-dispatchers)|
 
@@ -42,8 +42,8 @@ Provides functionality to receive Event Grid messages by way of Service Bus, spe
   "name": "string",
   "connectionString": "string",
   "queueName": "string",
-  "actions": [objects],
-  "allowedEventTypes": [strings]
+  "actions": [/* Array of action objects */],
+  "allowedEventTypes": [/* Array of strings */]
 }
 ```
 
@@ -67,9 +67,9 @@ Provides functionality to produce local file system events.
   "name": "string",
   "pathToWatch": "string",
   "includeSubDirectories": "bool",
-  "filters": [strings],
-  "actions": [objects],
-  "allowedEventTypes": [strings]
+  "filters": [/* Array of strings */],
+  "actions": [/* Array of action objects */],
+  "allowedEventTypes": [/* Array of strings */]
 }
 ```
 
@@ -173,10 +173,10 @@ This is the schema of the File Event Service's Event Grid event that is made ava
 {
   "id": "string",
   "subject": "string",
-  "data": {object},
-  "eventType": "Local.FileSystem.Renamed",
-  "dataVersion": "v1",
-  "eventTime": "2022-09-07T23:04:08.2770173Z",
+  "data": {/* data object */},
+  "eventType": "string",
+  "dataVersion": "string",
+  "eventTime": "UTC datetimeoffset as string",
 }
 ```
 

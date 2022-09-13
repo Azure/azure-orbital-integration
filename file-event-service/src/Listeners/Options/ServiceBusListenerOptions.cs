@@ -28,7 +28,7 @@ namespace FileEventService.Listeners.Options
                 QueueName = QueueName,
                 MaxAutoLockRenewalSeconds = MaxAutoLockRenewalSeconds,
                 MaxConcurrentCalls = MaxConcurrentCalls,
-                Actions = new string[] {Constants.RedactedSecretMask},
+                Actions = new string[] { Constants.RedactedSecretMask },
                 AllowedEventTypes = AllowedEventTypes
             };
 

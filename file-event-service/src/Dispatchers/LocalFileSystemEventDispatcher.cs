@@ -102,7 +102,7 @@ namespace FileEventService.Dispatchers
                 var evt = $"{_className}::{nameof(OnEvent)}";
                 var msg = $"Queuing event of type '{eventGridMessage.EventType}'.";
                 var log = LogMessage.CreateNew(evt, msg, _name, correlationId);
-                
+
                 log.ExtendedMessage = eventGridMessage;
                 log.Write(_logger);
 

@@ -28,10 +28,10 @@ namespace FileEventService
                     InitLogging(services, environmentName);
                     services.AddHostedService<EventListenerWorker>();
                     services.AddHostedService<EventDispatcherWorker>();
-                    services.AddHostedService<HeartbeatWorker>();                    
+                    services.AddHostedService<HeartbeatWorker>();
                 })
                 .Build();
-            
+
             RegisterAppCleanupTasks(host);
 
             host.Run();

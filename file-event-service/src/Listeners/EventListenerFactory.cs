@@ -19,7 +19,7 @@ namespace FileEventService.Listeners
             {
                 case EventListenerType.ServiceBus:
                     return ServiceBusEventListener.Register(JsonUtils.DeserializeObject<ServiceBusListenerOptions>(options), logger, token);
-                
+
                 default:
                     throw new NotImplementedException($"Event listener type '{type.ToString()}' is not implemented.");
             }

@@ -82,7 +82,7 @@ namespace FileEventService
             var log = LogMessage.CreateNew(evt, msg, _name, correlationId);
 
             try
-            {    
+            {
                 log.ExtendedMessage = eventGridMessage;
                 log.Write(_logger);
 

@@ -72,14 +72,11 @@ namespace FileEventService.Actions
 
         private EventGridEvent BuidlEventGridEvent(EventGridMessage eventGridMessage)
         {
-            EventGridEvent eventGridEvent =
-                    new EventGridEvent(
+            return new EventGridEvent(
                         subject: eventGridMessage.Subject,
                         eventType: eventGridMessage.EventType,
                         dataVersion: eventGridMessage.DataVersion,
-                        data: eventGridMessage.Data);
-
-            return eventGridEvent;
+                        data: new BinaryData(eventGridMessage.Data.ToString()));
         }
     }
 }

@@ -57,7 +57,7 @@ namespace FileEventService.Actions
             {
                 log.ExtendedMessage = eventGridMessage;
                 log.Write(_logger);
-                
+
                 BlobServiceClient cli = new BlobServiceClient(_options.ConnectionString);
                 var conCli = cli.GetBlobContainerClient(lowerContainerName);
                 await conCli.CreateIfNotExistsAsync().ConfigureAwait(false);

@@ -35,7 +35,7 @@ namespace FileEventService.Logging
             CorrelationId = correlationId;
             LogLevel = logLevel;
         }
-        
+
         /// <summary>
         /// Creates a new LogMessage in a consistent manner. To send a
         /// message once created, call Write(ILogger) to write the log.

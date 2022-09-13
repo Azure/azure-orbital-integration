@@ -20,7 +20,7 @@ namespace FileEventService.Listeners
             {
                 case EventDispatcherType.LocalFileSystem:
                     return LocalFileSystemEventDispatcher.Register(JsonUtils.DeserializeObject<LocalFileSystemDispatcherOptions>(options), logger, token);
-                
+
                 default:
                     throw new NotImplementedException($"Event dispatcher type '{type.ToString()}' is not implemented.");
             }

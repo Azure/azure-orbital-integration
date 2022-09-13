@@ -22,7 +22,7 @@ namespace FileEventService.Utilities
             if (!Enum.TryParse(stringType, true, out T source))
             {
                 var exMsg = String.Format(ExUnableToParseEnumFromString, stringType, GetAllTypesAsCSVString<T>());
-                throw new EnumUtilitiesException(exMsg);               
+                throw new EnumUtilitiesException(exMsg);
             }
 
             return source;

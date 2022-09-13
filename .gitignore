@@ -341,6 +341,7 @@ appsettings*.*.json
 
 # file-event-service
 file-event-service/src/appsettings*
+file-event-service.json
 !appsettings.template.json
 
 # orbital-helper & # tcp-to-blob

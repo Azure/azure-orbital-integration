@@ -77,7 +77,7 @@ namespace FileEventService.Workers
             var msg = "Stopping all listeners.";
             var log = LogMessage.CreateNew(evt, msg);
             log.Write(_logger);
-            
+
             foreach (var listener in _eventListenersList)
             {
                 await listener.StopAsync().ConfigureAwait(false);

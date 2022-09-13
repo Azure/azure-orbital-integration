@@ -15,7 +15,7 @@ namespace FileEventService.Models
         public string Subject { get; set; }
         public string EventType { get; set; }
         public dynamic Data { get; set; }
-        public string Id { get; set; }   
+        public string Id { get; set; }
         public string DataVersion { get; set; }
         public DateTimeOffset EventTime { get; set; }
 
