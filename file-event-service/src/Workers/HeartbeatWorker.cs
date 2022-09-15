@@ -36,7 +36,7 @@ namespace FileEventService.Workers
 
         private void Heartbeat(object sender, ElapsedEventArgs e)
         {
-            var evt = $"{nameof(_className)}::{nameof(Heartbeat)}";
+            var evt = $"{_className}::{nameof(Heartbeat)}";
             var msg = $"Heartbeat for interval {String.Format("{0:n0}", Constants.HeartbeatIntervalMs)}ms";
             var log = LogMessage.CreateNew(evt, msg);
             log.Write(_logger);
