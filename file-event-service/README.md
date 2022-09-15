@@ -11,7 +11,7 @@ For processing Aqua data, it retrieves new contact data for RT-STPS to process. 
   4. FileEventService watches for PDS files to be created in the staging folder `~/data-staging` and triggers a blob upload to write new files to the `pds` container.
   5. FileEventService watches for IPOPP output under the `~/drl/data/pub/gsfcdata/aqua/modis` folder and uploads those files to their respective folders under the `modis` container.
 
-During deployment of the aqua-processor component, we leverage a predefined `file-event-service.template.json` file under `aqua-processor/deploy/file-event-service` and use envsubst to replace tokens in the template with the appropriate values. This file is then packaged up and sent to blob store where it will get downloaded and used by the VM deployment.
+During deployment of the aqua-processor component, we leverage a predefined `file-event-service.template.json` file under `examples/aqua-processor/deploy/file-event-service` and use envsubst to replace tokens in the template with the appropriate values. This file is then packaged up and sent to blob store where it will get downloaded and used by the VM deployment.
 
 # File Event Service configuration
 FileEventService supports receiving Event Grid messages via Service Bus. You can configure as many event listeners or event dispatchers as needed.
