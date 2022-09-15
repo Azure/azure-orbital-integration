@@ -24,7 +24,7 @@
     "compile": "yarn prettier && npx tsc",
     "test": "ts-mocha -p tsconfig.json tests/*.ts",
     "coverage": "nyc yarn test",
-    "prettier": "npx prettier src/**/*.ts tests/**/*.ts -w",
+    "prettier": "npx prettier . -w",
     "run-server": "yarn build && cd ./dist && node ./bundle/tcp-to-blob.js"
   },
   "keywords": [
