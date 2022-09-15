@@ -8,7 +8,7 @@ on: push
 jobs:
   build:
   
-    name: build blob download service
+    name: build FileEventService
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,6 +21,6 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
       - name: Install dependencies
-        run: cd blob-download-service/src/ && dotnet restore
+        run: cd file-event-service/src/ && dotnet restore
       - name: Build
-        run: cd blob-download-service/src/ && dotnet build --no-restore 
+        run: cd file-event-service/src/ && dotnet build --no-restore 
