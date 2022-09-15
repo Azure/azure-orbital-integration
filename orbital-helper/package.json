@@ -1,8 +1,11 @@
 {
-  "name": "arm-orbital-helper",
+  "name": "@azure/arm-orbital-helper",
   "version": "1.0.0",
   "description": "ARM Orbital Helper",
-  "main": "src/orbitalHelper.ts",
+  "main": "dist/index.js",
+  "files": [
+    "dist/index.js"
+  ],
   "scripts": {
     "build": "npx esbuild ./src/samples/*.ts ./src/orbitalHelper.ts --bundle --platform=node --outdir=./dist/bundle",
     "compile-watch": "yarn prettier && npx tsc -w",
