@@ -9,9 +9,4 @@ import * as utils from './utils'
 
 export default orbitalHelper
 
-export {
-    aquaContactProfileParams,
-    orbitalHelper,
-    tleHelper,
-    utils,
-}
+export { aquaContactProfileParams, orbitalHelper, tleHelper, utils }
