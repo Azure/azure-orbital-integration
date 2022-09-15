@@ -20,4 +20,10 @@
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="file-event-service.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

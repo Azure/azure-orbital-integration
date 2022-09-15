@@ -3,6 +3,7 @@ FileEventService is an event driven tool that can listen for Event Grid or local
 
 # Integration with aqua-processor
 FileEventService runs as a systemd service on the processor VM. We describe the chain events for processing Aqua data below as a generic example. This can be adapted for processing data from other satellites as well. 
+
 For processing Aqua data, it retrieves new contact data for RT-STPS to process. Once contact data is written to blob using the tcp-to-blob component, an Event Grid alert is sent and FileEventService receives that event via Service Bus and executes a script followed by uploading NASA tool outputs to blob. The current chain of events are as follows:
 
   1. Tcp-to-blob receives the blob data, writes that data to blob store, triggering a blob created event on Event Grid.
