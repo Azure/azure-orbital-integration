@@ -1,5 +1,5 @@
 {
-  "name": "tcp-to-blob",
+  "name": "@azure/tcp-to-blob",
   "version": "1.0.0",
   "description": "TCP to BLOB",
   "scripts": {
@@ -34,6 +34,7 @@
   "author": "micholas",
   "license": "MIT",
   "dependencies": {
+    "@azure/arm-orbital-helper": "^1.0.0",
     "@azure/storage-blob": "^12.10.0",
     "ip": "^1.1.8"
   },
