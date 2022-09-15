@@ -1,0 +1,48 @@
+{
+  "environmentName": "file-event-service",
+  "eventListeners": [
+    {
+      "type": "ServiceBus",
+      "name": "MyServiceBusReceiver",
+      "connectionString": "",
+      "queueName": "blob-created",
+      "actions": [
+        {
+          "type": "BlobDownload",
+          "connectionString": "",
+          "localBlobDownloadPath": "./blobdata"
+        }
+      ],
+      "allowedEventTypes": [
+        "Microsoft.Storage.BlobCreated"
+      ]
+    }
+  ],
+  "eventDispatchers": [
+    {
+      "type": "LocalFileSystem",
+      "name": "RawContactDataWatcher",
+      "pathToWatch": "./blobdata",
+      "includeSubDirectories": true,
+      "filters": [
+        "*.*"
+      ],
+      "actions": [
+        {
+          "type": "ExecuteScript",
+          "filename": "my-script-to-run.sh",
+          "workingDirectory": "/home/azureuser/scripts",
+          "arguments": ""
+        },
+        {
+          "type": "SendEventGridEvent",
+          "topicEndpoint": "",
+          "key": ""
+        }
+      ],
+      "AllowedEventTypes": [
+        "Local.FileSystem.Renamed"
+      ]
+    }
+  ]
+}
