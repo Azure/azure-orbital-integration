@@ -13,7 +13,7 @@ variables:
 
 steps:
   - task: AzureCLI@2
-    displayName: 'Set ENVs/make Env Files. Deploy bicep'
+    displayName: "Set ENVs/make Env Files. Deploy bicep"
     env:
       AZ_LOCATION: $(AZ_LOCATION)
       AZ_RESOURCE_GROUP: $(AZ_RESOURCE_GROUP)
@@ -25,36 +25,36 @@ steps:
       WORKING_DIR: $(System.DefaultWorkingDirectory)
     inputs:
       azureSubscription: $(AZ_SUBSCRIPTION)
-      scriptType: 'bash'
-      scriptLocation: 'scriptPath'
-      scriptPath: 'tcp-to-blob/deploy/ado-pipeline/core/core-azure-cli.sh'
+      scriptType: "bash"
+      scriptLocation: "scriptPath"
+      scriptPath: "tcp-to-blob/deploy/ado-pipeline/core/core-azure-cli.sh"
 
   - task: Docker@2
-    displayName: 'Docker login'
+    displayName: "Docker login"
     inputs:
-      containerRegistry: 'aoi-acr-sc'
-      command: 'login'
+      containerRegistry: "aoi-acr-sc"
+      command: "login"
 
   - task: Docker@2
-    displayName: 'docker build and push'
+    displayName: "docker build and push"
     inputs:
-      containerRegistry: 'aoi-acr-sc'
-      repository: 'tcp-to-blob'
-      command: 'buildAndPush'
-      Dockerfile: 'tcp-to-blob/deploy/Dockerfile'
-      buildContext: './'
+      containerRegistry: "aoi-acr-sc"
+      repository: "tcp-to-blob"
+      command: "buildAndPush"
+      Dockerfile: "tcp-to-blob/deploy/Dockerfile"
+      buildContext: "./"
       tags: |
         latest
         $(Build.BuildId)
 
   - task: Kubernetes@1
-    displayName: 'kubectl apply'
+    displayName: "kubectl apply"
     inputs:
-      connectionType: 'Azure Resource Manager'
+      connectionType: "Azure Resource Manager"
       azureSubscriptionEndpoint: $(AZ_SUBSCRIPTION)
       azureResourceGroup: $(AZ_RESOURCE_GROUP)
       kubernetesCluster: $(NAME_PREFIX)-aks
-      command: 'apply'
-      arguments: '-f $(System.DefaultWorkingDirectory)/dist/env/$(NAME_PREFIX)/tcp-to-blob.yaml'
-      secretType: 'dockerRegistry'
-      containerRegistryType: 'Azure Container Registry' 
+      command: "apply"
+      arguments: "-f $(System.DefaultWorkingDirectory)/dist/env/$(NAME_PREFIX)/tcp-to-blob.yaml"
+      secretType: "dockerRegistry"
+      containerRegistryType: "Azure Container Registry"
