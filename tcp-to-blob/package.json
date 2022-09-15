@@ -1,5 +1,5 @@
 {
-  "name": "tcp-to-blob",
+  "name": "@azure/tcp-to-blob",
   "version": "1.0.0",
   "description": "TCP to BLOB",
   "scripts": {
@@ -25,7 +25,7 @@
     "compile": "yarn prettier && npx tsc",
     "test": "ts-mocha -p tsconfig.json tests/*.ts",
     "coverage": "nyc yarn test",
-    "prettier": "npx prettier src/**/*.ts tests/**/*.ts -w",
+    "prettier": "npx prettier . -w",
     "run-server": "yarn build && cd ./dist && node ./bundle/tcp-to-blob.js"
   },
   "keywords": [
@@ -35,6 +35,7 @@
   "author": "micholas",
   "license": "MIT",
   "dependencies": {
+    "@azure/arm-orbital-helper": "^1.0.0",
     "@azure/storage-blob": "^12.10.0",
     "ip": "^1.1.8"
   },

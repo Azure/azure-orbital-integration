@@ -9,9 +9,10 @@
 TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and persists it in Azure BLOB Storage.
 
 ## High level components
+
 - Vnet with subnets including:
-    - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
-    - `orbital-subnet`: Delegated to Azure Orbital from which the service can send contact data to TCP to BLOB endpoint.
+  - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
+  - `orbital-subnet`: Delegated to Azure Orbital from which the service can send contact data to TCP to BLOB endpoint.
 - Azure Container Registry.
 - AKS cluster.
 - Storage account and container for storing raw Orbital contact data.
@@ -32,13 +33,13 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 
 ## Prerequisites
 
-* NodeJS LTS (16 or later)
-* [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
+- NodeJS LTS (16 or later)
+- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
   uses `yarn`
-* Azure subscription access
-* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-* [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. 
-* Docker
+- Azure subscription access
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI.
+- Docker
 
 ## Install NodeJS dependencies
 
@@ -59,38 +60,38 @@ examples.
 
 Required:
 
-* `AZ_LOCATION` e.g. "westus2"
-* `NAME_PREFIX`: Used to make name for resources to create. e.g AKS cluster, vnet, etc.
+- `AZ_LOCATION` e.g. "westus2"
+- `NAME_PREFIX`: Used to make name for resources to create. e.g AKS cluster, vnet, etc.
 
 Optional:
 
-* `AZ_RESOURCE_GROUP`: Resource group containing your AKS service.
-* `ACR_NAME`: Name of your Azure Container Registry.
-* `CONTACT_DATA_STORAGE_ACCT`: Name of storage account where BLOBs will be created (containing data sent to TCP
+- `AZ_RESOURCE_GROUP`: Resource group containing your AKS service.
+- `ACR_NAME`: Name of your Azure Container Registry.
+- `CONTACT_DATA_STORAGE_ACCT`: Name of storage account where BLOBs will be created (containing data sent to TCP
   endpoint).
-* `CONTACT_DATA_STORAGE_CONTAINER`: Name of storage container for saving BLOBs.
+- `CONTACT_DATA_STORAGE_CONTAINER`: Name of storage container for saving BLOBs.
   default: `"tcp-to-blob-output-${NAME_PREFIX}"`
-* `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Connection string for contact data storage. Grants `tcp-to-blob` the ability to create the storage container if needed and create/write to BLOBs. This is stored as an AKS secret which is exposed as an environment variable in the `tcp-to-blob` container. You may use either:
-    * [Storage BLOB connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string): (default) Long living credentials for accessing storage container. This gets populated automatically if `CONTACT_DATA_STORAGE_CONNECTION_STRING` is not already set. 
-    * [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner. Things to consider for SAS:
-      * It is the responsibility of the storage account owner to create the SAS since it's not auto-created during TCP to BLOB deployment.
-      * Storage account owner must coordinate with TCP to BLOB AKS cluster owner to rotate the `CONTACT_DATA_STORAGE_CONNECTION_STRING` AKS secret otherwise TCP to BLOB will fail to write to blob storage upon SAS expiration.
-* `AKS_NAME`: Name of AKS cluster.
-* `AKS_VNET`: default: `"${AKS_CLUSTER_NAME}-vnet"`
-* `AKS_NUM_REPLICAS`: default: 2
-* `HOST`: default: "0.0.0.0".
-* `PORT`: default: 50111
-* `SOCKET_TIMEOUT_SECONDS`: default: 60
-* `NUM_BLOCK_LOG_FREQUENCY`: default: 4000
-* `SOCKET_TIMEOUT_SECONDS`: Seconds of socket inactivity until socket is destroyed. default: 60
-* `AKS_VNET_ADDR_PREFIX`: default: "10.0.0.0/8"
-* `AKS_VNET_SUBNET_ADDR_PREFIX`: Subnet for AKS nodes. default: "10.240.0.0/16"
-* `LB_IP`: IP address for the internal load balancer Orbital will hit. Should be in vnet IP range. default: "
+- `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Connection string for contact data storage. Grants `tcp-to-blob` the ability to create the storage container if needed and create/write to BLOBs. This is stored as an AKS secret which is exposed as an environment variable in the `tcp-to-blob` container. You may use either:
+  - [Storage BLOB connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string): (default) Long living credentials for accessing storage container. This gets populated automatically if `CONTACT_DATA_STORAGE_CONNECTION_STRING` is not already set.
+  - [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner. Things to consider for SAS:
+    - It is the responsibility of the storage account owner to create the SAS since it's not auto-created during TCP to BLOB deployment.
+    - Storage account owner must coordinate with TCP to BLOB AKS cluster owner to rotate the `CONTACT_DATA_STORAGE_CONNECTION_STRING` AKS secret otherwise TCP to BLOB will fail to write to blob storage upon SAS expiration.
+- `AKS_NAME`: Name of AKS cluster.
+- `AKS_VNET`: default: `"${AKS_CLUSTER_NAME}-vnet"`
+- `AKS_NUM_REPLICAS`: default: 2
+- `HOST`: default: "0.0.0.0".
+- `PORT`: default: 50111
+- `SOCKET_TIMEOUT_SECONDS`: default: 60
+- `NUM_BLOCK_LOG_FREQUENCY`: default: 4000
+- `SOCKET_TIMEOUT_SECONDS`: Seconds of socket inactivity until socket is destroyed. default: 60
+- `AKS_VNET_ADDR_PREFIX`: default: "10.0.0.0/8"
+- `AKS_VNET_SUBNET_ADDR_PREFIX`: Subnet for AKS nodes. default: "10.240.0.0/16"
+- `LB_IP`: IP address for the internal load balancer Orbital will hit. Should be in vnet IP range. default: "
   10.240.11.11"
-* `AKS_POD_SUBNET_ADDR_PREFIX`: Subnet for AKS pods. default:  "10.241.0.0/16"
-* `AKS_ORBITAL_SUBNET_ADDR_PREFIX`: Subnet delegated to Orbital. default:  "10.244.0.0/16"
-* `CANARY_NUM_LINES`: Number of lines of text canary will send to TCP to BLOB. default: 65000
-* `DEMODULATION_CONFIG`: Raw XML or named modem for the contact profile downlink [demodulation configuration](https://docs.microsoft.com/en-us/azure/orbital/modem-chain#specifying-a-named-modem-configuration-using-the-api). default: "aqua_direct_broadcast"
+- `AKS_POD_SUBNET_ADDR_PREFIX`: Subnet for AKS pods. default: "10.241.0.0/16"
+- `AKS_ORBITAL_SUBNET_ADDR_PREFIX`: Subnet delegated to Orbital. default: "10.244.0.0/16"
+- `CANARY_NUM_LINES`: Number of lines of text canary will send to TCP to BLOB. default: 65000
+- `DEMODULATION_CONFIG`: Raw XML or named modem for the contact profile downlink [demodulation configuration](https://docs.microsoft.com/en-us/azure/orbital/modem-chain#specifying-a-named-modem-configuration-using-the-api). default: "aqua_direct_broadcast"
 
 Recommend creating a `tcp-to-blob/.env/env-${stage}.sh` to set these and re-load env as needed without risking
 committing them to version control.
@@ -107,9 +108,9 @@ requires: Unix-like environment or Mac
 
 1. Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default
    subscription is set.
-    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
-    2. `az account set -s "${SUBSCRIPTION_ID}"` (
-       see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
+   1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
+   2. `az account set -s "${SUBSCRIPTION_ID}"` (
+      see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
 2. From `azure-orbital-integration` directory: `yarn install && yarn compile`
 3. Ensure docker is running.
 4. `cd tcp-to-blob`
@@ -126,15 +127,17 @@ requires: Unix-like environment or Mac
    7. Enter the desired Demodulation Configuration.
    8. Click the Submit button.
 
-### Advanced deployment 
-If you wish to utilize an existing ACR and Storage container: 
+### Advanced deployment
+
+If you wish to utilize an existing ACR and Storage container:
+
 1. Update your `.env/env-<name_prefix>.sh` to include:
-   * ACR info: `ACR_NAME` and `ACR_RESOURCE_GROUP`
-   * Storage account info: `CONTACT_DATA_STORAGE_ACCT`, `CONTACT_DATA_STORAGE_ACCT_RESOURCE_GROUP` and optionally `CONTACT_DATA_STORAGE_CONNECTION_STRING` (consider SAS connection string).
-   * Resource group for other generated resources: `AZ_RESOURCE_GROUP`
+   - ACR info: `ACR_NAME` and `ACR_RESOURCE_GROUP`
+   - Storage account info: `CONTACT_DATA_STORAGE_ACCT`, `CONTACT_DATA_STORAGE_ACCT_RESOURCE_GROUP` and optionally `CONTACT_DATA_STORAGE_CONNECTION_STRING` (consider SAS connection string).
+   - Resource group for other generated resources: `AZ_RESOURCE_GROUP`
 2. `./deploy/bicep/deploy-core.sh && ./deploy/az-cli/deploy-service-and-dashboards.sh`
-      
-* Note: An Azure CLI `deploy.sh` script is available in `./deploy/az-cli` for reference. However, the `./deploy/bicep` scripts are the most up-to-date and complete deployment mechanism.
+
+- Note: An Azure CLI `deploy.sh` script is available in `./deploy/az-cli` for reference. However, the `./deploy/bicep` scripts are the most up-to-date and complete deployment mechanism.
 
 ## Login/switch environments
 
@@ -158,7 +161,7 @@ If you wish to utilize an existing ACR and Storage container:
 
 **Hint:** Run this if you see an error "unauthorized: authentication required".
 
-## Run service locally *without* containers
+## Run service locally _without_ containers
 
 1. Login/switch environments (once every few hours or per env session).
 2. `cd tcp-to-blob`
@@ -198,9 +201,9 @@ Or run `yarn docker-kill-all` (instead of 1 & 2)
 
 ```
 let FindString = "";
-ContainerLog 
+ContainerLog
 | where LogEntry has FindString
-// | where not(LogEntry has "No socket data.") 
+// | where not(LogEntry has "No socket data.")
 | extend _data = parse_json(LogEntry)
 | where not(_data.event == "socket-data")
 | sort by TimeGenerated desc
@@ -216,7 +219,7 @@ ContainerLog
 **View recently completed BLOBs:**
 
 ```
-ContainerLog 
+ContainerLog
 | where LogEntry has FindString
 | extend _data = parse_json(LogEntry)
 | sort by TimeGenerated desc
@@ -232,7 +235,7 @@ ContainerLog
 ```
 let approxTime = todatetime('2022-07-15T02:34:11.969Z');
 let timeOffset = 2m;
-ContainerLog 
+ContainerLog
 | extend _data = parse_json(LogEntry)
 | where not(_data.event == "socket-data")
 | sort by TimeGenerated desc
@@ -271,25 +274,27 @@ docker image and pushes the image to our ACR created in step 1.
 
 1. Create Azure Resource Manager Service Connection and assign ownership role at the subscription level. Check with your
    ADO administrator to see if this is already created as it is not visible for all users.
-    - Please see the
-      following [documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml)
-      for creating the service connection.
-    - Please see the
-      following [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#assign-a-role-to-the-application)
-      regarding assigning role to a service principal. This will be the service principal that the build agent is using.
+
+   - Please see the
+     following [documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml)
+     for creating the service connection.
+   - Please see the
+     following [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#assign-a-role-to-the-application)
+     regarding assigning role to a service principal. This will be the service principal that the build agent is using.
 
 2. Create a variable group that your pipeline can reference. This var group sets environment variables for different
    build steps. Values needed:
-    - For ease name the variable group **tcp-to-blob-vg**. This is the name the build yaml files are expecting.
-    - ### sample variables:
-        - `ACR_NAME: $(ORG_NAME)$(AZ_LOCATION)acr`
-        - `CONTACT_DATA_STORAGE_ACCT: $(ORG_NAME)$(AZ_LOCATION)`
-        - `CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY: $(ORG_NAME)-$(AZ_LOCATION)-storage`
-        - `AZ_LOCATION: westus2`
-        - `AZ_RESOURCE_GROUP: $(ORG_NAME)-test`
-        - `AZ_SUBSCRIPTION: {This is the name of the Azure Resource Manager Service Connection created in step 1}`
-        - `NAME_PREFIX: $(ORG_NAME)-$(AZ_LOCATION)`
-        - `ORG_NAME: aoi`
+
+   - For ease name the variable group **tcp-to-blob-vg**. This is the name the build yaml files are expecting.
+   - ### sample variables:
+     - `ACR_NAME: $(ORG_NAME)$(AZ_LOCATION)acr`
+     - `CONTACT_DATA_STORAGE_ACCT: $(ORG_NAME)$(AZ_LOCATION)`
+     - `CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY: $(ORG_NAME)-$(AZ_LOCATION)-storage`
+     - `AZ_LOCATION: westus2`
+     - `AZ_RESOURCE_GROUP: $(ORG_NAME)-test`
+     - `AZ_SUBSCRIPTION: {This is the name of the Azure Resource Manager Service Connection created in step 1}`
+     - `NAME_PREFIX: $(ORG_NAME)-$(AZ_LOCATION)`
+     - `ORG_NAME: aoi`
 
 3. Create and/or run pipeline pointing to azure-resources/prereq-tcp-to-blob/prereq-azure-pipeline.yml
 
@@ -297,9 +302,9 @@ docker image and pushes the image to our ACR created in step 1.
    pipeline script to reference properly.
 
 5. Create and/or run pipeline pointing to ./azure-pipelines.yml
-    - First run of the pipeline you will need to grant permission for your service connection
-    - If this pipeline has been previously ran and resources exist another run will fail because the role assignment
-      already exists. If another run is needed first delete the aoi-westus2-aks-agentpool acr pull role assignment. 
+   - First run of the pipeline you will need to grant permission for your service connection
+   - If this pipeline has been previously ran and resources exist another run will fail because the role assignment
+     already exists. If another run is needed first delete the aoi-westus2-aks-agentpool acr pull role assignment.
 
 ## License
 

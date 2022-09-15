@@ -1,14 +1,14 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2019",
-    "outDir": "dist",
-    "rootDir": "src",
-    "sourceMap": true,
-    "strict": true,
-    "noImplicitAny": false,
-    "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "composite": true
-  }
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES2019",
+        "outDir": "dist",
+        "rootDir": "src",
+        "sourceMap": true,
+        "strict": true,
+        "noImplicitAny": false,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "composite": true
+    }
 }

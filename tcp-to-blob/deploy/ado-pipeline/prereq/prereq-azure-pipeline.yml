@@ -13,15 +13,15 @@ pool:
 
 steps:
   - task: AzureCLI@2
-    displayName: 'Creating Resource Group'
+    displayName: "Creating Resource Group"
     inputs:
       azureSubscription: $(AZ_SUBSCRIPTION)
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: 'az group create --name $(AZ_RESOURCE_GROUP) --location $(AZ_LOCATION)'
+      scriptType: "bash"
+      scriptLocation: "inlineScript"
+      inlineScript: "az group create --name $(AZ_RESOURCE_GROUP) --location $(AZ_LOCATION)"
 
   - task: AzureCLI@2
-    displayName: 'Set ENVs/make Env Files. Deploy bicep'
+    displayName: "Set ENVs/make Env Files. Deploy bicep"
     env:
       AZ_RESOURCE_GROUP: $(AZ_RESOURCE_GROUP)
       AZ_LOCATION: $(AZ_LOCATION)
@@ -33,6 +33,6 @@ steps:
       WORKING_DIR: $(System.DefaultWorkingDirectory)
     inputs:
       azureSubscription: $(AZ_SUBSCRIPTION)
-      scriptType: 'bash'
-      scriptLocation: 'scriptPath'
-      scriptPath: 'tcp-to-blob/deploy/ado-pipeline/prereq/prereq-azure-cli.sh'
+      scriptType: "bash"
+      scriptLocation: "scriptPath"
+      scriptPath: "tcp-to-blob/deploy/ado-pipeline/prereq/prereq-azure-cli.sh"
