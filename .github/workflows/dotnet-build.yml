@@ -23,4 +23,4 @@ jobs:
       - name: Install dependencies
         run: cd file-event-service/src/ && dotnet restore
       - name: Build
-        run: cd file-event-service/src/ && dotnet build --no-restore 
+        run: cd file-event-service/src/ && dotnet build --no-restore
