@@ -5,7 +5,10 @@
 
 . ./deploy/env-prereq-defaults.sh
 echo "Loading core env defaults."
-export CONTACT_DATA_STORAGE_CONTAINER=${CONTACT_DATA_STORAGE_CONTAINER:-"${NAME_PREFIX}-output"}
+
+# https://github.com/Azure/azure-orbital-integration/issues/118
+export CONTACT_DATA_STORAGE_CONTAINER=${CONTACT_DATA_STORAGE_CONTAINER:-"raw-contact-data"}
+echo "CONTACT_DATA_STORAGE_CONTAINER = \"${CONTACT_DATA_STORAGE_CONTAINER}\""
 
 export AKS_VNET=${AKS_VNET:-"${NAME_PREFIX}-vnet"}
 export AKS_VNET_ADDR_PREFIX=${AKS_VNET_ADDR_PREFIX:-'10.0.0.0/8'}

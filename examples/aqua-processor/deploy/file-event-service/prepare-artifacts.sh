@@ -9,12 +9,12 @@ APPLICATION_INSIGHTS_APP_NAME=${1}
 APPLICATION_INSIGHTS_RG=${2}
 
 WORKING_DIR="$(dirname "$0")"
-BLOB_DOWNLOAD_SERVICE_SRC_DIR="${WORKING_DIR}/../../../blob-download-service/src"
-ARTIFACTS_DIR="${WORKING_DIR}/../artifacts/linux-x64/blob-download-service"
+FILE_EVENT_SERVICE_SRC_DIR="${WORKING_DIR}/../../../../file-event-service/src"
+ARTIFACTS_DIR="${WORKING_DIR}/../artifacts/linux-x64/file-event-service"
 mkdir -p ${ARTIFACTS_DIR}
 
 # Build the binaries and stage them in the artifacts folder
-dotnet publish ${BLOB_DOWNLOAD_SERVICE_SRC_DIR}/BlobDownloadService.csproj --configuration Release --runtime linux-x64 --self-contained --output ${ARTIFACTS_DIR}
+dotnet publish ${FILE_EVENT_SERVICE_SRC_DIR}/FileEventService.csproj --configuration Release --runtime linux-x64 --self-contained --output ${ARTIFACTS_DIR}
 
 # Secrets that get retrieved using az cli. The UAMI associated with the
 # VM needs to have Contributor permissions for the folloing 3 resources
@@ -24,16 +24,27 @@ BLOB_CONNECTION_STRING=$(az storage account show-connection-string -g ${CONTACT_
 
 cat ${WORKING_DIR}/appsettings.template.json | \
   APP_INSIGHTS_CONNECTION_STRING=${APP_INSIGHTS_CONNECTION_STRING} \
-  ENVIRONMENT_NAME=${ENVIRONMENT_NAME} \
-  RECEIVER_NAME=${RECEIVER_NAME} \
+  envsubst > ${ARTIFACTS_DIR}/appsettings.json
+
+cat ${WORKING_DIR}/file-event-service.template.json | \
+  APP_INSIGHTS_CONNECTION_STRING=${APP_INSIGHTS_CONNECTION_STRING} \
+  FILE_EVENT_SERVICE_ENVIRONMENT_NAME=${FILE_EVENT_SERVICE_ENVIRONMENT_NAME} \
   SERVICE_BUS_CONNECTION_STRING=${SERVICE_BUS_CONNECTION_STRING} \
   SERVICE_BUS_QUEUE_NAME=${SERVICE_BUS_QUEUE_NAME} \
   BLOB_CONNECTION_STRING=${BLOB_CONNECTION_STRING} \
-  LOCAL_BLOB_DOWNLOAD_PATH=${LOCAL_BLOB_DOWNLOAD_PATH} \
-  ALLOWED_EVENT_TYPE=${ALLOWED_EVENT_TYPE} \
-  envsubst > ${ARTIFACTS_DIR}/appsettings.json
+  AZ_VM_USER_HOME_FOLDER=${AZ_VM_USER_HOME_FOLDER} \
+  RTSTPS_OUTPUT_CONATINER_NAME=${RTSTPS_OUTPUT_CONATINER_NAME} \
+  RTSTPS_OUTPUT_SUBFOLDER_PATH=${RTSTPS_OUTPUT_SUBFOLDER_PATH} \
+  MODIS_OUTPUT_CONTAINER_NAME=${MODIS_OUTPUT_CONTAINER_NAME} \
+  LEVEL0_OUTPUT_SUBFOLDER_PATH=${LEVEL0_OUTPUT_SUBFOLDER_PATH} \
+  LEVEL1_OUTPUT_SUBFOLDER_PATH=${LEVEL1_OUTPUT_SUBFOLDER_PATH} \
+  LEVEL2_OUTPUT_SUBFOLDER_PATH=${LEVEL2_OUTPUT_SUBFOLDER_PATH} \
+  LEVEL1_ALT1_OUTPUT_SUBFOLDER_PATH=${LEVEL1_ALT1_OUTPUT_SUBFOLDER_PATH} \
+  LEVEL2_ALT1_OUTPUT_SUBFOLDER_PATH=${LEVEL2_ALT1_OUTPUT_SUBFOLDER_PATH} \
+  envsubst > ${ARTIFACTS_DIR}/file-event-service.json
 
 # Stage other scripts in artifacts folder to be copied over
-cp ${WORKING_DIR}/BlobDownloadService.service ${ARTIFACTS_DIR}
+cp ${WORKING_DIR}/FileEventService.service ${ARTIFACTS_DIR}
+cp ${WORKING_DIR}/run-nasa-tools.sh ${ARTIFACTS_DIR}
 
-tar -czvf "${ARTIFACTS_DIR}/blob-download-service-artifacts.tar.gz" -C ${ARTIFACTS_DIR} .
+tar -czvf "${ARTIFACTS_DIR}/file-event-service-artifacts.tar.gz" -C ${ARTIFACTS_DIR} .
