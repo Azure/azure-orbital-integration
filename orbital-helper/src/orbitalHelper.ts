@@ -8,10 +8,11 @@ import {
     ContactProfile,
     ContactProfilesCreateOrUpdateOptionalParams,
     ContactsCreateResponse,
+    Spacecraft,
     SpacecraftsCreateOrUpdateOptionalParams,
 } from '@azure/arm-orbital'
 import { DefaultAzureCredential } from '@azure/identity'
-import { getEnvVar, prettyDuration } from './utils'
+import { getEnvVar, getNumDays, prettyDuration } from './utils'
 import { getTLE, TLE } from './tleHelper'
 import {
     makeAquaContactProfileParams,
@@ -54,23 +55,28 @@ export interface ContactWithSummary {
 }
 
 const makeContactSummary = (_contact: Contact): ContactSummary => {
-    const contactStart = _contact.rxStartTime ?? _contact.reservationStartTime
+    const contactStart =
+        _contact.rxStartTime ??
+        (_contact.reservationStartTime as unknown as Date)
     const contactEnd = _contact.rxEndTime ?? _contact.reservationEndTime
     let endMillis = contactEnd?.getTime()
     let startMillis = contactStart?.getTime()
     let startTimeRelative = ''
     const nowMillis = Date.now()
     if (startMillis) {
-        if (nowMillis - startMillis > 0) {
+        const numDays = getNumDays(contactStart)
+        if (numDays > 1) {
+            startTimeRelative = contactStart.toLocaleString()
+        } else if (nowMillis - startMillis > 0) {
             startTimeRelative = `${prettyDuration({
                 startMillis,
                 endMillis: nowMillis,
-            })} (in the past)`
+            })} (ago)`
         } else {
             startTimeRelative = `${prettyDuration({
                 startMillis: nowMillis,
                 endMillis,
-            })} (in the future)`
+            })} (from now)`
         }
     }
     const contactProfileId = _contact.contactProfile?.id ?? ''
@@ -134,6 +140,8 @@ export interface OrbitalHelper {
     subscription: string
     resourceGroup: string
     location: string
+
+    listSpacecrafts(): Promise<Spacecraft[]>
 
     scheduleContact(
         params: ScheduleContactParams
@@ -202,20 +210,20 @@ export const makeHelperParamsFromEnv = (): MakeOrbitalHelperParams => {
     }
 }
 
-export const makeOrbitalHelper = async (
+export const makeOrbitalHelper = (
     {
         location,
         resourceGroup,
         orbitalClient,
     }: MakeOrbitalHelperParams = makeHelperParamsFromEnv()
-): Promise<OrbitalHelper> => {
+): OrbitalHelper => {
     console.log(
         `Creating Orbital Helper for: ${JSON.stringify({
             location,
             resourceGroup,
         })}`
     )
-    const makeContactProfileShell = (profileName) => ({
+    const makeContactProfileShell = (profileName: string) => ({
         id: `/subscriptions/${orbitalClient.subscriptionId}/resourcegroups/${resourceGroup}/providers/Microsoft.Orbital/contactProfiles/${profileName}`,
     })
 
@@ -258,6 +266,16 @@ export const makeOrbitalHelper = async (
         }
     }
 
+    const listSpacecrafts = async () => {
+        const crafts: Spacecraft[] = []
+        for await (const _craft of orbitalClient.spacecrafts.list(
+            resourceGroup
+        )) {
+            crafts.push(_craft)
+        }
+        return crafts
+    }
+
     const getNextContact = async ({
         minDurationMinutes = 0,
         maxDurationMinutes,
@@ -287,6 +305,7 @@ export const makeOrbitalHelper = async (
             ? maxMinutesFromNow * MILLIS_PER_MINUTE
             : Number.MAX_SAFE_INTEGER
         for await (const _contact of contacts) {
+            console.log('constactttttt:', JSON.stringify(_contact, null, 2))
             if (!_contact?.rxStartTime || !_contact?.rxEndTime) {
                 continue
             }
@@ -411,7 +430,11 @@ export const makeOrbitalHelper = async (
     }
 
     // Title line must match value here: http://celestrak.com/NORAD/elements/active.txt
-    const updateTLE = async ({ spacecraftName }) => {
+    const updateTLE = async ({
+        spacecraftName,
+    }: {
+        spacecraftName: string
+    }) => {
         const newTLE: TLE = await getTLE(spacecraftName)
         const { location, links, titleLine, noradId } =
             await orbitalClient.spacecrafts.get(resourceGroup, spacecraftName)
@@ -460,7 +483,7 @@ export const makeOrbitalHelper = async (
         subscription: orbitalClient.subscriptionId,
         resourceGroup,
         location,
-
+        listSpacecrafts,
         scheduleContact,
         getNextContact,
         scheduleNextContact,

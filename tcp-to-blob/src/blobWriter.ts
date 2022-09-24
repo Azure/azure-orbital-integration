@@ -3,14 +3,15 @@
 // root for license information.
 
 import { BlockBlobClient, ContainerClient } from '@azure/storage-blob'
-import { EventLogger, getEnv } from './utils'
+import { getEnv, LogParams } from './utils'
+import { EventLogger } from '@azure/arm-orbital-helper'
 
 export interface WithContainerClient {
     containerClient: ContainerClient
 }
 
 export interface MakeBlobWriterParams extends WithContainerClient {
-    logger: EventLogger
+    logger: EventLogger<LogParams>
 }
 
 export type AuthType = 'Connection String' | 'DefaultAzureCredential'

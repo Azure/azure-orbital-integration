@@ -3,10 +3,12 @@
   "name": "azure-orbital-integration",
   "scripts": {
     "build": "yarn compile && yarn --cwd orbital-helper build && yarn --cwd tcp-to-blob build",
+    "build-tools": "yarn compile && yarn --cwd tools/orbital-helper-ui build",
     "compile": "yarn --cwd orbital-helper compile && yarn --cwd tcp-to-blob compile"
   },
   "workspaces": [
     "orbital-helper",
+    "tools/orbital-helper-ui",
     "tcp-to-blob"
   ]
 }

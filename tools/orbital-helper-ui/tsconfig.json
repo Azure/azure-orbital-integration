@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "target": "ES2018",
+        "module": "commonjs",
+        "jsx": "react",
+        "jsxFactory": "h",
+        "sourceMap": true,
+        "removeComments": true,
+        "strict": true,
+        "outDir": "dist"
+    },
+    "include": ["src/**/*", "tests/**/*"]
+}

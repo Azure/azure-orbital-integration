@@ -6,8 +6,10 @@
     "outDir": "dist",
     "rootDir": ".",
     "sourceMap": true,
+    "declaration": true,
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "composite": true
   },
   "include": ["src/**/*", "tests/**/*"],
   "references": [{ "path": "../orbital-helper" }]

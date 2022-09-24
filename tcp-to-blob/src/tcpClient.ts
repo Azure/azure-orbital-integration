@@ -3,13 +3,14 @@
 // root for license information.
 
 import { Socket } from 'net'
-import { EventLogger, makeLogger, sleep } from './utils'
+import { LogParams, makeLogger } from './utils'
+import { EventLogger, sleep } from '@azure/arm-orbital-helper'
 
 export interface SendDataParams {
     numLines: number
     host: string
     port: number
-    logger: EventLogger
+    logger: EventLogger<LogParams>
 }
 
 export const sendData = async ({
