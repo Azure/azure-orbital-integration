@@ -7,15 +7,17 @@ import {
     AppState,
     getEnvFromState,
     WithAppState,
-    WithEffect,
     WithEffectParams,
+    WithIsLoading,
+    WithStateUpdater,
 } from './appState'
 import { Env, ResourceBasics, Spacecraft } from '../preload'
-import { Alert, AlertMessage, AlertParams, AlertType } from './alert'
+import { Alert, AlertMessage, AlertType } from './alert'
 import { makeAPI } from './api'
 
 const { listSpacecrafts } = makeAPI()
-export interface ConfigState extends Env {
+
+export interface ConfigState extends Partial<Env>, WithIsLoading {
     spacecrafts?: Spacecraft[]
 }
 
@@ -26,9 +28,11 @@ function uniqueValues<T>(list: T[]) {
 }
 
 type WithSpacecrafts = Pick<AppState, 'spacecrafts'>
+
+type ResourceGroupOption = Pick<ResourceBasics, 'name' | 'location'>
 const listResourceGroups = ({
     spacecrafts,
-}: WithSpacecrafts): Pick<ResourceBasics, 'name' | 'location'>[] => {
+}: WithSpacecrafts): ResourceGroupOption[] => {
     if (!spacecrafts?.length) {
         return []
     }
@@ -40,9 +44,10 @@ const listResourceGroups = ({
     )
 }
 
+type SubscriptionOption = Pick<ResourceBasics, 'name' | 'subscriptionId'>
 const listSubscriptions = ({
     spacecrafts,
-}: WithSpacecrafts): Pick<ResourceBasics, 'name' | 'subscriptionId'>[] => {
+}: WithSpacecrafts): SubscriptionOption[] => {
     if (!spacecrafts?.length) {
         return []
     }
@@ -61,12 +66,12 @@ const listLocations = ({ spacecrafts }: WithSpacecrafts): string[] => {
     return [...new Set(spacecrafts.map((_) => _.location))]
 }
 
-export const applyEffect: WithEffect = ({
+export const applyEffect = <T extends ConfigState>({
     useEffect,
     setAppState,
-}: WithEffectParams) => {
+}: WithEffectParams<T>) => {
     useEffect(() => {
-        console.info('config useEffect')
+        console.info('Applying effect for config.')
         setAppState((_prevState) => ({
             ..._prevState,
             isLoading: true,
@@ -88,7 +93,60 @@ export const applyEffect: WithEffect = ({
     }, [])
 }
 
-export const Config = ({ appState, setAppState }: WithAppState) => {
+interface SelectParams<T extends ConfigState, OptionType>
+    extends WithStateUpdater<T> {
+    title: string
+    appState: T
+    options: OptionType[]
+    optionsLabelKey?: keyof OptionType
+    optionsValueKey: keyof OptionType
+    stateValueKey: keyof T
+}
+
+const Select = <T extends ConfigState, OptionType>({
+    appState,
+    options,
+    setAppState,
+    stateValueKey,
+    optionsValueKey,
+    optionsLabelKey = optionsValueKey,
+    title,
+}: SelectParams<T, OptionType>) => (
+    <div className="container" style={{ width: '100%' }}>
+        <label>{title}</label>
+        <select
+            type="text"
+            style={{ width: '100%' }}
+            value={String(appState[stateValueKey])}
+            readonly={!!appState.isLoading}
+            onChange={({ currentTarget }) => {
+                setAppState((_prevState) => ({
+                    ..._prevState,
+                    [stateValueKey]: currentTarget.value?.trim(),
+                }))
+            }}
+        >
+            <option disabled={appState.isLoading} value="">
+                {appState.isLoading ? 'Loading...' : ' - '}
+            </option>
+            {(options ?? []).map((_option) => (
+                <option
+                    label={
+                        appState.isLoading
+                            ? 'Loading...'
+                            : String(_option[optionsLabelKey]) ?? ''
+                    }
+                    value={String(_option[optionsValueKey]) ?? ''}
+                ></option>
+            ))}
+        </select>
+    </div>
+)
+
+export const Config = <T extends ConfigState>({
+    appState,
+    setAppState,
+}: WithAppState<T>) => {
     const { isEnvComplete } = getEnvFromState(appState)
     let alertType: AlertType = 'info'
     let alertMessage: AlertMessage
@@ -108,36 +166,15 @@ export const Config = ({ appState, setAppState }: WithAppState) => {
         <div className="container" style={{ width: '30em' }}>
             <Alert type={alertType} message={alertMessage} />
 
-            <div className="container" style={{ width: '100%' }}>
-                <label>Subscription</label>
-                <select
-                    type="text"
-                    style={{ width: '100%' }}
-                    value={appState.subscriptionId}
-                    readOnly={!!appState.isLoading}
-                    onChange={({ currentTarget }) => {
-                        setAppState((_prevState) => ({
-                            ..._prevState,
-                            subscriptionId: currentTarget.value?.trim(),
-                        }))
-                    }}
-                >
-                    <option disabled={appState.isLoading} value="">
-                        {appState.isLoading ? 'Loading...' : ' - '}
-                    </option>
-                    {(listSubscriptions(appState) ?? []).map(
-                        ({ subscriptionId, name }) => (
-                            <option
-                                label={appState.isLoading ? 'Loading...' : name}
-                                value={subscriptionId}
-                                selected={
-                                    subscriptionId === appState.subscriptionId
-                                }
-                            ></option>
-                        )
-                    )}
-                </select>
-            </div>
+            <Select
+                title="Subscription"
+                stateValueKey="subscriptionId"
+                options={listSubscriptions(appState) ?? []}
+                optionsValueKey="subscriptionId"
+                optionsLabelKey="name"
+                appState={appState}
+                setAppState={setAppState}
+            />
 
             <div className="container">
                 <label>Location</label>
@@ -155,32 +192,14 @@ export const Config = ({ appState, setAppState }: WithAppState) => {
                 />
             </div>
 
-            <div className="container" style={{ width: '100%' }}>
-                <label>Resource group</label>
-                <select
-                    type="text"
-                    style={{ width: '100%' }}
-                    value={appState.resourceGroup}
-                    readonly={!!appState.isLoading}
-                    onChange={({ currentTarget }) => {
-                        setAppState((_prevState) => ({
-                            ..._prevState,
-                            resourceGroup: currentTarget.value?.trim(),
-                        }))
-                    }}
-                >
-                    <option disabled={appState.isLoading} value="">
-                        {appState.isLoading ? 'Loading...' : ' - '}
-                    </option>
-                    {(listResourceGroups(appState) ?? []).map(({ name }) => (
-                        <option
-                            label={appState.isLoading ? 'Loading...' : name}
-                            value={name}
-                            selected={name === appState.resourceGroup}
-                        ></option>
-                    ))}
-                </select>
-            </div>
+            <Select
+                title="Resource group"
+                stateValueKey="resourceGroup"
+                options={listResourceGroups(appState) ?? []}
+                optionsValueKey="name"
+                appState={appState}
+                setAppState={setAppState}
+            />
         </div>
     )
 }

@@ -12,5 +12,5 @@
     "composite": true
   },
   "include": ["src/**/*", "tests/**/*"],
-  "references": [{ "path": "../orbital-helper" }]
+  "references": [{ "path": "../common-js" }]
 }

@@ -1,15 +1,15 @@
 # Orbital Helper UI
 
-This project provides an alternative user interface for Azure Orbital Ground Station. Functionality includes:
+This project provides a supplementary user interface for Azure Orbital Ground Station. Functionality includes:
 
-- Contact summary viewer: simplified way of filtering and viewing contact summary including:
-  - Contact start date
-  - Status
-  - Contact name
-  - Contact profile name
-  - Ground station name
-- Health checker
-  - Checks existence of resources deployed by TCP to BLOB
+-   Contact summary viewer: simplified way of filtering and viewing contact summary including:
+    -   Contact start date
+    -   Status
+    -   Contact name
+    -   Contact profile name
+    -   Ground station name
+-   Health checker
+    -   Checks existence of resources deployed by TCP to BLOB
 
 ## Prerequisites
 
@@ -29,7 +29,6 @@ requires: Unix-like environment or Mac
     2. `az account set -s "${SUBSCRIPTION_ID}"` (
        see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
 2. From `azure-orbital-integration` directory: `yarn install && yarn build-tools`
-
 
 ## Run
 

@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "ES2019",
-        "types": ["node"],
+        "types": ["node", "mocha"],
         "outDir": "dist",
         "rootDir": ".",
         "sourceMap": true,
@@ -11,6 +11,5 @@
         "esModuleInterop": true,
         "composite": true
     },
-    "include": ["src/**/*", "tests/**/*"],
-    "references": [{ "path": "../common-js" }]
+    "include": ["src/**/*", "tests/**/*"]
 }

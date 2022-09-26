@@ -4,7 +4,7 @@
 
 import { Socket } from 'net'
 import { LogParams, makeLogger } from './utils'
-import { EventLogger, sleep } from '@azure/arm-orbital-helper'
+import { EventLogger, sleep } from '@azure/orbital-integration-common'
 
 export interface SendDataParams {
     numLines: number

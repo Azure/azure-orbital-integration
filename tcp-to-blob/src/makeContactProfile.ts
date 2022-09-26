@@ -1,8 +1,8 @@
 import {
-    getEnvVar,
     MakeAquaContactProfileParams,
     makeOrbitalHelper,
 } from '@azure/arm-orbital-helper'
+import { getEnvVar } from '@azure/orbital-integration-common'
 
 const makeContactProfile = async () => {
     const { createContactProfile } = await makeOrbitalHelper()

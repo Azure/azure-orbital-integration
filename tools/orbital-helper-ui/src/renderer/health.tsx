@@ -4,27 +4,28 @@
 
 import { h } from 'preact'
 import {
-    AppState,
     WithAppState,
     WithEffect,
     WithEffectParams,
+    WithIsLoading,
 } from './appState'
 import { makeAPI } from './api'
-import { SearchResourcesResponse } from '../preload'
+import { Env, SearchResourcesResponse } from '../preload'
 import { Alert, AlertParams } from './alert'
 
 const { searchResources } = makeAPI()
-export interface HealthState {
+
+export interface HealthState extends Partial<Env>, WithIsLoading {
     resources?: SearchResourcesResponse[]
     resourceNamePrefix?: string
     isHealthLoading?: boolean
 }
 
-export const applyEffect: WithEffect = ({
+export const applyEffect: WithEffect<HealthState> = <T extends HealthState>({
     appState,
     useEffect,
     setAppState,
-}: WithEffectParams) => {
+}: WithEffectParams<T>) => {
     useEffect(() => {
         if (!appState.resourceNamePrefix) {
             if (appState.resources?.length) {
@@ -59,7 +60,7 @@ export const applyEffect: WithEffect = ({
     ])
 }
 
-const requiredResourceTypes: { [key: string]: string } = {
+const requiredResourceTitleMap: { [key: string]: string } = {
     'microsoft.network/virtualnetworks': 'VNet',
     'microsoft.containerservice/managedclusters': 'AKS Cluster',
     'microsoft.managedidentity/userassignedidentities': 'AKS Identity',
@@ -86,7 +87,7 @@ const getCountsByType = ({
         isHealthy: true,
         typeMetrics: {},
     }
-    for (const [type, title] of Object.entries(requiredResourceTypes)) {
+    for (const [type] of Object.entries(requiredResourceTitleMap)) {
         const typeMetric: TypeMetric = {
             count: 0,
             names: [],
@@ -113,8 +114,9 @@ const getCountsByType = ({
 
     return res
 }
-type AlertInfoParams = AppState &
+type AlertInfoParams = HealthState &
     Pick<GetCountsByTypeResponse, 'isHealthy' | 'message'>
+
 const getAlertParams = (params: AlertInfoParams): AlertParams => {
     if (params.isHealthLoading) {
         return {
@@ -143,7 +145,10 @@ const getAlertParams = (params: AlertInfoParams): AlertParams => {
     }
 }
 
-export const Health = ({ appState, setAppState }: WithAppState) => {
+export const Health = <T extends HealthState>({
+    appState,
+    setAppState,
+}: WithAppState<T>) => {
     const { isHealthy, message, typeMetrics } = getCountsByType({
         resources: appState.resources,
     })
@@ -183,7 +188,7 @@ export const Health = ({ appState, setAppState }: WithAppState) => {
                                         ? '❌'
                                         : '❓'}
                                 </span>
-                                {requiredResourceTypes[type] ?? 'Unknown'}
+                                {requiredResourceTitleMap[type] ?? 'Unknown'}
                                 {!names?.length ? null : names.length > 1 ? (
                                     <span style={{ color: '#8B0000' }}>
                                         : Multiple matches!

@@ -8,7 +8,7 @@ import {
     getEnvVar,
     BaseLogParams,
     MakeLoggerParams,
-} from '@azure/arm-orbital-helper'
+} from '@azure/orbital-integration-common'
 
 export interface LogParams extends BaseLogParams {
     remoteHost?: string

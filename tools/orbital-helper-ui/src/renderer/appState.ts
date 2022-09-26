@@ -15,21 +15,26 @@ import { EffectCallback, Inputs } from 'preact/hooks'
  */
 export type TabName = 'contacts' | 'health' | 'config'
 
+export interface WithIsLoading {
+    isLoading?: boolean
+}
 export type AppState = { tabName: TabName } & Partial<ContactSearchState> &
     Partial<ConfigState> &
     Partial<HealthState>
 
-export interface WithAppState {
-    appState: AppState
-    updateAppState: (newState: Partial<AppState>) => void
-    setAppState: StateUpdater<AppState>
+export interface WithStateUpdater<T extends Partial<AppState>> {
+    setAppState: StateUpdater<T>
+}
+export interface WithAppState<T extends Partial<AppState>>
+    extends WithStateUpdater<T> {
+    appState: T
 }
 
-export type WithEffectParams = WithAppState & {
+export type WithEffectParams<T extends Partial<AppState>> = WithAppState<T> & {
     useEffect: (effect: EffectCallback, inputs?: Inputs | undefined) => void
 }
-export interface WithEffect {
-    (params: WithEffectParams): void
+export interface WithEffect<T extends Partial<AppState>> {
+    (params: WithEffectParams<T>): void
 }
 
 export const getEnvFromState = <

@@ -3,7 +3,7 @@
 // root for license information.
 
 import { get } from 'http'
-import { getEnvVar } from './utils'
+import { getEnvVar } from '@azure/orbital-integration-common'
 
 export interface TLE {
     title: string

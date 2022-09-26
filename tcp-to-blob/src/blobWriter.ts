@@ -4,7 +4,7 @@
 
 import { BlockBlobClient, ContainerClient } from '@azure/storage-blob'
 import { getEnv, LogParams } from './utils'
-import { EventLogger } from '@azure/arm-orbital-helper'
+import { EventLogger } from '@azure/orbital-integration-common'
 
 export interface WithContainerClient {
     containerClient: ContainerClient

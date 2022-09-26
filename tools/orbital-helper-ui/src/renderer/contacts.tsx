@@ -11,6 +11,8 @@ import {
     WithAppState,
     WithEffect,
     WithEffectParams,
+    WithIsLoading,
+    WithStateUpdater,
 } from './appState'
 import { makeAPI } from './api'
 
@@ -57,11 +59,10 @@ export const filterConfig = {
 
 export type FilterKey = keyof typeof filterConfig
 
-export interface ContactSearchState extends Partial<Env> {
-    isLoading?: boolean
+export interface ContactSearchState extends Partial<Env>, WithIsLoading {
     spacecraftName?: string
-    contacts: ContactSummary[]
-    spacecrafts: Spacecraft[]
+    contacts?: ContactSummary[]
+    spacecrafts?: Spacecraft[]
     statusPrefix?: string
     namePrefix?: string
     contactProfilePrefix?: string
@@ -69,14 +70,15 @@ export interface ContactSearchState extends Partial<Env> {
     isContactsLoading?: boolean
 }
 
-type SpacecraftSelectParams = Partial<SearchContactsParams> &
-    Pick<AppState, 'isLoading' | 'isContactsLoading' | 'spacecrafts'> &
-    Pick<WithAppState, 'setAppState'>
+type SpacecraftSelectParams<T extends ContactSearchState> =
+    Partial<SearchContactsParams> &
+        Pick<AppState, 'isLoading' | 'isContactsLoading' | 'spacecrafts'> &
+        WithStateUpdater<T>
 
 const filterSpacecrafts = (
     appState: Pick<AppState, 'spacecrafts'> & Partial<Env>
 ) => {
-    const crafts = (appState.spacecrafts ?? [])
+    return (appState.spacecrafts ?? [])
         .filter((_) =>
             !appState.subscriptionId
                 ? true
@@ -90,16 +92,15 @@ const filterSpacecrafts = (
         .filter((_) =>
             !appState.location ? true : appState.location === _.location
         )
-    return crafts
 }
 
-const SpacecraftSelect = ({
+const SpacecraftSelect = <T extends ContactSearchState>({
     setAppState,
     isLoading,
     isContactsLoading,
     spacecraftName,
     spacecrafts,
-}: SpacecraftSelectParams) => {
+}: SpacecraftSelectParams<T>) => {
     return (
         <select
             disabled={isLoading || isContactsLoading}
@@ -161,15 +162,17 @@ const filterContacts = (state: Partial<ContactSearchState>) => {
     return filteredContacts
 }
 
-export const applyEffect: WithEffect = ({
+export const applyEffect: WithEffect<ContactSearchState> = <
+    T extends ContactSearchState
+>({
     appState,
     useEffect,
     setAppState,
-}: WithEffectParams) => {
+}: WithEffectParams<T>) => {
     const { env, isEnvComplete } = getEnvFromState(appState)
 
     useEffect(() => {
-        console.info('contacts useEffect')
+        console.info('Applying effect for contacts.')
         if (!isEnvComplete) {
             setAppState((_prevState) => ({
                 ..._prevState,
@@ -202,7 +205,10 @@ export const applyEffect: WithEffect = ({
         })
     }, [appState.spacecraftName])
 }
-export const ScheduledContacts = ({ setAppState, appState }: WithAppState) => {
+export const ScheduledContacts = <T extends ContactSearchState>({
+    setAppState,
+    appState,
+}: WithAppState<T>) => {
     const { env, isEnvComplete } = getEnvFromState(appState)
 
     if (!isEnvComplete) {
@@ -220,7 +226,7 @@ export const ScheduledContacts = ({ setAppState, appState }: WithAppState) => {
         ...appState,
         spacecrafts: filteredSpacecrafts,
     })
-    const selectParams: SpacecraftSelectParams = {
+    const selectParams: SpacecraftSelectParams<T> = {
         isLoading: appState.isLoading,
         isContactsLoading: appState.isContactsLoading,
         spacecraftName: appState.spacecraftName,

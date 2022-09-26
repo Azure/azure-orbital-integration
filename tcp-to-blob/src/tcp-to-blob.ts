@@ -2,7 +2,7 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
-import { getEnvVar } from '@azure/arm-orbital-helper'
+import { getEnvVar } from '@azure/orbital-integration-common'
 import { getEnv, makeRemoteToken } from './utils'
 import { Server } from 'net'
 import { statSync } from 'fs'

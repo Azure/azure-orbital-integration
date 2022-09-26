@@ -3,34 +3,45 @@
 // root for license information.
 
 import { h, render } from 'preact'
-import { useEffect, useState } from 'preact/hooks'
+import { StateUpdater, useEffect, useState } from 'preact/hooks'
 import {
     AppState,
     getEnvFromState,
     TabName,
     WithAppState,
     WithEffect,
+    WithStateUpdater,
 } from './appState'
 import {
     applyEffect as applyEffectForContacts,
+    ContactSearchState,
     ScheduledContacts,
 } from './contacts'
-import { applyEffect as applyEffectForConfig, Config } from './config'
+import {
+    applyEffect as applyEffectForConfig,
+    Config,
+    ConfigState,
+} from './config'
 
 import { makeAPI } from './api'
-import { applyEffect as applyEffectForHealth, Health } from './health'
+import {
+    applyEffect as applyEffectForHealth,
+    Health,
+    HealthState,
+} from './health'
 
 const { getEnv } = makeAPI()
 
 interface ContentMaker {
-    (params: WithAppState): h.JSX.Element
+    (params: WithAppState<AppState>): h.JSX.Element
 }
+
 interface TabMapItem {
     title: string
-    applyEffect: WithEffect
+    applyEffect: WithEffect<Partial<AppState>> | undefined
     contentMaker: ContentMaker
 }
-const tabMap: { [name: string]: TabMapItem } = {
+const tabMap: { [tabName: string]: TabMapItem } = {
     contacts: {
         title: 'Contacts',
         contentMaker: ScheduledContacts,
@@ -50,7 +61,7 @@ const tabMap: { [name: string]: TabMapItem } = {
 const Nav = ({
     tabName,
     setAppState,
-}: { tabName: TabName } & Pick<WithAppState, 'setAppState'>) => {
+}: { tabName: TabName } & WithStateUpdater<AppState>) => {
     return (
         <nav>
             <ul>
@@ -60,7 +71,7 @@ const Nav = ({
                             className={
                                 tabName === _currentTabName ? 'active' : ''
                             }
-                            href="#home"
+                            href="#"
                             onClick={() =>
                                 setAppState((_prevState) => ({
                                     ..._prevState,
@@ -68,7 +79,7 @@ const Nav = ({
                                 }))
                             }
                         >
-                            {tabMap[_currentTabName].title}
+                            {tabMap[_currentTabName as TabName].title}
                         </a>
                     </li>
                 ))}
@@ -83,35 +94,32 @@ const App = () => {
         resourceGroup: '',
         spacecraftName: '',
     })
-    const updateAppState = (newState: Partial<AppState>) => {
-        setAppState((previousState) => ({
-            ...previousState,
-            ...newState,
-        }))
-    }
 
     for (const [_tabName, { applyEffect }] of Object.entries(tabMap)) {
-        console.info(`Applying effect for ${_tabName}.`)
-        applyEffect({
-            useEffect,
-            appState,
-            updateAppState,
-            setAppState,
-        })
+        if (applyEffect !== undefined) {
+            applyEffect({
+                useEffect,
+                appState: appState as ConfigState &
+                    HealthState &
+                    ContactSearchState,
+                setAppState: setAppState as StateUpdater<Partial<AppState>>,
+            })
+        }
     }
 
     useEffect(() => {
         console.info('index useEffect')
-        updateAppState({
+        setAppState((_prevState) => ({
+            ..._prevState,
             ...getEnv(),
-        })
+        }))
     }, [])
 
     const { isEnvComplete } = getEnvFromState(appState)
 
-    let contentMaker: ContentMaker = Config
+    let MakeContent: ContentMaker = Config
     if (isEnvComplete && tabMap[appState.tabName]) {
-        contentMaker = tabMap[appState.tabName].contentMaker
+        MakeContent = tabMap[appState.tabName].contentMaker
     }
 
     return (
@@ -126,11 +134,7 @@ const App = () => {
                     width: 'calc(100% - 80px)',
                 }}
             >
-                {contentMaker({
-                    appState: appState,
-                    updateAppState,
-                    setAppState,
-                })}
+                <MakeContent appState={appState} setAppState={setAppState} />
             </div>
         </div>
     )

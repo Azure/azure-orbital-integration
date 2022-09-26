@@ -12,7 +12,11 @@ import {
     SpacecraftsCreateOrUpdateOptionalParams,
 } from '@azure/arm-orbital'
 import { DefaultAzureCredential } from '@azure/identity'
-import { getEnvVar, getNumDays, prettyDuration } from './utils'
+import {
+    getEnvVar,
+    getNumDays,
+    prettyDuration,
+} from '@azure/orbital-integration-common'
 import { getTLE, TLE } from './tleHelper'
 import {
     makeAquaContactProfileParams,
