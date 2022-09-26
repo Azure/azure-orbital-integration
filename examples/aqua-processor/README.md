@@ -19,14 +19,28 @@ cd examples/aqua-processor
 mkdir -p ./.env
 cp ./deploy/env-template.sh ./.env/env-template.sh
 ```
-Set the following parameters in your `.env/env-template.sh` file:
-* AZ_LOCATION: Region where the resources will be deployed.
-* NAME_PREFIX: Prefix for generating names for resources to prevent conflict between multiple deployments. Please limit to 11 characters or less. 
-* ALLOWED_SSH_IP_ADDRESS: Source IP address that you will be connecting to the processor VM from. This would normally be the public IP of your local machine.
-* CONTACT_STORAGE_ACCOUNT_NAME: The storage account from the [tcp-to-blob](/tcp-to-blob) deployment.
-* CONTACT_STORAGE_ACCOUNT_RESOURCE_GROUP: Resource group name for contact storage account.
-* SERVICE_BUS_NAMESPACE: Service bus namespace from the [tcp-to-blob](/tcp-to-blob) deployment.
-* SERVICE_BUS_RESOURCE_GROUP: Resource group name for the service bus namespace.
+Set the following **REQUIRED** parameters in your `.env/env-template.sh` file:
+- AZ_LOCATION: Region where the resources will be deployed.
+- NAME_PREFIX: Prefix for generating names for resources to prevent conflict between multiple deployments. Please limit to 11 characters or less. 
+- ALLOWED_SSH_IP_ADDRESS: Source IP address that you will be connecting to the processor VM from. This would normally be the public IP of your local machine.
+- CONTACT_STORAGE_ACCOUNT_NAME: The storage account from the [tcp-to-blob](/tcp-to-blob) deployment.
+- CONTACT_STORAGE_ACCOUNT_RESOURCE_GROUP: Resource group name for contact storage account.
+- SERVICE_BUS_NAMESPACE: Service bus namespace from the [tcp-to-blob](/tcp-to-blob) deployment.
+- SERVICE_BUS_RESOURCE_GROUP: Resource group name for the service bus namespace.
+
+Optional parameters:
+- SERVICE_BUS_AUTH_RULE_NAME: By default we use the system provided auth rule name. If needed you can create your own and update this variable.
+- FILE_EVENT_SERVICE_ENVIRONMENT_NAME: Used to name the instance of FileEventService for log parsing.
+- AZ_VM_USER_HOME_FOLDER: Used to specify the home folder path on the processor VM.
+- SERVICE_BUS_QUEUE_NAME: The queue where Event Grid sends the blob created events when new contact data is written to blob store.
+- RTSTPS_OUTPUT_CONATINER_NAME: The container where `RT-STPS` output data is stored.
+- RTSTPS_OUTPUT_SUBFOLDER_PATH: The subfolder path within the `RTSTPS_OUTPUT_CONATINER_NAME` where RT-STPS data is stored.
+- MODIS_OUTPUT_CONTAINER_NAME: The container where `modis` output data is stored
+- LEVEL0_OUTPUT_SUBFOLDER_PATH: The subfolder path within the `MODIS_OUTPUT_CONTAINER_NAME` where `level0` data is stored.
+- LEVEL1_OUTPUT_SUBFOLDER_PATH: The subfolder path within the `MODIS_OUTPUT_CONTAINER_NAME` where `level1` data is stored.
+- LEVEL2_OUTPUT_SUBFOLDER_PATH: The subfolder path within the `MODIS_OUTPUT_CONTAINER_NAME` where `level2` data is stored.
+- LEVEL1_ALT1_OUTPUT_SUBFOLDER_PATH: The subfolder path within the `MODIS_OUTPUT_CONTAINER_NAME` where `level1-alt1` data is stored.
+- LEVEL2_ALT1_OUTPUT_SUBFOLDER_PATH: The subfolder path within the `MODIS_OUTPUT_CONTAINER_NAME` where `level2-alt1` data is stored.
 
 ### Deploy
 Deploy from your local machine (requires an ssh client).
@@ -142,33 +156,16 @@ Start IPOPP services:
 
 This completes the IPOPP installation and configuration. 
 
-## Enable INotifyRTSTPS Service
+## Enable FileEventService.service
 
-The INotifyRTSTPS service provides event driven processing of contact data files as they are downloaded using the BlobDownloadService. Once RT-STPS is installed, you can enable and start the service and as soon as contact data starts to land on the aqua-processor VM, [inotifywait](https://linux.die.net/man/1/inotifywait) will pick up the new file and automatically trigger RT-STPS. The service will automatically export any logs output by RT-STPS and land in Log Analytics Workspace.
+The FileEventService.service provides event driven processing of contact data files as they are downloaded using FileEventService. Once RT-STPS and IPOPP are installed and configured, you can enable and start the service and as soon as contact data starts to land on the aqua-processor VM, FileEventService will pick up the new file and automatically trigger RT-STPS and IPOPP processing tools [See FileEventService for more details](../../file-event-service/README.md). The service will automatically export any logs output by RT-STPS and IPOPP and land in Log Analytics Workspace.
 
-- Enable the service: `sudo systemctl enable INotifyRTSTPS.service`
-- Start the service: `sudo systemctl start INotifyRTSTPS.service`
+- Enable the service: `sudo systemctl enable FileEventService.service`
+- Start the service: `sudo systemctl start FileEventService.service`
 
-Once this service is enabled, Aqua data files will be automatically processed by RT-STPS as soon as they are written to local disk at `~/blobdata` by the BlobDownloadService.
-
-## Run IPOPP ingest 
-RT-STPS writes its output to the `~/data` folder as `PDS` files. Copy these files to the IPOPP landing zone and start the ingest:
-```
-cp ~/data/* ~/drl/data/dsm/ingest/.
-~/drl/tools/ingest_ipopp.sh
-```
-IPOPP writes its output to the `~/drl/data/pub/gsfcdata/aqua/modis` directory.
-
-To persist the processed data in Azure Blob Storage, upload it from the above directory to a container using [AzCopy](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10). 
+Once this service is enabled, Aqua data files will be automatically processed by RT-STPS and IPOPP and any output will be stored in the storage account that was created during the [tcp-to-blob](../../tcp-to-blob/README.md) deployment.
 
 ## Monitoring IPOPP
-Adding the CRON job below will export data from IPOPP logs to system logs and based on our bicep configuration, the data from a VM's local logs should show up in log analytics.
-
-Here's a sample cron to collect metrics every 5 minutes:
-```
-*/5 * * * * /datadrive/ipopp/drl/nsls/bin/print-logs.sh -startdate `date --date="5 minutes ago" +"%Y-%m-%dT%H:%M:%S"` | logger -p local1.info
-```
-
 Every station that is enabled on IPOPP also produces logs and you can use the same steps to configure the logs to be sent to a local logger and utilize the data using log analytics.
 
 For more information about monitoring, refer to Appendix F in the IPOPP user's guide.

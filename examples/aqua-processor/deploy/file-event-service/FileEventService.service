@@ -7,9 +7,10 @@ Wants=network.target
 After=network.target
 
 [Service]
-WorkingDirectory=/usr/share/BlobDownloadService
+WorkingDirectory=/usr/share/FileEventService
+User=azureuser
 ExecStartPre=/bin/sleep 10
-ExecStart=/usr/share/BlobDownloadService/BlobDownloadService
+ExecStart=/usr/share/FileEventService/FileEventService
 LimitNOFILE=65536
 Restart=always
 RestartSec=30
