@@ -6,7 +6,6 @@ import { contextBridge, ipcMain, ipcRenderer } from 'electron'
 import { AzureOrbital } from '@azure/arm-orbital'
 import {
     ContactSummary,
-    getOptionalEnvVar,
     makeOrbitalHelper,
     OrbitalHelper,
     SearchScheduledContactsParams,
