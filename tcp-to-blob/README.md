@@ -6,7 +6,19 @@
 
 # TCP-to-BLOB
 
-TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and persists it in Azure BLOB Storage.
+TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and persists it in Azure BLOB Storage. This doc shows how to deploy this architecture into Azure using the resources and code in this repository.
+
+## Prerequisites
+
+* Virtual Machine OR
+* Local/Personal environment
+* NodeJS LTS (16 or later)
+* [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
+  uses `yarn`
+* Azure subscription access
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+* [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. 
+* Docker
 
 ## High level components
 - Vnet with subnets including:
@@ -30,16 +42,6 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
    socket)
 7. `complete`: Final event providing success/failure summary. (1 per socket)
 
-## Prerequisites
-
-* NodeJS LTS (16 or later)
-* [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
-  uses `yarn`
-* Azure subscription access
-* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-* [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. 
-* Docker
-
 ## Install NodeJS dependencies
 
 From `azure-orbital-integration` project root directory, run:
@@ -54,6 +56,12 @@ package.json to determine what script are available.
 
 If for some reason you prefer to not run the with `yarn` or `npm`, you can consider the `scripts` in package.json as
 examples.
+
+## Create environment file
+
+1. `cd tcp-to-blob && mkdir .env`
+2. `cp ./deploy/env-template.sh .env/env-<name_prefix>.sh`
+3. Edit your env file as needed. See: "Environment variables" section below.
 
 ## Environment variables
 
@@ -94,12 +102,6 @@ Optional:
 
 Recommend creating a `tcp-to-blob/.env/env-${stage}.sh` to set these and re-load env as needed without risking
 committing them to version control.
-
-## Create environment file
-
-1. `cd tcp-to-blob && mkdir .env`
-2. `cp ./deploy/env-template.sh .env/env-<name_prefix>.sh`
-3. Edit your env file as needed. See: "Environment variables" section above.
 
 ## Deploy environment to Azure Kubernetes Service (AKS)
 
