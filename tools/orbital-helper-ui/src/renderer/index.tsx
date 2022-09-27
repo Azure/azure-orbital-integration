@@ -128,7 +128,7 @@ const App = () => {
 
             <div
                 style={{
-                    marginTop: '3.7em',
+                    marginTop: '4.5em',
                     marginLeft: '40px',
                     marginRight: '40px',
                     width: 'calc(100% - 80px)',

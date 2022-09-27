@@ -32,4 +32,4 @@ requires: Unix-like environment or Mac
 
 ## Run
 
-`yarn start` or `yarn start-dev` (to re-build and run)
+`yarn start-ui` or from `tools/orbital-helper-ui` directory: `yarn start-dev` (to re-build and run)

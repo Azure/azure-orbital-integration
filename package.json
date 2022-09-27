@@ -8,7 +8,9 @@
     "build-tools": "yarn compile && yarn --cwd tools/orbital-helper-ui build",
     "compile-common-js": "yarn --cwd common-js compile",
     "compile-orbital-helper": "yarn --cwd ornital-helper compile",
-    "compile": "for dir_name in common-js orbital-helper tcp-to-blob; do echo \"compiling ${dir_name}\"; npx yarn --cwd  ${dir_name} compile; done"
+    "compile-tools": "yarn compile-common-js && yarn compile-orbital-helper && yarn --cwd tools/orbital-helper-ui compile",
+    "compile": "for dir_name in common-js orbital-helper tcp-to-blob; do echo \"compiling ${dir_name}\"; npx yarn --cwd  ${dir_name} compile; done",
+    "start-ui": "yarn --cwd tools/orbital-helper-ui start"
   },
   "workspaces": [
     "common-js",

@@ -12,7 +12,7 @@
         "esModuleInterop": true,
         "composite": true
     },
-    "include": ["src/**/*", "tests/**/*"],
+    "include": ["src/**/*"],
     "references": [
         { "path": "../../common-js" },
         { "path": "../../orbital-helper" }
