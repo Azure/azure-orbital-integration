@@ -3,4 +3,6 @@
 // root for license information.
 
 export * from './logger'
+export * from './resource-graph'
+export * from './tcp-to-blob-health'
 export * from './utils'

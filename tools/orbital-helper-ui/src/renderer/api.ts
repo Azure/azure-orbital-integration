@@ -3,10 +3,10 @@
 // root for license information.
 
 import {
+    CheckRequiredResources,
     Env,
     ListSpacecrafts,
     SearchContacts,
-    SearchResources,
 } from '../preload'
 
 export const makeAPI = () => {
@@ -14,7 +14,8 @@ export const makeAPI = () => {
         //@ts-ignore
         searchContacts: window.api?.searchContacts as SearchContacts,
         //@ts-ignore
-        searchResources: window.api?.searchResources as SearchResources,
+        checkRequiredResources: window.api
+            ?.checkRequiredResources as CheckRequiredResources,
         //@ts-ignore
         listSpacecrafts: window.api?.listSpacecrafts as ListSpacecrafts,
         //@ts-ignore

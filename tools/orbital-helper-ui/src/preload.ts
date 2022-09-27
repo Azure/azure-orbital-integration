@@ -5,6 +5,11 @@
 import { contextBridge, ipcMain, ipcRenderer } from 'electron'
 import { AzureOrbital } from '@azure/arm-orbital'
 import {
+    checkRequiredResources as _checkRequiredResources,
+    CheckRequiredResourcesParams as _CheckRequiredResourcesParams,
+    GetCountsByTypeResponse,
+} from '@azure/orbital-integration-common'
+import {
     ContactSummary,
     makeOrbitalHelper,
     OrbitalHelper,
@@ -15,6 +20,22 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph'
 
 export interface SearchContactsParams extends Env {
     spacecraftName: string
+}
+
+export type CheckRequiredResources = {
+    (params: CheckRequiredResourcesParams): Promise<GetCountsByTypeResponse>
+}
+export type CheckRequiredResourcesParams = Omit<
+    _CheckRequiredResourcesParams,
+    'client'
+>
+const checkRequiredResources: CheckRequiredResources = async (
+    params: CheckRequiredResourcesParams
+) => {
+    return _checkRequiredResources({
+        ...params,
+        client: getResourceGraphClient(),
+    })
 }
 
 const searchContacts = async ({
@@ -69,49 +90,6 @@ const listSpacecrafts: ListSpacecrafts = async (
     return data as unknown as Spacecraft[]
 }
 
-export interface SearchResourcesParams extends Partial<Env> {
-    resourceNamePrefix: string
-}
-export type SearchResourcesResponse = ResourceBasics & {
-    type: string
-}
-export interface SearchResources {
-    (params: SearchResourcesParams): Promise<SearchResourcesResponse[]>
-}
-const searchResources: SearchResources = async (
-    params: SearchResourcesParams
-): Promise<SearchResourcesResponse[]> => {
-    const startMillis = Date.now()
-    const resourceType = 'microsoft.orbital/spacecrafts'
-
-    let query = `Resources
-| where name startswith '${params.resourceNamePrefix}'
-| project name, type, location, subscriptionId, resourceGroup
-| join kind=leftouter (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subscriptionName=name, subscriptionId) on subscriptionId
-| project name, location, resourceGroup, subscriptionId, subscriptionName, type`
-    if (params?.location) {
-        query = `${query}
-        | where location=~'${params?.location}'`
-    }
-    if (params?.resourceGroup) {
-        query = `${query}
-        | where resourceGroup=~'${params?.resourceGroup}'`
-    }
-    if (params?.subscriptionId) {
-        query = `${query}
-        | where subscriptionId=~'${params?.subscriptionId}'`
-    }
-    const { data } = await getResourceGraphClient().resources(
-        { query },
-        { resultFormat: 'jsdoc' }
-    )
-
-    console.log(
-        `Duration searchResources: ${(Date.now() - startMillis) / 1000} seconds`
-    )
-    return data as unknown as SearchResourcesResponse[]
-}
-
 export interface GetOrbitalHelper {
     (params: Env): OrbitalHelper
 }
@@ -144,7 +122,7 @@ export interface ResourceBasics {
 
 export const LIST_SPACECRAFT_KEY = 'list-spacecrafts'
 export const SEARCH_CONTACTS_KEY = 'search-contacts'
-export const SEARCH_RESOURCES_KEY = 'search-resources'
+export const CHECK_RESOURCES_KEY = 'search-resources'
 
 export interface SearchContacts {
     (params: SearchContactsParams): Promise<ContactSummary[]>
@@ -183,8 +161,8 @@ contextBridge?.exposeInMainWorld('api', {
         ipcRenderer.invoke(SEARCH_CONTACTS_KEY, params),
     listSpacecrafts: async (params: Env) =>
         ipcRenderer.invoke(LIST_SPACECRAFT_KEY, params),
-    searchResources: async (params: SearchResourcesParams) =>
-        ipcRenderer.invoke(SEARCH_RESOURCES_KEY, params),
+    checkRequiredResources: async (params: CheckRequiredResourcesParams) =>
+        ipcRenderer.invoke(CHECK_RESOURCES_KEY, params),
     env,
 })
 
@@ -199,9 +177,9 @@ export const registerIpcMain = () => {
         }
     )
     ipcMain.handle(
-        SEARCH_RESOURCES_KEY,
-        async (e, params: SearchResourcesParams) => {
-            return searchResources(params)
+        CHECK_RESOURCES_KEY,
+        async (e, params: CheckRequiredResourcesParams) => {
+            return checkRequiredResources(params)
         }
     )
 }

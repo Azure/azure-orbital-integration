@@ -10,13 +10,16 @@ import {
     WithIsLoading,
 } from './appState'
 import { makeAPI } from './api'
-import { Env, SearchResourcesResponse } from '../preload'
+import { Env } from '../preload'
 import { Alert, AlertParams } from './alert'
+import { GetCountsByTypeResponse } from '@azure/orbital-integration-common'
 
-const { searchResources } = makeAPI()
+const { checkRequiredResources } = makeAPI()
 
-export interface HealthState extends Partial<Env>, WithIsLoading {
-    resources?: SearchResourcesResponse[]
+export interface HealthState
+    extends Partial<Env>,
+        WithIsLoading,
+        Partial<GetCountsByTypeResponse> {
     resourceNamePrefix?: string
     isHealthLoading?: boolean
 }
@@ -27,28 +30,33 @@ export const applyEffect: WithEffect<HealthState> = <T extends HealthState>({
     setAppState,
 }: WithEffectParams<T>) => {
     useEffect(() => {
-        if (!appState.resourceNamePrefix) {
-            if (appState.resources?.length) {
-                setAppState((_prevState) => ({
-                    ..._prevState,
-                    resources: [],
-                }))
-            }
+        if (
+            !appState.resourceNamePrefix ||
+            !appState.subscriptionId ||
+            !appState.resourceGroup ||
+            !appState.location
+        ) {
+            setAppState((_prevState) => ({
+                ..._prevState,
+                isHealthy: undefined,
+                message: undefined,
+                typeMetrics: undefined,
+            }))
             return
         }
         setAppState((_prevState) => ({
             ..._prevState,
             isHealthLoading: true,
         }))
-        searchResources({
+        checkRequiredResources({
             resourceNamePrefix: appState.resourceNamePrefix,
             subscriptionId: appState.subscriptionId,
             resourceGroup: appState.resourceGroup,
             location: appState.location,
-        }).then((resources) => {
+        }).then((res) => {
             setAppState((_prevState) => ({
                 ..._prevState,
-                resources,
+                ...res,
                 isHealthLoading: false,
             }))
         })
@@ -60,60 +68,6 @@ export const applyEffect: WithEffect<HealthState> = <T extends HealthState>({
     ])
 }
 
-const requiredResourceTitleMap: { [key: string]: string } = {
-    'microsoft.network/virtualnetworks': 'VNet',
-    'microsoft.containerservice/managedclusters': 'AKS Cluster',
-    'microsoft.managedidentity/userassignedidentities': 'AKS Identity',
-    'microsoft.orbital/contactprofiles': 'Orbital Contact Profile',
-    'microsoft.portal/dashboards': 'ADO Dashboard',
-    'microsoft.operationalinsights/workspaces': 'Log Analytics Workspace',
-}
-
-interface TypeMetric {
-    count: number
-    names?: string[]
-}
-type GetCountsByTypeResponse = {
-    isHealthy: boolean
-    typeMetrics: {
-        [type: string]: TypeMetric
-    }
-    message?: string
-}
-const getCountsByType = ({
-    resources,
-}: Pick<HealthState, 'resources'>): GetCountsByTypeResponse => {
-    const res: GetCountsByTypeResponse = {
-        isHealthy: true,
-        typeMetrics: {},
-    }
-    for (const [type] of Object.entries(requiredResourceTitleMap)) {
-        const typeMetric: TypeMetric = {
-            count: 0,
-            names: [],
-        }
-
-        for (const _resource of resources ?? []) {
-            if (_resource.type === type) {
-                typeMetric.count = typeMetric.count + 1
-                typeMetric.names?.push(_resource.name)
-                if (typeMetric.count > 1) {
-                    res.isHealthy = false
-                    res.message = `Multiple resources found of same type. Use more specific prefix.`
-                }
-            }
-        }
-
-        if (typeMetric.count < 1) {
-            res.isHealthy = false
-            res.message = `Missing one or more required resources.`
-        }
-
-        res.typeMetrics[type] = typeMetric
-    }
-
-    return res
-}
 type AlertInfoParams = HealthState &
     Pick<GetCountsByTypeResponse, 'isHealthy' | 'message'>
 
@@ -149,13 +103,10 @@ export const Health = <T extends HealthState>({
     appState,
     setAppState,
 }: WithAppState<T>) => {
-    const { isHealthy, message, typeMetrics } = getCountsByType({
-        resources: appState.resources,
-    })
     const alertParams = getAlertParams({
         ...appState,
-        message,
-        isHealthy,
+        message: appState.message,
+        isHealthy: appState.isHealthy ?? true,
     })
     return (
         <div className="container" style={{ color: '#444', width: '30em' }}>
@@ -176,10 +127,12 @@ export const Health = <T extends HealthState>({
                     }}
                 />
             </div>
-            {appState.isHealthLoading || !appState.resourceNamePrefix ? null : (
+            {!appState.typeMetrics ||
+            appState.isHealthLoading ||
+            !appState.resourceNamePrefix ? null : (
                 <div>
-                    {Object.entries(typeMetrics).map(
-                        ([type, { count, names }]) => (
+                    {Object.entries(appState.typeMetrics).map(
+                        ([type, { count, names, title }]) => (
                             <div style={{ padding: '7px' }}>
                                 <span style={{ paddingRight: '6px' }}>
                                     {count === 1
@@ -188,7 +141,7 @@ export const Health = <T extends HealthState>({
                                         ? '❌'
                                         : '❓'}
                                 </span>
-                                {requiredResourceTitleMap[type] ?? 'Unknown'}
+                                {title}
                                 {!names?.length ? null : names.length > 1 ? (
                                     <span style={{ color: '#8B0000' }}>
                                         : Multiple matches!
