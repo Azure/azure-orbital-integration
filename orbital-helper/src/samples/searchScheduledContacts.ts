@@ -6,7 +6,7 @@ import {
     makeOrbitalHelper,
     SearchScheduledContactsParams,
 } from '../orbitalHelper'
-import { getEnvVar, getOptionalEnvVar } from '../utils'
+import { getEnvVar, getOptionalEnvVar } from '@azure/orbital-integration-common'
 
 const rangeMillis = 90_000
 const plusOrMinus = (_date: Date | undefined) => ({

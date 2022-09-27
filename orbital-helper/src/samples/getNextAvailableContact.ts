@@ -3,7 +3,10 @@
 // root for license information.
 
 import { makeOrbitalHelper } from '../orbitalHelper'
-import { getEnvVar, getOptionalNumericEnvVar } from '../utils'
+import {
+    getEnvVar,
+    getOptionalNumericEnvVar,
+} from '@azure/orbital-integration-common'
 
 const getNextContact_cli = async () => {
     const orbitalHelper = await makeOrbitalHelper()

@@ -4,14 +4,14 @@
 
 const roundToHundredths = (num: number) => Math.round(100 * num) / 100
 
-export const getEnvVar = (name) => {
-    const val = process.env[name]
+export const getEnvVar = (key: string) => {
+    const val = process.env[key]
     if (!val) {
         throw new Error(`Must set "${name}" env variable.`)
     }
     return val
 }
-export const getOptionalEnvVar = (name) => {
+export const getOptionalEnvVar = (name: string) => {
     const val = process.env[name]?.trim()
     if (!val) {
         return undefined
@@ -19,7 +19,7 @@ export const getOptionalEnvVar = (name) => {
     return val
 }
 
-export const getOptionalNumericEnvVar = (name) => {
+export const getOptionalNumericEnvVar = (name: string) => {
     const val = process.env[name]
     if (!val) {
         return undefined
@@ -27,6 +27,10 @@ export const getOptionalNumericEnvVar = (name) => {
     const numericVal = +val
     return isNaN(numericVal) ? undefined : numericVal
 }
+
+const millisInMinute = 60_000
+const millisInHour = 60 * millisInMinute
+const millisInDay = 24 * millisInHour
 
 export const prettyDuration = ({
     startMillis,
@@ -36,9 +40,6 @@ export const prettyDuration = ({
     endMillis?: number
 }) => {
     const durationMillis = endMillis - startMillis
-    const millisInMinute = 60_000
-    const millisInHour = 60 * millisInMinute
-    const millisInDay = 24 * millisInHour
     const daysPart =
         durationMillis >= millisInDay
             ? `${Math.floor(
@@ -53,13 +54,19 @@ export const prettyDuration = ({
         durationMillis >= millisInMinute
             ? `${Math.floor(durationMillis / millisInMinute) % 60} min `
             : ''
-    const secondsPart = `${roundToHundredths(
-        (durationMillis / 1_000) % 60
-    )} sec`
 
-    return `${daysPart}${hoursPart}${minutesPart}${secondsPart}`
+    return `${daysPart}${hoursPart}${minutesPart}`
 }
 
-if (require.main === module) {
-    console.log(roundToHundredths(124234.3544545))
+export const getNumDays = (date: Date) => {
+    const millis = Math.abs(Date.now() - date.getTime())
+    return Math.floor(millis / millisInDay)
+}
+
+const defaultSleepMillis = 1_000 // 1 second
+
+export const sleep = async (sleepMillis = defaultSleepMillis) => {
+    return new Promise((resolve) => {
+        setTimeout(resolve, sleepMillis)
+    })
 }
