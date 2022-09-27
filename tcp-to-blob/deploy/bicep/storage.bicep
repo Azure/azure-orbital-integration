@@ -51,6 +51,36 @@ resource rscStorage 'Microsoft.Storage/storageAccounts@2021-09-01' = {
   }
 }
 
+resource rscPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2022-05-01' = {
+  name: 'default'
+  parent: rscStorage
+  properties: {
+    policy: {
+      rules: [
+        {
+          definition: {
+            actions: {
+              baseBlob: {
+                delete: {
+                  daysAfterCreationGreaterThan: 7
+                }
+              }
+            }
+            filters: {
+            blobTypes: [
+              'blockBlob'
+            ]
+            }
+          }
+          enabled: true
+          name: 'deleteAfter7Days'
+          type: 'Lifecycle'
+        }
+      ]
+    }
+  }
+}
+
 @description('https://docs.microsoft.com/en-us/azure/templates/microsoft.eventgrid/systemtopics?pivots=deployment-language-bicep')
 resource eventGridSystemTopic 'Microsoft.EventGrid/systemTopics@2022-06-15' = {
   name: '${name}-contact-data-created'
