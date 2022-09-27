@@ -1,14 +1,14 @@
 import {
-    aquaContactProfileParams,
-    orbitalHelper,
+    MakeAquaContactProfileParams,
+    makeOrbitalHelper,
 } from '@azure/arm-orbital-helper'
-import { getEnvVar } from './utils'
+import { getEnvVar } from '@azure/orbital-integration-common'
 
 const makeContactProfile = async () => {
-    const { createContactProfile } = await orbitalHelper.makeOrbitalHelper()
+    const { createContactProfile } = await makeOrbitalHelper()
     const aksName = getEnvVar('AKS_NAME')
     const demodConfig = getEnvVar('DEMODULATION_CONFIG')
-    const params: aquaContactProfileParams.MakeAquaContactProfileParams = {
+    const params: MakeAquaContactProfileParams = {
         name: `${aksName}-cp`,
         endpointIP: getEnvVar('LB_IP'),
         endpointPort: +getEnvVar('PORT'),

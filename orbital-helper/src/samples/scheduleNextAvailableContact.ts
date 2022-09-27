@@ -3,7 +3,7 @@
 // root for license information.
 
 import { GetNextContactParams, makeOrbitalHelper } from '../orbitalHelper'
-import { getEnvVar } from '../utils'
+import { getEnvVar } from '@azure/orbital-integration-common'
 
 const scheduleNextAvailableAndDisplay_cli = async () => {
     const orbitalHelper = await makeOrbitalHelper()

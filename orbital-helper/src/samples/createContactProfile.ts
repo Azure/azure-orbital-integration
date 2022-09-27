@@ -3,7 +3,7 @@
 // root for license information.
 
 import { getEndpointFromEnv, makeOrbitalHelper } from '../orbitalHelper'
-import { getEnvVar } from '../utils'
+import { getEnvVar } from '@azure/orbital-integration-common'
 
 const createContactProfile_cli = async () => {
     const { createContactProfile } = await makeOrbitalHelper()

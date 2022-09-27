@@ -3,67 +3,20 @@
 // root for license information.
 
 import { Socket } from 'net'
+import {
+    makeLogger as _makeLogger,
+    getEnvVar,
+    BaseLogParams,
+    MakeLoggerParams,
+} from '@azure/orbital-integration-common'
 
-export const getEnvVar = (key: string) => {
-    const val = process.env[key]
-    if (!val) {
-        throw new Error(`[init] Must populate "${key}" env var.`)
-    }
-    return val
-}
-
-export interface LogParams {
-    event: string
+export interface LogParams extends BaseLogParams {
     remoteHost?: string
     remotePort?: number
-    error?: { message: string }
-    message: string
-
-    [key: string]: any
 }
 
-export interface EventLogger {
-    info(params: LogParams): void
-
-    warn(params: LogParams): void
-
-    error(params: LogParams): void
-    extendContext: (params: { [key: string]: any }) => void
-}
-
-type ConsoleLoggerFx = (message?: any, ...optionalParams: any[]) => void
-export const makeLogger = (makeLoggerParams: {
-    subsystem: string
-    [key: string]: any
-}): EventLogger => {
-    let context = makeLoggerParams
-    const doLog = (log: ConsoleLoggerFx, { error, ...params }: LogParams) => {
-        log(
-            JSON.stringify({
-                ...context,
-                ...params,
-                error: error ? error.message ?? error.toString() : undefined,
-            })
-        )
-    }
-    return {
-        info: (params: LogParams) => {
-            doLog(console.info, params)
-        },
-        warn: (params: LogParams) => {
-            doLog(console.warn, params)
-        },
-        error: (params: LogParams) => {
-            doLog(console.error, params)
-        },
-        extendContext: (params: { [key: string]: any }) => {
-            context = {
-                ...context,
-                ...params,
-            }
-        },
-    }
-}
+export const makeLogger = (params: MakeLoggerParams) =>
+    _makeLogger<LogParams>(params)
 
 const defaultSocketTimeoutSeconds = 60
 
@@ -101,14 +54,6 @@ export const getEnv = () => {
         port,
         socketTimeoutSeconds,
     }
-}
-
-const defaultSleepMillis = 1_000 // 1 second
-
-export const sleep = async (sleepMillis = defaultSleepMillis) => {
-    return new Promise((resolve) => {
-        setTimeout(resolve, sleepMillis)
-    })
 }
 
 type RemoteConnection = Pick<Socket, 'remoteAddress' | 'remotePort'>
