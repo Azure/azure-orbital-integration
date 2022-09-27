@@ -7,7 +7,14 @@
         "sourceMap": true,
         "removeComments": true,
         "strict": true,
-        "outDir": "dist"
+        "outDir": "dist",
+        "rootDir": ".",
+        "esModuleInterop": true,
+        "composite": true
     },
-    "include": ["src/**/*", "tests/**/*"]
+    "include": ["src/**/*", "tests/**/*"],
+    "references": [
+        { "path": "../../common-js" },
+        { "path": "../../orbital-helper" }
+    ]
 }
