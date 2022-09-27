@@ -154,6 +154,12 @@ If you wish to utilize an existing ACR and Storage container:
 4. View AKS logs as described below.
 5. Verify BLOB matching `filename` was created in your storage container.
 
+# Set up a heartbeat testing TCP to Blob endpoint 
+1. Ensure docker is running
+2. Login/switch environments (once every few hours or per env session).
+3. `yarn run-canary-cron`
+4. View AKS logs as described below.
+
 **Hint:** Run this if you see an error "unauthorized: authentication required".
 
 ## Run service locally _without_ containers
