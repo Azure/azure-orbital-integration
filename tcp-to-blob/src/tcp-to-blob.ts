@@ -59,7 +59,7 @@ if (require.main === module) {
             ) {
                 sender = 'canary'
             }
-            const filename = `tcp_data_${timestampStr}_${sender}_${remoteToken}.${sender=='canary'? 'text':'bin'}`
+            const filename = `tcp_data_${timestampStr}_${sender}_${remoteToken}.${sender=='canary'? 'txt':'bin'}`
             const logger = makeLogger({
                 subsystem: 'tcp-to-blob',
                 filename,
