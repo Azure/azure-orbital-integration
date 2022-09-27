@@ -78,6 +78,7 @@ resource eventSubscription 'Microsoft.EventGrid/systemTopics/eventSubscriptions@
       ]
       // https://github.com/Azure/azure-orbital-integration/issues/118
       subjectBeginsWith: '/blobServices/default/containers/raw-contact-data'
+      subjectEndsWith: '.bin'
     }
   }
 }
