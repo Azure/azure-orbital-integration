@@ -46,7 +46,7 @@ namespace FileEventService.Actions
         {
             FileMetadata data = JsonUtils.DeserializeObject<FileMetadata>(eventGridMessage.Data.ToString());
 
-            string filePath = Path.Combine(_options.FilePath, data.FileName);
+            string filePath = Path.Combine(_options.FilePath, data.RelativeFilePath);
             string lowerContainerName = _options.ContainerName.ToLowerInvariant();
             var evt = $"{_className}::{nameof(ProcessEventAsync)}";
             var msg = $"Starting blob upload to, '{lowerContainerName}/{filePath}'.";

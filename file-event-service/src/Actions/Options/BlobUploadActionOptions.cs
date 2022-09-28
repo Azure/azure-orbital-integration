@@ -12,7 +12,7 @@ namespace FileEventService.Actions
     {
         public string ConnectionString { get; set; }
         public string ContainerName { get; set; }
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = string.Empty;
 
         public string AsJsonSerializedString()
         {
