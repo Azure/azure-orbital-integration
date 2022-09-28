@@ -70,6 +70,9 @@ resource rscPolicy 'Microsoft.Storage/storageAccounts/managementPolicies@2022-05
             blobTypes: [
               'blockBlob'
             ]
+            prefixMatch: [
+              'raw-contact-data/canary'
+            ]
             }
           }
           enabled: true
