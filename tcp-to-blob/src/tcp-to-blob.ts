@@ -59,10 +59,11 @@ if (require.main === module) {
             ) {
                 sender = 'canary'
             }
-            const filename = `tcp_data_${timestampStr}_${sender}_${remoteToken}.${sender=='canary'? 'txt':'bin'}`
+            const localFileName = `tcp_data_${timestampStr}_${sender}_${remoteToken}.${sender=='canary'? 'txt':'bin'}`
+            const filename = `${sender}/${localFileName}`
             const logger = makeLogger({
                 subsystem: 'tcp-to-blob',
-                filename,
+                localFileName,
                 localPort: port,
                 remoteHost,
                 remotePort,
@@ -132,12 +133,12 @@ if (require.main === module) {
                     try {
                         fileAppender = makeFileAppender({
                             dirPath: '/tmp/output',
-                            filename,
+                            filename: localFileName,
                         })
                         const msg = {
                             message: 'Creating file.',
                             event: 'socket-data',
-                            filename,
+                            filename: localFileName,
                             ...makeMsgData(),
                         }
 
