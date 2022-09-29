@@ -63,7 +63,7 @@ if (require.main === module) {
             const filename = `${sender}/${localFileName}`
             const logger = makeLogger({
                 subsystem: 'tcp-to-blob',
-                localFileName,
+                filename,
                 localPort: port,
                 remoteHost,
                 remotePort,
