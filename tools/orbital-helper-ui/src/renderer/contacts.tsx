@@ -317,7 +317,14 @@ export const ScheduledContacts = <T extends ContactSearchState>({
                         ) : (
                             filteredContacts.map((summary) => (
                                 <tr>
-                                    <td>{summary.startTimeRelative}</td>
+                                    <td>
+                                        {summary.startTimeRelative}
+                                        {summary.startTimeRelative?.includes(':') ? null : (
+                                            <div className="tooltip">🕑
+                                                <span className="tooltiptext">{summary.startTime}</span>
+                                            </div>
+                                        )}
+                                    </td>
                                     <td>{summary.duration}</td>
                                     <td
                                         style={{
