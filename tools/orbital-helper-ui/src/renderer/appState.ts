@@ -7,6 +7,7 @@ import { ConfigState } from './config'
 import { Env } from '../preload'
 import { StateUpdater } from 'preact/compat'
 import { HealthState } from './health'
+import { LogsState } from './logs'
 import { EffectCallback, Inputs } from 'preact/hooks'
 
 /**
@@ -20,7 +21,8 @@ export interface WithIsLoading {
 }
 export type AppState = { tabName: TabName } & Partial<ContactSearchState> &
     Partial<ConfigState> &
-    Partial<HealthState>
+    Partial<HealthState> &
+    Partial<LogsState>
 
 export interface WithStateUpdater<T extends Partial<AppState>> {
     setAppState: StateUpdater<T>

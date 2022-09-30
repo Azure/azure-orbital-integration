@@ -3,7 +3,6 @@
 // root for license information.
 
 import { get } from 'http'
-import { getEnvVar } from '@azure/orbital-integration-common'
 
 export interface TLE {
     title: string
@@ -52,13 +51,3 @@ export const getTLE = (title: string): Promise<TLE> => {
     })
 }
 
-if (require.main === module) {
-    const tleTitle = getEnvVar('TLE_TITLE')
-    getTLE(tleTitle)
-        .then((tle) => {
-            console.log(JSON.stringify(tle, null, 2))
-        })
-        .catch((error) => {
-            console.error(error)
-        })
-}

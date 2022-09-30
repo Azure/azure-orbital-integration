@@ -13,8 +13,11 @@ import {
 } from '@azure/arm-orbital'
 import { DefaultAzureCredential } from '@azure/identity'
 import {
+    BaseLogParams,
+    EventLogger,
     getEnvVar,
     getNumDays,
+    makeLogger,
     prettyDuration,
 } from '@azure/orbital-integration-common'
 import { getTLE, TLE } from './tleHelper'
@@ -51,6 +54,7 @@ interface MakeOrbitalHelperParams {
     resourceGroup: string
     location: string
     orbitalClient: AzureOrbital
+    logger: EventLogger<BaseLogParams>
 }
 
 export interface ContactWithSummary {
@@ -203,7 +207,10 @@ export const getHelperEnvVars = () => {
         subscription: getEnvVar('AZ_SUBSCRIPTION'),
     }
 }
-export const makeHelperParamsFromEnv = (): MakeOrbitalHelperParams => {
+export const makeHelperParamsFromEnv = (): Omit<
+    MakeOrbitalHelperParams,
+    'logger'
+> => {
     const envParams = getHelperEnvVars()
     return {
         ...envParams,
@@ -219,14 +226,19 @@ export const makeOrbitalHelper = (
         location,
         resourceGroup,
         orbitalClient,
-    }: MakeOrbitalHelperParams = makeHelperParamsFromEnv()
+        logger,
+    }: MakeOrbitalHelperParams = {
+        logger: makeLogger({ subsystem: 'orbital-helper' }),
+        ...makeHelperParamsFromEnv(),
+    }
 ): OrbitalHelper => {
-    console.log(
-        `Creating Orbital Helper for: ${JSON.stringify({
+    logger?.info({
+        event: 'init',
+        message: `Creating Orbital Helper for: ${JSON.stringify({
             location,
             resourceGroup,
-        })}`
-    )
+        })}`,
+    })
     const makeContactProfileShell = (profileName: string) => ({
         id: `/subscriptions/${orbitalClient.subscriptionId}/resourcegroups/${resourceGroup}/providers/Microsoft.Orbital/contactProfiles/${profileName}`,
     })
@@ -256,7 +268,11 @@ export const makeOrbitalHelper = (
             reservationEndTime,
             reservationStartTime,
         }
-        console.log('   scheduleNextContact: Scheduling contact...')
+        logger.info({
+            event: 'schedule-contact',
+            message: `Scheduling contact`,
+            params: lastUnnamedParam,
+        })
         const unhelpfulRes = await orbitalClient.contacts.beginCreateAndWait(
             resourceGroup,
             spaceCraftName,
@@ -309,7 +325,6 @@ export const makeOrbitalHelper = (
             ? maxMinutesFromNow * MILLIS_PER_MINUTE
             : Number.MAX_SAFE_INTEGER
         for await (const _contact of contacts) {
-            console.log('constactttttt:', JSON.stringify(_contact, null, 2))
             if (!_contact?.rxStartTime || !_contact?.rxEndTime) {
                 continue
             }
@@ -337,7 +352,11 @@ export const makeOrbitalHelper = (
     const scheduleNextContact = async (
         schedParams: GetNextContactParams
     ): Promise<ScheduleNextContactResponse | void> => {
-        console.log('   scheduleNextContact: Finding next available contact...')
+        logger.info({
+            event: 'schedule-next-contact',
+            message: `Finding next contact`,
+            params: schedParams,
+        })
         const nextContact = await getNextContact(schedParams)
 
         if (!nextContact) {
@@ -360,7 +379,11 @@ export const makeOrbitalHelper = (
             reservationEndTime: contact.rxEndTime,
             reservationStartTime: contact.rxStartTime,
         }
-        console.log('   scheduleNextContact: Scheduling contact...')
+        logger.info({
+            event: 'schedule-next-contact',
+            message: `Scheduling contact`,
+            params: lastUnnamedParam,
+        })
         const unhelpfulRes = await orbitalClient.contacts.beginCreateAndWait(
             resourceGroup,
             schedParams.spaceCraftName,
@@ -380,6 +403,11 @@ export const makeOrbitalHelper = (
     const searchScheduledContacts = async function* _getScheduledContacts(
         _params: SearchScheduledContactsParams
     ): AsyncGenerator<ContactWithSummary> {
+        logger.info({
+            event: 'search-scheduled-contacts',
+            message: 'Searching scheduled contacts.',
+            params: _params,
+        })
         const contacts = await orbitalClient.contacts.list(
             resourceGroup,
             _params.spacecraftName
@@ -449,13 +477,12 @@ export const makeOrbitalHelper = (
             tleLine1: newTLE.line1,
             tleLine2: newTLE.line2,
         }
-        console.log(
-            `Attempting to update spacecraft with "optionalParams": ${JSON.stringify(
-                optionalParams,
-                null,
-                2
-            )}`
-        )
+        logger.info({
+            event: 'update-tle',
+            message: `Updating TLE`,
+            params: optionalParams,
+        })
+
         await orbitalClient.spacecrafts.beginCreateOrUpdateAndWait(
             resourceGroup,
             spacecraftName,
