@@ -29,16 +29,23 @@ export interface MakeLoggerParams {
     [key: string]: any
 }
 export const makeLogger = <LogParams extends BaseLogParams>(
-    makeLoggerParams: MakeLoggerParams
+    makeLoggerParams: MakeLoggerParams,
+    isPretty: boolean = false
 ): EventLogger<LogParams> => {
     let context = makeLoggerParams
     const doLog = (log: ConsoleLoggerFx, { error, ...params }: LogParams) => {
         log(
-            JSON.stringify({
-                ...context,
-                ...params,
-                error: error ? error.message ?? error.toString() : undefined,
-            })
+            JSON.stringify(
+                {
+                    ...context,
+                    ...params,
+                    error: error
+                        ? error.message ?? error.toString()
+                        : undefined,
+                },
+                null,
+                isPretty ? 2 : ''
+            )
         )
     }
     return {

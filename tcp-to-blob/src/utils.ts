@@ -18,7 +18,7 @@ export interface LogParams extends BaseLogParams {
 export const makeLogger = (params: MakeLoggerParams) =>
     _makeLogger<LogParams>(params)
 
-const defaultSocketTimeoutSeconds = 60
+const defaultSocketTimeoutSeconds = 120
 
 export const getEnv = () => {
     const storageContainer = getEnvVar('CONTACT_DATA_STORAGE_CONTAINER')

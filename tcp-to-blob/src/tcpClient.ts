@@ -4,7 +4,11 @@
 
 import { Socket } from 'net'
 import { LogParams, makeLogger } from './utils'
-import { EventLogger, sleep } from '@azure/orbital-integration-common'
+import {
+    EventLogger,
+    sleep,
+    BaseLogParams,
+} from '@azure/orbital-integration-common'
 
 export interface SendDataParams {
     numLines: number
@@ -13,16 +17,34 @@ export interface SendDataParams {
     logger: EventLogger<LogParams>
 }
 
+export interface MakeSocketParams {
+    host: string
+    port: number
+    logger: EventLogger<BaseLogParams>
+}
+
+export const makeSocket = ({ host, port, logger }: MakeSocketParams) => {
+    const client = new Socket({
+        allowHalfOpen: true,
+    })
+
+    logger.info({
+        event: 'init',
+        message: 'Establishing connection.',
+    })
+
+    client.setTimeout(30_000)
+    const socket = client.connect(port, host)
+    return socket
+}
+
 export const sendData = async ({
     numLines,
     host,
     port,
     logger,
 }: SendDataParams) => {
-    const client = new Socket({
-        allowHalfOpen: true,
-    })
-
+    let isOkToWrite = true
     let linesWritten = 0
     const baseParams = {
         host,
@@ -31,16 +53,11 @@ export const sendData = async ({
         numLines,
     }
 
-    logger.info({
-        event: 'init',
-        message: 'Establishing connection.',
-        ...baseParams,
+    const socket = makeSocket({
+        host,
+        port,
+        logger,
     })
-
-    let isOkToWrite = true
-
-    client.setTimeout(30_000)
-    const socket = client.connect(port, host)
 
     const asyncWrite = (): Promise<void> => {
         return new Promise((resolve, reject) => {

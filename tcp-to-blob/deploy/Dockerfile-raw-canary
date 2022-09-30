@@ -11,4 +11,4 @@ RUN apk add --update nodejs
 
 WORKDIR /app/
 
-COPY ./dist/bundle/tcp-to-blob-canary.js .
+COPY ./dist/bundle/tcp-to-blob-raw-canary.js .

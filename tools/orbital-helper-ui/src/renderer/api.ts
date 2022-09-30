@@ -7,12 +7,15 @@ import {
     Env,
     ListSpacecrafts,
     SearchContacts,
+    SearchLogs,
 } from '../preload'
 
 export const makeAPI = () => {
     return {
         //@ts-ignore
         searchContacts: window.api?.searchContacts as SearchContacts,
+        //@ts-ignore
+        searchLogs: window.api?.searchLogs as SearchLogs,
         //@ts-ignore
         checkRequiredResources: window.api
             ?.checkRequiredResources as CheckRequiredResources,

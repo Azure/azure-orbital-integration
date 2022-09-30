@@ -59,7 +59,8 @@ if (require.main === module) {
             ) {
                 sender = 'canary'
             }
-            const filename = `tcp_data_${timestampStr}_${sender}_${remoteToken}`
+            const localFileName = `tcp_data_${timestampStr}_${sender}_${remoteToken}`
+            let filename = `${sender}/${localFileName}`
             const logger = makeLogger({
                 subsystem: 'tcp-to-blob',
                 filename,
@@ -93,6 +94,7 @@ if (require.main === module) {
             let numActiveBlockProcessors = 0
             const maxBlobSizeInBytesToInspectContent = 1_000
             const httpHeader = 'GET / HTTP/'
+            let isText: boolean | undefined = undefined
             socket.on('data', (data) => {
                 if (!data.byteLength) {
                     logger.info({
@@ -128,16 +130,27 @@ if (require.main === module) {
                         })
                         return
                     }
+                    if (isText === undefined) {
+                        if (data.toString().includes('Hello from')) {
+                            isText = true
+                        } else {
+                            isText = false
+                        }
+                        filename = `${filename}${isText ? '.txt' : '.bin'}`
+                        logger.extendContext({
+                            filename,
+                        })
+                    }
                 } else if (!fileAppender) {
                     try {
                         fileAppender = makeFileAppender({
                             dirPath: '/tmp/output',
-                            filename,
+                            filename: localFileName,
                         })
                         const msg = {
                             message: 'Creating file.',
                             event: 'socket-data',
-                            filename,
+                            filename: localFileName,
                             ...makeMsgData(),
                         }
 

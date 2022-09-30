@@ -50,7 +50,7 @@ yarn deploy-dashboard
 
 # Build & deploy canary
 echo "Publishing canary image."
-yarn docker-push-canary
+yarn docker-push-text-canary
 
 yarn make-contact-profile
 
@@ -61,8 +61,6 @@ sleep $SLEEP_SECONDS_BEFORE_CANARY;
 echo "Running Canary Kubernetes Job."
 yarn run-canary
 
-# If deployed to different cluster, you can use --context:
-# e.g. `kubectl --context tcp-to-blob-canary-dev delete -f ./.env/tcp-to-blob-canary.yaml
 
 # TODO: Write params needed for deploying Orbital contact profile to a file
 #  that can be loaded (as env variable) when (using Orbital Helper for )

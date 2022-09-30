@@ -13,7 +13,7 @@ interface ArgvParams {
 
 const runJob = async () => {
     const logger = makeLogger({
-        subsystem: 'tcp-to-blob-canary',
+        subsystem: 'tcp-to-blob-text-canary',
     })
     let sendParams: SendDataParams | null = null
     try {

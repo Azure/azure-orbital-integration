@@ -7,7 +7,7 @@ const roundToHundredths = (num: number) => Math.round(100 * num) / 100
 export const getEnvVar = (key: string) => {
     const val = process.env[key]
     if (!val) {
-        throw new Error(`Must set "${name}" env variable.`)
+        throw new Error(`Must set "${key}" env variable.`)
     }
     return val
 }
@@ -61,6 +61,11 @@ export const prettyDuration = ({
 export const getNumDays = (date: Date) => {
     const millis = Math.abs(Date.now() - date.getTime())
     return Math.floor(millis / millisInDay)
+}
+
+export const getNumHours = (date: Date) => {
+    const millis = Math.abs(Date.now() - date.getTime())
+    return Math.floor(millis / millisInHour)
 }
 
 const defaultSleepMillis = 1_000 // 1 second
