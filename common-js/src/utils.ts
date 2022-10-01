@@ -63,6 +63,11 @@ export const getNumDays = (date: Date) => {
     return Math.floor(millis / millisInDay)
 }
 
+export const getNumHours = (date: Date) => {
+    const millis = Math.abs(Date.now() - date.getTime())
+    return Math.floor(millis / millisInHour)
+}
+
 const defaultSleepMillis = 1_000 // 1 second
 
 export const sleep = async (sleepMillis = defaultSleepMillis) => {

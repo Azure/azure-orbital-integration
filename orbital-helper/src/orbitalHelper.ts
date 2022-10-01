@@ -16,7 +16,7 @@ import {
     BaseLogParams,
     EventLogger,
     getEnvVar,
-    getNumDays,
+    getNumHours,
     makeLogger,
     prettyDuration,
 } from '@azure/orbital-integration-common'
@@ -72,8 +72,8 @@ const makeContactSummary = (_contact: Contact): ContactSummary => {
     let startTimeRelative = ''
     const nowMillis = Date.now()
     if (startMillis) {
-        const numDays = getNumDays(contactStart)
-        if (numDays > 1) {
+        const numHours = getNumHours(contactStart)
+        if (numHours > 24) {
             startTimeRelative = contactStart.toLocaleString()
         } else if (nowMillis - startMillis > 0) {
             startTimeRelative = `${prettyDuration({
