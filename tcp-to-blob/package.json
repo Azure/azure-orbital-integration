@@ -4,6 +4,7 @@
   "description": "TCP to BLOB",
   "scripts": {
     "build": "npx esbuild ./src/tcp-*.ts ./src/makeEnvFiles.ts ./src/makeContactProfile.ts --bundle --platform=node --outdir=./dist/bundle",
+    "clean": "rm -rf ./dist & rm -rf ./node_modules",
     "make-env-files": "node ./dist/bundle/makeEnvFiles.js",
     "make-contact-profile": "node ./dist/bundle/makeContactProfile.js",
     "deploy-fast": "yarn make-env-files && kubectl apply -f ./dist/env/${NAME_PREFIX}/tcp-to-blob.yaml",

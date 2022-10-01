@@ -1,16 +1,17 @@
 {
-    "name": "azure-orbital-electron",
+    "name": "azure-orbital-helper-ui",
     "version": "1.0.0",
-    "description": "User-friendly UI for Azure orbital",
+    "description": "UI for Azure Orbital Integration",
     "author": "micholas",
     "license": "MIT",
     "private": true,
     "scripts": {
+        "clean": "rm -rf ./dist & rm -rf ./node_modules",
         "copy": "cp src/*.css src/*.html src/package.json dist/",
         "compile": "yarn prettier && npx tsc",
         "compile-watch": "yarn prettier && npx tsc -w",
         "dev": "node esbuild.js dev && yarn cp",
-        "build": "npx esbuild --external:'electron' --platform=node --bundle ./src/preload.ts   --outdir=./dist/ && npx esbuild --external:'electron' --platform=node --bundle ./src/renderer/index.tsx --outdir=./dist/scripts && npx esbuild --external:'electron' --platform=node --bundle  ./src/main.ts  --outdir=./dist/ && yarn copy",
+        "build": "npx esbuild --external:'electron' --platform=node --bundle ./src/preload.ts --outdir=./dist/ && npx esbuild --external:'electron' --platform=node --bundle ./src/renderer/index.tsx --outdir=./dist/scripts && npx esbuild --external:'electron' --platform=node --bundle  ./src/main.ts  --outdir=./dist/ && yarn copy",
         "webpack": "webpack && cp src/*.html src/package.json dist/",
         "start": "electron dist/",
         "start-dev": "yarn build && electron dist/",
@@ -18,12 +19,8 @@
         "prettier": "npx prettier . -w"
     },
     "devDependencies": {
-        "@types/chai": "^4.3.3",
-        "@types/mocha": "^9.1.1",
-        "chai": "^4.3.6",
-        "electron": "^20.1.3",
+        "electron": "^21.0.1",
         "esbuild": "^0.15.7",
-        "mocha": "^10.0.0",
         "prettier": "^2.7.1",
         "ts-loader": "^9.3.1",
         "typescript": "^4.8.3"
