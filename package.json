@@ -6,6 +6,7 @@
     "build-orbital-helper": "yarn compile && yarn --cwd orbital-helper build",
     "build-tcp-to-blob": "yarn compile && yarn --cwd tcp-to-blob build",
     "build-tools": "yarn compile && yarn --cwd tools/orbital-helper-ui build",
+    "clean": "rm -rf ./node_modules && for dir_name in common-js orbital-helper tcp-to-blob tools/orbital-helper-ui; do echo \"cleaning ${dir_name}\"; npx yarn --cwd  ${dir_name} clean; done",
     "compile-common-js": "yarn --cwd common-js compile",
     "compile-orbital-helper": "yarn --cwd ornital-helper compile",
     "compile-tools": "yarn compile-common-js && yarn compile-orbital-helper && yarn --cwd tools/orbital-helper-ui compile",

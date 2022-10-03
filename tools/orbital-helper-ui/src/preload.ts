@@ -3,11 +3,15 @@
 // root for license information.
 
 import { contextBridge, ipcMain, ipcRenderer } from 'electron'
+import { LogsQueryClient } from '@azure/monitor-query'
+
 import { AzureOrbital } from '@azure/arm-orbital'
 import {
     checkRequiredResources as _checkRequiredResources,
     CheckRequiredResourcesParams as _CheckRequiredResourcesParams,
     GetCountsByTypeResponse,
+    getEnvVar,
+    makeLogger,
 } from '@azure/orbital-integration-common'
 import {
     ContactSummary,
@@ -15,8 +19,15 @@ import {
     OrbitalHelper,
     SearchScheduledContactsParams,
 } from '@azure/arm-orbital-helper'
-import { DefaultAzureCredential } from '@azure/identity'
 import { ResourceGraphClient } from '@azure/arm-resourcegraph'
+import { DefaultAzureCredential } from '@azure/identity'
+
+const logger = makeLogger(
+    {
+        subsystem: 'electron-preload',
+    },
+    true
+)
 
 export interface SearchContactsParams extends Env {
     spacecraftName: string
@@ -44,6 +55,7 @@ const searchContacts = async ({
     resourceGroup,
     spacecraftName,
 }: SearchContactsParams) => {
+    const startMillis = Date.now()
     if (!spacecraftName?.trim()) {
         return []
     }
@@ -61,6 +73,9 @@ const searchContacts = async ({
     )) {
         contacts.push(summary)
     }
+    console.log(
+        `Duration searchContacts: ${(Date.now() - startMillis) / 1000} seconds`
+    )
     return contacts.sort(
         (a, b) =>
             new Date(b.startTimeUTC ?? 0)?.getTime() -
@@ -103,6 +118,7 @@ const getOrbitalHelper: GetOrbitalHelper = ({
         orbitalClient,
         location,
         resourceGroup,
+        logger,
     })
 }
 
@@ -122,6 +138,7 @@ export interface ResourceBasics {
 
 export const LIST_SPACECRAFT_KEY = 'list-spacecrafts'
 export const SEARCH_CONTACTS_KEY = 'search-contacts'
+export const SEARCH_LOGS_KEY = 'search-logs'
 export const CHECK_RESOURCES_KEY = 'search-resources'
 
 export interface SearchContacts {
@@ -159,6 +176,8 @@ const env: Partial<Env> = JSON.parse(
 contextBridge?.exposeInMainWorld('api', {
     searchContacts: async (params: SearchContactsParams) =>
         ipcRenderer.invoke(SEARCH_CONTACTS_KEY, params),
+    searchLogs: async (params: SearchLogs) =>
+        ipcRenderer.invoke(SEARCH_LOGS_KEY, params),
     listSpacecrafts: async (params: Env) =>
         ipcRenderer.invoke(LIST_SPACECRAFT_KEY, params),
     checkRequiredResources: async (params: CheckRequiredResourcesParams) =>
@@ -176,6 +195,12 @@ export const registerIpcMain = () => {
             return searchContacts(params)
         }
     )
+    ipcMain.handle(SEARCH_LOGS_KEY, async (e, params: SearchLogsParams) => {
+        return searchEventLogs({
+            client: new LogsQueryClient(getCredentials()),
+            ...params,
+        })
+    })
     ipcMain.handle(
         CHECK_RESOURCES_KEY,
         async (e, params: CheckRequiredResourcesParams) => {
@@ -183,3 +208,86 @@ export const registerIpcMain = () => {
         }
     )
 }
+
+export interface SearchLogsParams {
+    logAnalyticsWorkspaceName: string
+    subsystem?: string
+    event?: string
+    message?: string
+}
+export type EventLogEntry = {
+    timestamp: Date
+    subsystem: string
+    event: string
+    message: string
+}
+export interface SearchLogs {
+    (params: Omit<SearchLogsParams, 'client'>): Promise<{
+        logs: EventLogEntry[]
+    }>
+}
+const searchEventLogs = async (
+    params: SearchLogsParams & { client: LogsQueryClient }
+): Promise<{ logs: EventLogEntry[] }> => {
+    const startMillis = Date.now()
+
+    let query: string = `ContainerLog
+ | extend _data = parse_json(LogEntry)
+ | where _data.subsystem != ''`
+    const _params = params as unknown as any
+    for (const prop of ['subsystem', 'event']) {
+        if (_params[prop]) {
+            query = `${query}
+ | where _data.${prop} == '${_params[prop]}'`
+        }
+    }
+    if (params.message) {
+        query = `${query}
+ | where _data.massage has '${params.message}'`
+    }
+    query = `${query}
+ | sort by TimeGenerated desc
+ | project TimeGenerated, LogEntry`
+
+    const lawId = await getLawId({ name: params.logAnalyticsWorkspaceName })
+    const res = await params.client.queryWorkspace(lawId, query, {
+        startTime: new Date(Date.now() - 30 * 24 * 3600 * 1000),
+        endTime: new Date(),
+    })
+    const rows = (res as unknown as any)['tables'][0]['rows'] as any[]
+    console.log(`duration: ${(Date.now() - startMillis) / 1000}} seconds`)
+    return {
+        logs: rows.map(([timestamp, json]) => ({
+            timestamp,
+            ...JSON.parse(json),
+        })) as unknown as EventLogEntry[],
+    }
+}
+
+let lawIdMap: { [lawName: string]: string } = {}
+
+const getLawId = async ({ name }: { name: string }) => {
+    const resourceClient = new ResourceGraphClient(getCredentials())
+    if (lawIdMap[name]) {
+        console.log(`law ID cache hit for ${name}.`)
+        return lawIdMap[name]
+    }
+    console.log(`law ID cache MISS :( Querying for for ${name}.`)
+    const query = `Resources
+    | where name == '${name}'`
+    const { data } = await resourceClient.resources(
+        { query },
+        { resultFormat: 'jsdoc' }
+    )
+    const errMessage = `No log analytics workspace found named "${name}".`
+    if (data.length !== 1) {
+        throw new Error(errMessage)
+    }
+    const lawId = data[0]?.properties?.customerId
+    if (!lawId) {
+        throw new Error(`No log analytics workspace found named "${name}".`)
+    }
+    lawIdMap[name] = lawId
+    return lawId
+}
+

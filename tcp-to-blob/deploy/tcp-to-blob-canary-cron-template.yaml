@@ -8,12 +8,15 @@ metadata:
 spec:
   schedule: "*/1 * * * *"
   jobTemplate:
-      spec:
-        template:
-          spec:
-            containers:
-              - name: tcp-to-blob-canary
-                image: "${ACR_NAME}.azurecr.io/tcp-to-blob-canary:latest"
-                command: [ "node", "tcp-to-blob-canary.js" ]
-                args: [ "{\"host\" : \"${LB_IP}\", \"port\": ${PORT}, \"numLines\": ${CANARY_NUM_LINES}}" ]
-            restartPolicy: OnFailure
+    spec:
+      template:
+        spec:
+          containers:
+            - name: tcp-to-blob-canary
+              image: "${ACR_NAME}.azurecr.io/tcp-to-blob-canary:latest"
+              command: ["node", "tcp-to-blob-canary.js"]
+              args:
+                [
+                  '{"host" : "${LB_IP}", "port": ${PORT}, "numLines": ${CANARY_NUM_LINES}}',
+                ]
+          restartPolicy: OnFailure

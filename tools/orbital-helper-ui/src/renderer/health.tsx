@@ -5,74 +5,26 @@
 import { h } from 'preact'
 import {
     WithAppState,
-    WithEffect,
-    WithEffectParams,
     WithIsLoading,
 } from './appState'
-import { makeAPI } from './api'
 import { Env } from '../preload'
 import { Alert, AlertParams } from './alert'
 import { GetCountsByTypeResponse } from '@azure/orbital-integration-common'
-
-const { checkRequiredResources } = makeAPI()
 
 export interface HealthState
     extends Partial<Env>,
         WithIsLoading,
         Partial<GetCountsByTypeResponse> {
     resourceNamePrefix?: string
-    isHealthLoading?: boolean
-}
-
-export const applyEffect: WithEffect<HealthState> = <T extends HealthState>({
-    appState,
-    useEffect,
-    setAppState,
-}: WithEffectParams<T>) => {
-    useEffect(() => {
-        if (
-            !appState.resourceNamePrefix ||
-            !appState.subscriptionId ||
-            !appState.resourceGroup ||
-            !appState.location
-        ) {
-            setAppState((_prevState) => ({
-                ..._prevState,
-                isHealthy: undefined,
-                message: undefined,
-                typeMetrics: undefined,
-            }))
-            return
-        }
-        setAppState((_prevState) => ({
-            ..._prevState,
-            isHealthLoading: true,
-        }))
-        checkRequiredResources({
-            resourceNamePrefix: appState.resourceNamePrefix,
-            subscriptionId: appState.subscriptionId,
-            resourceGroup: appState.resourceGroup,
-            location: appState.location,
-        }).then((res) => {
-            setAppState((_prevState) => ({
-                ..._prevState,
-                ...res,
-                isHealthLoading: false,
-            }))
-        })
-    }, [
-        appState.resourceNamePrefix,
-        appState.subscriptionId,
-        appState.resourceGroup,
-        appState.location,
-    ])
+    isNamePrefixContentLoading?: boolean
+    healthErrorMessage?: string
 }
 
 type AlertInfoParams = HealthState &
     Pick<GetCountsByTypeResponse, 'isHealthy' | 'message'>
 
 const getAlertParams = (params: AlertInfoParams): AlertParams => {
-    if (params.isHealthLoading) {
+    if (params.isNamePrefixContentLoading) {
         return {
             type: 'info',
             message: 'Performing health check...',
@@ -99,6 +51,31 @@ const getAlertParams = (params: AlertInfoParams): AlertParams => {
     }
 }
 
+export const NamePrefixInput = <T extends HealthState>({
+    appState,
+    setAppState,
+}: WithAppState<T>) => {
+    return (
+        <div className="container" style={{ width: '30em' }}>
+            <label>Resource name prefix</label>
+            <input
+                readOnly={
+                    !!appState.isLoading || appState.isNamePrefixContentLoading
+                }
+                type="text"
+                style={{ width: 'calc(100% - 2em)' }}
+                value={appState.resourceNamePrefix ?? ''}
+                onChange={({ currentTarget }) => {
+                    setAppState((_prevState) => ({
+                        ..._prevState,
+                        resourceNamePrefix: currentTarget.value?.trim() ?? '',
+                    }))
+                }}
+            />
+        </div>
+    )
+}
+
 export const Health = <T extends HealthState>({
     appState,
     setAppState,
@@ -111,24 +88,9 @@ export const Health = <T extends HealthState>({
     return (
         <div className="container" style={{ color: '#444', width: '30em' }}>
             <Alert type={alertParams.type} message={alertParams.message} />
-            <div className="container">
-                <label>Resource name prefix</label>
-                <input
-                    readOnly={!!appState.isLoading || appState.isHealthLoading}
-                    type="text"
-                    style={{ width: 'calc(100% - 2em)' }}
-                    value={appState.resourceNamePrefix ?? ''}
-                    onChange={({ currentTarget }) => {
-                        setAppState((_prevState) => ({
-                            ..._prevState,
-                            resourceNamePrefix:
-                                currentTarget.value?.trim() ?? '',
-                        }))
-                    }}
-                />
-            </div>
+            <NamePrefixInput {...{ appState, setAppState }} />
             {!appState.typeMetrics ||
-            appState.isHealthLoading ||
+            appState.isNamePrefixContentLoading ||
             !appState.resourceNamePrefix ? null : (
                 <div>
                     {Object.entries(appState.typeMetrics).map(

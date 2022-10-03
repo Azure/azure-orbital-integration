@@ -25,12 +25,15 @@ import {
 
 import { makeAPI } from './api'
 import {
-    applyEffect as applyEffectForHealth,
     Health,
     HealthState,
 } from './health'
+import {
+    Logs,
+} from './logs'
+import { EventLogEntry } from '../preload'
 
-const { getEnv } = makeAPI()
+const { checkRequiredResources, getEnv, searchLogs } = makeAPI()
 
 interface ContentMaker {
     (params: WithAppState<AppState>): h.JSX.Element
@@ -50,7 +53,12 @@ const tabMap: { [tabName: string]: TabMapItem } = {
     health: {
         title: 'Health',
         contentMaker: Health,
-        applyEffect: applyEffectForHealth,
+        applyEffect: undefined, // applyEffectForHealth,
+    },
+    logs: {
+        title: 'Logs',
+        contentMaker: Logs,
+        applyEffect: undefined, // applyEffectForLogs,
     },
     config: {
         title: 'Config',
@@ -114,6 +122,66 @@ const App = () => {
             ...getEnv(),
         }))
     }, [])
+
+    useEffect(() => {
+        // namePrefix related content
+        if (
+            !appState.resourceNamePrefix ||
+            !appState.subscriptionId ||
+            !appState.resourceGroup ||
+            !appState.location
+        ) {
+            setAppState((_prevState) => ({
+                ..._prevState,
+                isHealthy: undefined,
+                message: undefined,
+                typeMetrics: undefined,
+                isNamePrefixContentLoading: false,
+            }))
+            return
+        }
+        setAppState((_prevState) => ({
+            ..._prevState,
+            logs: undefined,
+            typeMetrics: undefined,
+            isNamePrefixContentLoading: true,
+        }))
+        Promise.all([
+            checkRequiredResources({
+                resourceNamePrefix: appState.resourceNamePrefix,
+                subscriptionId: appState.subscriptionId,
+                resourceGroup: appState.resourceGroup,
+                location: appState.location,
+            }).catch((err) => ({
+                isHealthy: false,
+                typeMetrics: undefined,
+                message: err.message,
+            })),
+            searchLogs({
+                logAnalyticsWorkspaceName: `${appState.resourceNamePrefix}-law`,
+            }).catch((err) => {
+                const logs: EventLogEntry[] = []
+                return {
+                    logs,
+                    logSearchErrorMassage: err.message,
+                }
+            }),
+        ]).then(([healthRes, logsRes]) => {
+            setAppState((_prevState) => ({
+                ..._prevState,
+                isNamePrefixContentLoading: false,
+                ...healthRes,
+                healthErrorMessage: undefined,
+                ...logsRes,
+                logSearchErrorMassage: undefined,
+            }))
+        })
+    }, [
+        appState.resourceNamePrefix,
+        appState.subscriptionId,
+        appState.resourceGroup,
+        appState.location,
+    ])
 
     const { isEnvComplete } = getEnvFromState(appState)
 

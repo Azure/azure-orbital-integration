@@ -88,9 +88,8 @@ Optional:
 - `AKS_NUM_REPLICAS`: default: 2
 - `HOST`: default: "0.0.0.0".
 - `PORT`: default: 50111
-- `SOCKET_TIMEOUT_SECONDS`: default: 60
 - `NUM_BLOCK_LOG_FREQUENCY`: default: 4000
-- `SOCKET_TIMEOUT_SECONDS`: Seconds of socket inactivity until socket is destroyed. default: 60
+- `SOCKET_TIMEOUT_SECONDS`: Seconds of socket inactivity until socket is destroyed. default: 120
 - `AKS_VNET_ADDR_PREFIX`: default: "10.0.0.0/8"
 - `AKS_VNET_SUBNET_ADDR_PREFIX`: Subnet for AKS nodes. default: "10.240.0.0/16"
 - `LB_IP`: IP address for the internal load balancer Orbital will hit. Should be in vnet IP range. default: "
@@ -154,7 +153,8 @@ If you wish to utilize an existing ACR and Storage container:
 4. View AKS logs as described below.
 5. Verify BLOB matching `filename` was created in your storage container.
 
-# Set up a heartbeat testing TCP to Blob endpoint 
+# Set up a heartbeat testing TCP to Blob endpoint
+
 1. Ensure docker is running
 2. Login/switch environments (once every few hours or per env session).
 3. `yarn run-canary-cron`

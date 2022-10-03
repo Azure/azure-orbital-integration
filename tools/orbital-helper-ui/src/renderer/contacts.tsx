@@ -142,21 +142,46 @@ const getEmptyContactsMessage = (appState: Partial<ContactSearchState>) => {
     return null
 }
 
+const _filter = ({
+    _filterVal = '',
+    _propVal = '',
+}: {
+    _filterVal?: string
+    _propVal?: string
+}) => {
+    if (_filterVal.startsWith('"') && _filterVal.endsWith('"')) {
+        return _propVal === _filterVal.substring(1, _filterVal.length - 1)
+    }
+    return _propVal.includes(_filterVal)
+}
+export const filter = ({
+    filterValue = '',
+    propertyValue = '',
+}: {
+    filterValue?: string
+    propertyValue?: string
+}) => {
+    const _filterVal = filterValue?.toLowerCase()?.trim()
+    const _propVal = propertyValue?.toLowerCase()?.trim()
+    if (!_filterVal) {
+        return true
+    }
+
+    if (_filterVal.startsWith('-') && _filterVal.length > 1) {
+        return !_filter({ _filterVal: _filterVal.substring(1), _propVal })
+    }
+    return _filter({ _filterVal, _propVal })
+}
 const filterContacts = (state: Partial<ContactSearchState>) => {
     let filteredContacts = state.contacts ?? []
     for (const [filterKey, { contactSummaryKey }] of Object.entries(
         filterConfig
     )) {
         filteredContacts = filteredContacts?.filter((contactSummary) => {
-            const filterValue = state[filterKey as unknown as FilterKey]
-            if (!filterValue?.trim()) {
-                // No value set for filter property => keep it.
-                return true
-            }
-            // Keep it if prefix matches
-            return contactSummary[contactSummaryKey]
-                ?.toLowerCase()
-                .startsWith(filterValue?.toLowerCase())
+            return filter({
+                filterValue: state[filterKey as unknown as FilterKey],
+                propertyValue: contactSummary[contactSummaryKey],
+            })
         })
     }
     return filteredContacts
@@ -250,6 +275,7 @@ export const ScheduledContacts = <T extends ContactSearchState>({
                 <table className="filterable">
                     <thead>
                         <th>Start</th>
+                        <th>Duration</th>
                         {Object.entries(filterConfig).map(
                             ([key, { title }]) => (
                                 <th>
@@ -264,7 +290,7 @@ export const ScheduledContacts = <T extends ContactSearchState>({
                                                 value={
                                                     appState[key as FilterKey]
                                                 }
-                                                onKeyUp={(e) => {
+                                                onChange={(e) => {
                                                     const val =
                                                         e.currentTarget.value?.trim()
                                                     setAppState(
@@ -291,7 +317,15 @@ export const ScheduledContacts = <T extends ContactSearchState>({
                         ) : (
                             filteredContacts.map((summary) => (
                                 <tr>
-                                    <td>{summary.startTimeRelative}</td>
+                                    <td>
+                                        {summary.startTimeRelative}
+                                        {summary.startTimeRelative?.includes(':') ? null : (
+                                            <div className="tooltip">🕑
+                                                <span className="tooltiptext">{summary.startTime}</span>
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td>{summary.duration}</td>
                                     <td
                                         style={{
                                             textTransform: 'capitalize',
