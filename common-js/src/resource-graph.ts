@@ -45,7 +45,7 @@ export const makeResourceGraphHelper = ({
 | where name startswith '${params.resourceNamePrefix}'
 | project name, type, location, subscriptionId, resourceGroup
 | join kind=leftouter (ResourceContainers | where type=='microsoft.resources/subscriptions' | project subscriptionName=name, subscriptionId) on subscriptionId
-// | project name, location, resourceGroup, subscriptionId, subscriptionName, type`
+| project name, location, resourceGroup, subscriptionId, subscriptionName, type`
         if (params?.location) {
             query = `${query}
         | where location=~'${params?.location}'`
