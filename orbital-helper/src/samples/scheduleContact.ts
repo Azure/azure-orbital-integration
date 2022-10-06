@@ -7,7 +7,7 @@ import {
     MILLIS_PER_MINUTE,
     ScheduleContactParams,
 } from '../orbitalHelper'
-import { getEnvVar } from '../utils'
+import { getEnvVar } from '@azure/orbital-integration-common'
 
 const scheduleContact_cli = async () => {
     const orbitalHelper = await makeOrbitalHelper()

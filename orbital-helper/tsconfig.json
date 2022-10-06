@@ -2,13 +2,15 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "ES2019",
+        "types": ["node"],
         "outDir": "dist",
-        "rootDir": "src",
+        "rootDir": ".",
         "sourceMap": true,
+        "declaration": true,
         "strict": true,
-        "noImplicitAny": false,
         "esModuleInterop": true,
-        "resolveJsonModule": true,
         "composite": true
-    }
+    },
+    "include": ["src/**/*", "tests/**/*"],
+    "references": [{ "path": "../common-js" }]
 }

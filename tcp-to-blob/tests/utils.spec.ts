@@ -5,8 +5,7 @@
 import * as chai from 'chai'
 const expect = chai.expect
 const assert = chai.assert
-import { EventLogger, getEnv, getEnvVar, makeLogger } from '../src/utils'
-import { mock, SinonMock } from 'sinon'
+import { getEnv } from '../src/utils'
 
 describe('utils.getEnv', () => {
     beforeEach(() => {
@@ -50,128 +49,5 @@ describe('utils.getEnv', () => {
             getEnv()
         }
         expect(testGetEnv).to.throw(Error)
-    })
-})
-
-describe('utils.getEnvVar', () => {
-    beforeEach(() => {
-        process.env.CONTACT_DATA_STORAGE_CONTAINER = 'my-container'
-    })
-    afterEach(() => {
-        delete process.env.CONTACT_DATA_STORAGE_CONTAINER
-    })
-    it('should return a value for CONTACT_DATA_STORAGE_CONTAINER', () => {
-        const result = getEnvVar('CONTACT_DATA_STORAGE_CONTAINER')
-        assert.isString(result)
-    })
-    it('should throw an error because THIS_ENV_VAR does not exist', () => {
-        const testGetEnvVar = function () {
-            getEnvVar('THIS_ENV_VAR')
-        }
-        expect(testGetEnvVar).to.throw()
-    })
-})
-
-describe('utils.makeLogger', () => {
-    let mockConsole: SinonMock
-    let logger: EventLogger
-    beforeEach(() => {
-        mockConsole = mock(console)
-        logger = makeLogger({
-            subsystem: 'test/logger',
-        })
-    })
-    afterEach(() => {
-        mockConsole.verify()
-        mockConsole.restore()
-    })
-
-    it('"info"', () => {
-        mockConsole
-            .expects('info')
-            .once()
-            .withArgs(
-                JSON.stringify({
-                    subsystem: 'test/logger',
-                    event: 'init',
-                    message: 'I initialized!',
-                })
-            )
-
-        logger.info({
-            event: 'init',
-            message: 'I initialized!',
-        })
-    })
-
-    it('"warn"', () => {
-        mockConsole
-            .expects('warn')
-            .once()
-            .withArgs(
-                JSON.stringify({
-                    subsystem: 'test/logger',
-                    event: 'close',
-                    message: 'I closed!',
-                    millis: 20,
-                })
-            )
-
-        logger.warn({
-            event: 'close',
-            message: 'I closed!',
-            millis: 20,
-        })
-    })
-
-    it('"error"', () => {
-        const error = new Error('Oh no!')
-        mockConsole
-            .expects('error')
-            .once()
-            .withArgs(
-                JSON.stringify({
-                    subsystem: 'test/logger',
-                    event: 'err',
-                    message: 'I errored!',
-                    error: error.message,
-                })
-            )
-
-        logger.error({
-            subsystem: 'test/logger',
-            event: 'err',
-            message: 'I errored!',
-            error,
-        })
-    })
-
-    it('"extendContext"', () => {
-        mockConsole
-            .expects('info')
-            .once()
-            .withArgs(
-                JSON.stringify({
-                    subsystem: 'test/logger',
-                    color: 'green',
-                    lengthInFeet: 12,
-                    u: 2,
-                    event: 'close',
-                    message: 'I closed!',
-                    millis: 20,
-                })
-            )
-
-        logger.extendContext({
-            color: 'green',
-            lengthInFeet: 12,
-            u: 2,
-        })
-
-        logger.info({
-            event: 'close',
-            message: 'I closed!',
-            millis: 20,
-        })
     })
 })

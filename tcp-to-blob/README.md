@@ -6,7 +6,18 @@
 
 # TCP-to-BLOB
 
-TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and persists it in Azure BLOB Storage.
+TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and persists it in Azure BLOB Storage. This doc shows you how to deploy this architecture into Azure using the resources and code in this repository.
+
+## Prerequisites
+
+- NodeJS LTS (16 or later)
+- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
+  uses `yarn`
+- Azure subscription access
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI.
+- Docker
+- Virtual Machine or personal environment for execution
 
 ## High level components
 
@@ -31,16 +42,6 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
    socket)
 7. `complete`: Final event providing success/failure summary. (1 per socket)
 
-## Prerequisites
-
-- NodeJS LTS (16 or later)
-- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
-  uses `yarn`
-- Azure subscription access
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI.
-- Docker
-
 ## Install NodeJS dependencies
 
 From `azure-orbital-integration` project root directory, run:
@@ -55,6 +56,12 @@ package.json to determine what script are available.
 
 If for some reason you prefer to not run the with `yarn` or `npm`, you can consider the `scripts` in package.json as
 examples.
+
+## Create environment file
+
+1. `cd tcp-to-blob && mkdir .env`
+2. `cp ./deploy/env-template.sh .env/env-<name_prefix>.sh`
+3. Edit your env file as needed. See: "Environment variables" section above.
 
 ## Environment variables
 
@@ -81,9 +88,8 @@ Optional:
 - `AKS_NUM_REPLICAS`: default: 2
 - `HOST`: default: "0.0.0.0".
 - `PORT`: default: 50111
-- `SOCKET_TIMEOUT_SECONDS`: default: 60
 - `NUM_BLOCK_LOG_FREQUENCY`: default: 4000
-- `SOCKET_TIMEOUT_SECONDS`: Seconds of socket inactivity until socket is destroyed. default: 60
+- `SOCKET_TIMEOUT_SECONDS`: Seconds of socket inactivity until socket is destroyed. default: 120
 - `AKS_VNET_ADDR_PREFIX`: default: "10.0.0.0/8"
 - `AKS_VNET_SUBNET_ADDR_PREFIX`: Subnet for AKS nodes. default: "10.240.0.0/16"
 - `LB_IP`: IP address for the internal load balancer Orbital will hit. Should be in vnet IP range. default: "
@@ -95,12 +101,6 @@ Optional:
 
 Recommend creating a `tcp-to-blob/.env/env-${stage}.sh` to set these and re-load env as needed without risking
 committing them to version control.
-
-## Create environment file
-
-1. `cd tcp-to-blob && mkdir .env`
-2. `cp ./deploy/env-template.sh .env/env-<name_prefix>.sh`
-3. Edit your env file as needed. See: "Environment variables" section above.
 
 ## Deploy environment to Azure Kubernetes Service (AKS)
 
@@ -152,6 +152,13 @@ If you wish to utilize an existing ACR and Storage container:
 3. `yarn run-canary`
 4. View AKS logs as described below.
 5. Verify BLOB matching `filename` was created in your storage container.
+
+# Set up a heartbeat testing TCP to Blob endpoint
+
+1. Ensure docker is running
+2. Login/switch environments (once every few hours or per env session).
+3. `yarn run-canary-cron`
+4. View AKS logs as described below.
 
 **Hint:** Run this if you see an error "unauthorized: authentication required".
 

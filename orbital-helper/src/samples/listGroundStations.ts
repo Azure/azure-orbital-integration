@@ -4,7 +4,7 @@
 
 import { AzureOrbital } from '@azure/arm-orbital'
 import { DefaultAzureCredential } from '@azure/identity'
-import { getEnvVar } from '../utils'
+import { getEnvVar } from '@azure/orbital-integration-common'
 
 const listGroundStations_cli = async () => {
     const orbitalClient = new AzureOrbital(

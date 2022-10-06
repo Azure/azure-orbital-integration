@@ -2,15 +2,17 @@
     "name": "@azure/arm-orbital-helper",
     "version": "1.0.0",
     "description": "ARM Orbital Helper",
-    "main": "dist/index.js",
+    "main": "dist/src/index.js",
     "files": [
-        "dist/index.js"
+        "dist/src/*"
     ],
     "scripts": {
         "build": "npx esbuild ./src/samples/*.ts ./src/orbitalHelper.ts --bundle --platform=node --outdir=./dist/bundle",
+        "clean": "rm -rf ./dist & rm -rf ./node_modules",
         "compile-watch": "yarn prettier && npx tsc -w",
         "compile": "yarn prettier && npx tsc",
-        "prettier": "npx prettier . -w"
+        "prettier": "npx prettier . -w",
+        "test": "npx ts-mocha -p tsconfig.json tests/*.spec.ts"
     },
     "keywords": [],
     "author": "micholas",

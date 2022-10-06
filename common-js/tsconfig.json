@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "ES2019",
+        "types": ["node", "mocha"],
+        "outDir": "dist",
+        "rootDir": ".",
+        "sourceMap": true,
+        "declaration": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "composite": true
+    },
+    "include": ["src/**/*", "tests/**/*"]
+}

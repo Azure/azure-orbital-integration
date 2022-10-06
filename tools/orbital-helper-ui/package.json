@@ -1,0 +1,34 @@
+{
+    "name": "azure-orbital-helper-ui",
+    "version": "1.0.0",
+    "description": "UI for Azure Orbital Integration",
+    "author": "micholas",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "clean": "rm -rf ./dist & rm -rf ./node_modules",
+        "copy": "cp src/*.css src/*.html src/package.json dist/",
+        "compile": "yarn prettier && npx tsc",
+        "compile-watch": "yarn prettier && npx tsc -w",
+        "dev": "node esbuild.js dev && yarn cp",
+        "build": "npx esbuild --external:'electron' --platform=node --bundle ./src/preload.ts --outdir=./dist/ && npx esbuild --external:'electron' --platform=node --bundle ./src/renderer/index.tsx --outdir=./dist/scripts && npx esbuild --external:'electron' --platform=node --bundle  ./src/main.ts  --outdir=./dist/ && yarn copy",
+        "webpack": "webpack && cp src/*.html src/package.json dist/",
+        "start": "electron dist/",
+        "start-dev": "yarn build && electron dist/",
+        "package": "echo 'This does not work yet.' && yarn build && for platform in 'darwin'; do npx electron-packager dist/ ${npm_package_name} --out build/ --platform=${platform} --arch=x64 --overwrite; done",
+        "prettier": "npx prettier . -w"
+    },
+    "devDependencies": {
+        "electron": "^21.0.1",
+        "esbuild": "^0.15.7",
+        "prettier": "^2.7.1",
+        "ts-loader": "^9.3.1",
+        "typescript": "^4.8.3"
+    },
+    "dependencies": {
+        "@azure/arm-resourcegraph": "^4.2.1",
+        "@azure/identity": "^3.0.0",
+        "@azure/monitor-query": "^1.0.2",
+        "preact": "^10.10.6"
+    }
+}

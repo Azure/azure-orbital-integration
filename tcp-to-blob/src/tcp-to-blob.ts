@@ -2,7 +2,8 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
-import { getEnv, getEnvVar, makeRemoteToken } from './utils'
+import { getEnvVar } from '@azure/orbital-integration-common'
+import { getEnv, makeRemoteToken } from './utils'
 import { Server } from 'net'
 import { statSync } from 'fs'
 import { FileAppender, makeFileAppender } from './fileAppender'
@@ -58,7 +59,10 @@ if (require.main === module) {
             ) {
                 sender = 'canary'
             }
-            const filename = `tcp_data_${timestampStr}_${sender}_${remoteToken}`
+            const localFileName = `tcp_data_${timestampStr}_${sender}_${remoteToken}.${
+                sender == 'canary' ? 'txt' : 'bin'
+            }`
+            const filename = `${sender}/${localFileName}`
             const logger = makeLogger({
                 subsystem: 'tcp-to-blob',
                 filename,
@@ -131,12 +135,12 @@ if (require.main === module) {
                     try {
                         fileAppender = makeFileAppender({
                             dirPath: '/tmp/output',
-                            filename,
+                            filename: localFileName,
                         })
                         const msg = {
                             message: 'Creating file.',
                             event: 'socket-data',
-                            filename,
+                            filename: localFileName,
                             ...makeMsgData(),
                         }
 

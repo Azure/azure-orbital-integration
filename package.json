@@ -2,11 +2,21 @@
   "private": true,
   "name": "azure-orbital-integration",
   "scripts": {
-    "build": "yarn compile && yarn --cwd orbital-helper build && yarn --cwd tcp-to-blob build",
-    "compile": "yarn --cwd orbital-helper compile && yarn --cwd tcp-to-blob compile"
+    "build": "yarn compile && for dir_name in orbital-helper tcp-to-blob; do echo \"building ${dir_name}\"; npx yarn --cwd  ${dir_name} build; done",
+    "build-orbital-helper": "yarn compile && yarn --cwd orbital-helper build",
+    "build-tcp-to-blob": "yarn compile && yarn --cwd tcp-to-blob build",
+    "build-tools": "yarn compile && yarn --cwd tools/orbital-helper-ui build",
+    "clean": "rm -rf ./node_modules && for dir_name in common-js orbital-helper tcp-to-blob tools/orbital-helper-ui; do echo \"cleaning ${dir_name}\"; npx yarn --cwd  ${dir_name} clean; done",
+    "compile-common-js": "yarn --cwd common-js compile",
+    "compile-orbital-helper": "yarn --cwd ornital-helper compile",
+    "compile-tools": "yarn compile-common-js && yarn compile-orbital-helper && yarn --cwd tools/orbital-helper-ui compile",
+    "compile": "for dir_name in common-js orbital-helper tcp-to-blob; do echo \"compiling ${dir_name}\"; npx yarn --cwd  ${dir_name} compile; done",
+    "start-ui": "yarn --cwd tools/orbital-helper-ui start"
   },
   "workspaces": [
+    "common-js",
     "orbital-helper",
-    "tcp-to-blob"
+    "tcp-to-blob",
+    "tools/orbital-helper-ui"
   ]
 }
