@@ -81,7 +81,7 @@
     },
     {
       "type": "LocalFileSystem",
-      "name": "modis-created",
+      "name": "modis-combined-created",
       "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/drl/data/pub/gsfcdata/combined/modis/level3",
       "includeSubDirectories": true,
       "filters": [
