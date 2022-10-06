@@ -63,7 +63,7 @@ namespace FileEventService.Actions
                 await conCli.CreateIfNotExistsAsync().ConfigureAwait(false);
                 var blobClient = conCli.GetBlobClient(filePath);
 
-                await blobClient.UploadAsync(data.FullFilePath).ConfigureAwait(false);
+                await blobClient.UploadAsync(data.FullFilePath, _options.Overwrite).ConfigureAwait(false);
 
                 log.EventRuntimeMs = sw.ElapsedMilliseconds;
                 log.Message = $"Ending blob upload to, '{lowerContainerName}/{filePath}'.";

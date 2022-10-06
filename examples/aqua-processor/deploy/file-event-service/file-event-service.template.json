@@ -61,9 +61,9 @@
     },
     {
       "type": "LocalFileSystem",
-      "name": "modis-level0-created",
-      "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/drl/data/pub/gsfcdata/aqua/modis/level0",
-      "includeSubDirectories": false,
+      "name": "modis-created",
+      "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/drl/data/pub/gsfcdata/aqua/modis",
+      "includeSubDirectories": true,
       "filters": [
         "*.*"
       ],
@@ -72,7 +72,7 @@
           "type": "BlobUpload",
           "connectionString": "${BLOB_CONNECTION_STRING}",
           "containerName": "${MODIS_OUTPUT_CONTAINER_NAME}",
-          "filePath": "${LEVEL0_OUTPUT_SUBFOLDER_PATH}"
+          "filePath": ""
         }
       ],
       "allowedEventTypes": [
@@ -81,9 +81,9 @@
     },
     {
       "type": "LocalFileSystem",
-      "name": "modis-level1-created",
-      "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/drl/data/pub/gsfcdata/aqua/modis/level1",
-      "includeSubDirectories": false,
+      "name": "modis-created",
+      "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/drl/data/pub/gsfcdata/combined/modis/level3",
+      "includeSubDirectories": true,
       "filters": [
         "*.*"
       ],
@@ -91,68 +91,8 @@
         {
           "type": "BlobUpload",
           "connectionString": "${BLOB_CONNECTION_STRING}",
-          "containerName": "${MODIS_OUTPUT_CONTAINER_NAME}",
-          "filePath": "${LEVEL1_OUTPUT_SUBFOLDER_PATH}"
-        }
-      ],
-      "allowedEventTypes": [
-        "Local.FileSystem.Created"
-      ]
-    },
-    {
-      "type": "LocalFileSystem",
-      "name": "modis-level2-created",
-      "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/drl/data/pub/gsfcdata/aqua/modis/level2",
-      "includeSubDirectories": false,
-      "filters": [
-        "*.*"
-      ],
-      "actions": [
-        {
-          "type": "BlobUpload",
-          "connectionString": "${BLOB_CONNECTION_STRING}",
-          "containerName": "${MODIS_OUTPUT_CONTAINER_NAME}",
-          "filePath": "${LEVEL2_OUTPUT_SUBFOLDER_PATH}"
-        }
-      ],
-      "allowedEventTypes": [
-        "Local.FileSystem.Created"
-      ]
-    },
-    {
-      "type": "LocalFileSystem",
-      "name": "modis-level1-alt1-created",
-      "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/drl/data/pub/gsfcdata/aqua/modis/level1-alt1",
-      "includeSubDirectories": false,
-      "filters": [
-        "*.*"
-      ],
-      "actions": [
-        {
-          "type": "BlobUpload",
-          "connectionString": "${BLOB_CONNECTION_STRING}",
-          "containerName": "${MODIS_OUTPUT_CONTAINER_NAME}",
-          "filePath": "${LEVEL1_ALT1_OUTPUT_SUBFOLDER_PATH}"
-        }
-      ],
-      "allowedEventTypes": [
-        "Local.FileSystem.Created"
-      ]
-    },
-    {
-      "type": "LocalFileSystem",
-      "name": "modis-level2-alt1-created",
-      "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/drl/data/pub/gsfcdata/aqua/modis/level2-alt1",
-      "includeSubDirectories": false,
-      "filters": [
-        "*.*"
-      ],
-      "actions": [
-        {
-          "type": "BlobUpload",
-          "connectionString": "${BLOB_CONNECTION_STRING}",
-          "containerName": "${MODIS_OUTPUT_CONTAINER_NAME}",
-          "filePath": "${LEVEL2_ALT1_OUTPUT_SUBFOLDER_PATH}"
+          "containerName": "${MODIS_OUTPUT_CONTAINER_NAME}/combined",
+          "filePath": ""
         }
       ],
       "allowedEventTypes": [

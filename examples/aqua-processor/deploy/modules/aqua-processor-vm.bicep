@@ -386,7 +386,7 @@ resource dcra 'Microsoft.Insights/dataCollectionRuleAssociations@2019-11-01-prev
 
 @description('When using CustomScript, schema should follow: https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/custom-script-linux')
 resource installBDS 'Microsoft.Compute/virtualMachines/extensions@2022-03-01' = {
-  name: 'blob-download-service'
+  name: 'file-event-service'
   location: location
   parent: aquaProcessorVm
   properties: {
