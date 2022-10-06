@@ -68,7 +68,6 @@ namespace FileEventService.Actions
 
             try
             {
-                eventGridMessage.Data.test = "";
                 log.ExtendedMessage = eventGridMessage;
                 log.Write(_logger);
 
