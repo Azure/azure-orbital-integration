@@ -53,7 +53,7 @@ namespace FileEventService.Models
             // ./d1 becomes /d1
             if (pathToWatch.StartsWith('.'))
             {
-                pathToWatch = pathToWatch.Substring(1, pathToWatch.Length);
+                pathToWatch = pathToWatch.Substring(1, pathToWatch.Length - 1);
             }
 
             // Split on the pathToWatch and take the second value,
