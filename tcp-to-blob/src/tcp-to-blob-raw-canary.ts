@@ -36,7 +36,7 @@ const runJob = async () => {
         const { containerClient } = makeContainerClient()
 
         const blobClient = await containerClient.getBlobClient(blobName)
-        if (!await blobClient.exists()) {
+        if (!(await blobClient.exists())) {
             logger.error({
                 event: 'complete',
                 message: '⚠️ BLOB not found.',
