@@ -9,6 +9,7 @@ import { statSync } from 'fs'
 import { FileAppender, makeFileAppender } from './fileAppender'
 import { BlobWriter, makeBlobWriter, makeContainerClient } from './blobWriter'
 import { cidrSubnet } from 'ip'
+import { v4 as uuid } from 'uuid'
 
 import { makeLogger } from './utils'
 
@@ -24,7 +25,9 @@ process.on('uncaughtException', function (error) {
     })
 })
 
+const nonBinaryRegex = /^[a-zA-Z\d\-_\:\s\.\,]+$/gm
 if (require.main === module) {
+    const containerName = getEnvVar('CONTACT_DATA_STORAGE_CONTAINER')
     const canarySubnetPrefix = getEnvVar('AKS_POD_SUBNET_ADDR_PREFIX')
     const orbitalSubnetPrefix = getEnvVar('AKS_ORBITAL_SUBNET_ADDR_PREFIX')
     const { port, host, socketTimeoutSeconds } = getEnv()
@@ -63,10 +66,12 @@ if (require.main === module) {
             let filename = `${sender}/${localFileName}`
             const logger = makeLogger({
                 subsystem: 'tcp-to-blob',
+                containerName,
                 filename,
                 localPort: port,
                 remoteHost,
                 remotePort,
+                resolutionId: uuid(),
             })
 
             const makeMsgData = () =>
@@ -94,7 +99,7 @@ if (require.main === module) {
             let numActiveBlockProcessors = 0
             const maxBlobSizeInBytesToInspectContent = 1_000
             const httpHeader = 'GET / HTTP/'
-            let isText: boolean | undefined = undefined
+            let isText: boolean | null = null
             socket.on('data', (data) => {
                 if (!data.byteLength) {
                     logger.info({
@@ -103,15 +108,10 @@ if (require.main === module) {
                         ...makeMsgData(),
                     })
                     return
-                } else if (
-                    data.byteLength < maxBlobSizeInBytesToInspectContent
-                ) {
+                } else if (data.length < maxBlobSizeInBytesToInspectContent) {
                     if (
                         data
-                            .slice(
-                                0,
-                                Math.min(httpHeader.length, data.byteLength)
-                            )
+                            .slice(0, Math.min(httpHeader.length, data.length))
                             .toString() === httpHeader
                     ) {
                         logger.info({
@@ -130,18 +130,24 @@ if (require.main === module) {
                         })
                         return
                     }
-                    if (isText === undefined) {
-                        if (data.toString().includes('Hello from')) {
-                            isText = true
-                        } else {
-                            isText = false
-                        }
-                        filename = `${filename}${isText ? '.txt' : '.bin'}`
-                        logger.extendContext({
-                            filename,
-                        })
-                    }
-                } else if (!fileAppender) {
+                }
+                if (isText === null) {
+                    const slice = data
+                        .slice(
+                            0,
+                            Math.min(
+                                maxBlobSizeInBytesToInspectContent,
+                                data.length
+                            )
+                        )
+                        .toString()
+                    isText = nonBinaryRegex.test(slice)
+                    filename = `${filename}${isText ? '.txt' : '.bin'}`
+                    logger.extendContext({
+                        filename,
+                    })
+                }
+                if (!fileAppender) {
                     try {
                         fileAppender = makeFileAppender({
                             dirPath: '/tmp/output',
@@ -150,7 +156,8 @@ if (require.main === module) {
                         const msg = {
                             message: 'Creating file.',
                             event: 'socket-data',
-                            filename: localFileName,
+                            filename,
+                            localFileName,
                             ...makeMsgData(),
                         }
 
@@ -198,7 +205,9 @@ if (require.main === module) {
                     }
                     numActiveBlockProcessors--
                 } catch (error) {
-                    const message = 'Error appending block to file.'
+                    const message = `Error appending block to file. ${
+                        (error as unknown as any).message ?? ''
+                    }`.trim()
                     logger.error({
                         event: 'socket-data',
                         message,

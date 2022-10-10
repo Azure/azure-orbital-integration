@@ -6,7 +6,7 @@ kind: CronJob
 metadata:
   name: tcp-to-blob-text-canary-cron
 spec:
-  schedule: "50 8 * * *"
+  schedule: "*/15 * * * *"
   jobTemplate:
     spec:
       template:

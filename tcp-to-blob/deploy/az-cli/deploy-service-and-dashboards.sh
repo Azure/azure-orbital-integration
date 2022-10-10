@@ -59,7 +59,7 @@ echo "Waiting ${SLEEP_SECONDS_BEFORE_CANARY} seconds for service to initialize b
 sleep $SLEEP_SECONDS_BEFORE_CANARY;
 # TODO: Experiment with wait that works best or better way to run upon service initialization.
 echo "Running Canary Kubernetes Job."
-yarn run-canary
+yarn run-text-canary
 
 
 # TODO: Write params needed for deploying Orbital contact profile to a file

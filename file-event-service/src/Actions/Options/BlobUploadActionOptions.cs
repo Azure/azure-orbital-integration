@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 using System.Text.Json.Serialization;
+using System.Threading;
 using FileEventService.Utilities;
 
 namespace FileEventService.Actions
@@ -12,7 +13,8 @@ namespace FileEventService.Actions
     {
         public string ConnectionString { get; set; }
         public string ContainerName { get; set; }
-        public string FilePath { get; set; }
+        public string FilePath { get; set; } = string.Empty;
+        public bool Overwrite { get; set; } = false;
 
         public string AsJsonSerializedString()
         {

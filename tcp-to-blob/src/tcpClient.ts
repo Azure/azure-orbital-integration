@@ -133,7 +133,7 @@ export const sendData = async ({
                 break
             }
             str += `Hello from Client ${(++linesWritten).toLocaleString()} ${new Date().toISOString()}\n`
-            if (linesWritten % 10_000 === 0) {
+            if (linesWritten % 50_000 === 0) {
                 logger.info({
                     event: 'checkpoint',
                     message: `Client sent ${linesWritten.toLocaleString()} of ${numLines.toLocaleString()} lines.`,

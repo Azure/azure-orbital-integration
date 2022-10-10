@@ -24,8 +24,6 @@ spec:
                   value: "${PORT}"
                 - name: LB_IP
                   value: "${LB_IP}"
-                - name: PORT
-                  value: "${PORT}"
                 - name: CONTACT_DATA_STORAGE_CONTAINER
                   value: "${CONTACT_DATA_STORAGE_CONTAINER}"
                 - name: CONTACT_DATA_STORAGE_CONNECTION_STRING

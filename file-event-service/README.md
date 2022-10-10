@@ -120,7 +120,8 @@ Provides blob upload functionality.
   "type": "BlobUpload",
   "connectionString": "string",
   "containerName": "string",
-  "filePath": "string"
+  "filePath": "string",
+  "overwrite": "bool"
 }
 ```
 
@@ -130,6 +131,7 @@ Provides blob upload functionality.
 |connectionString|The connection string used for authenticating with Azure storage.|
 |containerName|The container name where blobs will be uploaded.|
 |filePath|The file path within a container where blobs will be uploaded.|
+|overwrite|Overwrite if exists. **Default: false**|
 
 ## ExecuteScript
 Provides script execution functionality. When the script gets called, an environment variable named `FES_EVENT_GRID_EVENT` will be set for the scripts running context. Since we are working with Event Grid events, we use the same Event Grid schema. [See File Event Service Event Grid schema](#file-event-service-event-grid-schema)
