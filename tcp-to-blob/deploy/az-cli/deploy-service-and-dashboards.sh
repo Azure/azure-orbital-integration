@@ -50,7 +50,7 @@ yarn deploy-dashboard
 
 # Build & deploy canary
 echo "Publishing canary image."
-yarn docker-push-canary
+yarn docker-push-text-canary
 
 yarn make-contact-profile
 
@@ -59,7 +59,7 @@ echo "Waiting ${SLEEP_SECONDS_BEFORE_CANARY} seconds for service to initialize b
 sleep $SLEEP_SECONDS_BEFORE_CANARY;
 # TODO: Experiment with wait that works best or better way to run upon service initialization.
 echo "Running Canary Kubernetes Job."
-yarn run-canary
+yarn run-text-canary
 
 # If deployed to different cluster, you can use --context:
 # e.g. `kubectl --context tcp-to-blob-canary-dev delete -f ./.env/tcp-to-blob-canary.yaml

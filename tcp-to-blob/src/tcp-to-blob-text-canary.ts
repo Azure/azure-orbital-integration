@@ -4,6 +4,7 @@
 
 import { sendData, SendDataParams } from './tcpClient'
 import { makeLogger } from './utils'
+import { v4 as uuid } from 'uuid'
 
 interface ArgvParams {
     host: string
@@ -12,8 +13,14 @@ interface ArgvParams {
 }
 
 const runJob = async () => {
+    const startMillis = Date.now()
+
+    const makeDuration = () => ({
+        durationInSeconds: (Date.now() - startMillis) / 1_000,
+    })
     const logger = makeLogger({
-        subsystem: 'tcp-to-blob-canary',
+        subsystem: 'tcp-to-blob-text-canary',
+        resolutionId: uuid(),
     })
     let sendParams: SendDataParams | null = null
     try {
@@ -26,6 +33,7 @@ const runJob = async () => {
             logger.error({
                 event: 'init',
                 message,
+                ...makeDuration(),
             })
             throw new Error(message)
         }
@@ -38,6 +46,7 @@ const runJob = async () => {
             logger.error({
                 event: 'init',
                 message,
+                ...makeDuration(),
             })
             throw new Error(message)
         }
@@ -50,8 +59,14 @@ const runJob = async () => {
             logger.info({
                 event: 'init',
                 message: `Unable to read "numLines" from input. Using default: ${defaultNumLines}.`,
+                ...makeDuration(),
             })
             numLines = defaultNumLines
+            logger.extendContext({
+                host,
+                port,
+                numLines,
+            })
         }
         if (isNaN(port)) {
             throw new Error(
@@ -66,15 +81,20 @@ const runJob = async () => {
             numLines,
         }
         await sendData(sendParams)
+        logger.info({
+            event: 'complete',
+            message: '✅ Finished sending text data to TCP socket.',
+            ...makeDuration(),
+        })
     } catch (err) {
-        const message =
-            `Failed to create records (params: ${JSON.stringify(
-                sendParams
-            )}): ` + (err as Error)?.message ?? (err as any)?.toString()
+        const message = `⚠️ Failed to send text data to TCP socket. ${
+            (err as Error)?.message
+        }`.trim()
         logger.error({
-            event: 'canary-error',
+            event: 'complete',
             message,
             error: err as Error,
+            ...makeDuration(),
         })
         throw err
     }

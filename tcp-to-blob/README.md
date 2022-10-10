@@ -76,8 +76,8 @@ Optional:
 - `ACR_NAME`: Name of your Azure Container Registry.
 - `CONTACT_DATA_STORAGE_ACCT`: Name of storage account where BLOBs will be created (containing data sent to TCP
   endpoint).
-- `CONTACT_DATA_STORAGE_CONTAINER`: Name of storage container for saving BLOBs.
-  default: `"tcp-to-blob-output-${NAME_PREFIX}"`
+- `CONTACT_DATA_STORAGE_CONTAINER`: Name of storage container for saving BLOBs. default: `"raw-contact-data"`
+- `RAW_DATA_BLOB_NAME`: Name of BLOB within `$CONTACT_DATA_STORAGE_CONTAINER` which will be streamed by raw data canary to TCP to BLOB endpoint. You may either upload this reference data manually (consider using `reference-data/` prefix) or schedule a contact and reference the BLOB associated with the results.
 - `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Connection string for contact data storage. Grants `tcp-to-blob` the ability to create the storage container if needed and create/write to BLOBs. This is stored as an AKS secret which is exposed as an environment variable in the `tcp-to-blob` container. You may use either:
   - [Storage BLOB connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string): (default) Long living credentials for accessing storage container. This gets populated automatically if `CONTACT_DATA_STORAGE_CONNECTION_STRING` is not already set.
   - [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner. Things to consider for SAS:
@@ -145,22 +145,37 @@ If you wish to utilize an existing ACR and Storage container:
 2. Open a new bash-like terminal shell.
 3. `. .env/env-<name_prefix>.sh && yarn az-login && . ./deploy/env-defaults.sh`
 
-# Send test data to TCP to BLOB endpoint
+# Send _text data_ to TCP to BLOB endpoint
 
 1. Ensure docker is running.
 2. Login/switch environments (once every few hours or per env session).
-3. `yarn run-canary`
+3. `yarn run-text-canary`
 4. View AKS logs as described below.
 5. Verify BLOB matching `filename` was created in your storage container.
 
-# Set up a heartbeat testing TCP to Blob endpoint
+### Set up ongoing _text data_ heartbeat testing TCP to Blob endpoint
 
 1. Ensure docker is running
 2. Login/switch environments (once every few hours or per env session).
-3. `yarn run-canary-cron`
+3. `yarn deploy-text-canary-cron`
 4. View AKS logs as described below.
 
-**Hint:** Run this if you see an error "unauthorized: authentication required".
+### Send _raw contact data_ to TCP to BLOB endpoint for testing
+
+1. See `RAW_DATA_BLOB_NAME` env variable above to make raw data available for canary to read and steam to TCP to BLOB.
+2. Ensure docker is running.
+3. Login/switch environments (once every few hours or per env session).
+4. `yarn run-raw-canary`
+5. View AKS logs as described below.
+6. Verify BLOB matching `filename` was created in your storage container.
+
+### Set up ongoing _raw contact data_ heartbeat testing TCP to Blob endpoint
+
+1. See `RAW_DATA_BLOB_NAME` env variable above to make raw data available for canary to read and steam to TCP to BLOB.
+2. Ensure docker is running
+3. Login/switch environments (once every few hours or per env session).
+4. `yarn deploy-raw-canary-cron`
+5. View AKS logs as described below.
 
 ## Run service locally _without_ containers
 
@@ -213,7 +228,7 @@ ContainerLog
 | project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error)
 // | where event == "complete"
 // | where subsystem == "tcp-to-blob"
-// | where subsystem == "tcp-to-blob-canary"
+// | where subsystem == "tcp-to-blob-text-canary"
 // | where TimeGenerated between((approxTime - timeOffset) .. (approxTime + timeOffset))
 ```
 
@@ -245,7 +260,7 @@ ContainerLog
 | project TimeGenerated, senderIP, sender, subsystem=tostring(_data.subsystem), event=tostring(_data.event), message=tostring(_data.message), filename=tostring(_data.filename), mb=todouble(_data.fileSizeInKB)/1000, seconds=todouble(_data.durationInSeconds), containerName=tostring(_data.containerName), error=tostring(_data.error)
 // | where event == "complete"
 // | where subsystem == "tcp-to-blob"
-// | where subsystem == "tcp-to-blob-canary"
+// | where subsystem == "tcp-to-blob-text-canary"
 // | where filename == FindString
 | where TimeGenerated between((approxTime - timeOffset) .. (approxTime + timeOffset))
 ```

@@ -1,0 +1,32 @@
+# Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+# Software is licensed under the MIT License. See LICENSE in the project
+# root for license information.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tcp-to-blob-raw-canary
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: tcp-to-blob-raw-canary
+          image: "${ACR_NAME}.azurecr.io/tcp-to-blob-raw-canary:latest"
+          command: ["node", "tcp-to-blob-raw-canary.js"]
+          env:
+            - name: RAW_DATA_BLOB_NAME
+              value: "${RAW_DATA_BLOB_NAME}"
+            - name: HOST
+              value: "0.0.0.0"
+            - name: PORT
+              value: "${PORT}"
+            - name: LB_IP
+              value: "${LB_IP}"
+            - name: CONTACT_DATA_STORAGE_CONTAINER
+              value: "${CONTACT_DATA_STORAGE_CONTAINER}"
+            - name: CONTACT_DATA_STORAGE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}"
+                  key: "connection-string"

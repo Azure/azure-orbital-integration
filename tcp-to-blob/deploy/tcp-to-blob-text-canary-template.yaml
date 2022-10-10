@@ -4,14 +4,14 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: tcp-to-blob-canary
+  name: tcp-to-blob-text-canary
 spec:
   template:
     spec:
       containers:
-        - name: tcp-to-blob-canary
-          image: "${ACR_NAME}.azurecr.io/tcp-to-blob-canary:latest"
-          command: ["node", "tcp-to-blob-canary.js"]
+        - name: tcp-to-blob-text-canary
+          image: "${ACR_NAME}.azurecr.io/tcp-to-blob-text-canary:latest"
+          command: ["node", "tcp-to-blob-text-canary.js"]
           args:
             [
               '{"host" : "${LB_IP}", "port": ${PORT}, "numLines": ${CANARY_NUM_LINES}}',

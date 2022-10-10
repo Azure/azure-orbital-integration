@@ -10,8 +10,10 @@ import { program } from 'commander'
 const templateDir = resolve('./')
 const defaultTemplateNames = [
     'deploy/tcp-to-blob-template.yaml',
-    'deploy/tcp-to-blob-canary-template.yaml',
-    'deploy/tcp-to-blob-canary-cron-template.yaml',
+    'deploy/tcp-to-blob-text-canary-template.yaml',
+    'deploy/tcp-to-blob-text-canary-cron-template.yaml',
+    'deploy/tcp-to-blob-raw-canary-template.yaml',
+    'deploy/tcp-to-blob-raw-canary-cron-template.yaml',
     'deploy/dashboard-template.json',
 ]
 
