@@ -10,6 +10,7 @@ import {
     BaseLogParams,
 } from '@azure/orbital-integration-common'
 
+export const linePrefix = 'Hello from Client'
 export interface SendDataParams {
     numLines: number
     host: string
@@ -132,7 +133,7 @@ export const sendData = async ({
             if (linesWritten >= numLines) {
                 break
             }
-            str += `Hello from Client ${(++linesWritten).toLocaleString()} ${new Date().toISOString()}\n`
+            str += `${linePrefix} ${(++linesWritten).toLocaleString()} ${new Date().toISOString()}\n`
             if (linesWritten % 50_000 === 0) {
                 logger.info({
                     event: 'checkpoint',

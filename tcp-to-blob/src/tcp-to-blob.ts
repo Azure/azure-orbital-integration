@@ -10,6 +10,7 @@ import { FileAppender, makeFileAppender } from './fileAppender'
 import { BlobWriter, makeBlobWriter, makeContainerClient } from './blobWriter'
 import { cidrSubnet } from 'ip'
 import { v4 as uuid } from 'uuid'
+import { linePrefix } from './tcpClient'
 
 import { makeLogger } from './utils'
 
@@ -25,7 +26,6 @@ process.on('uncaughtException', function (error) {
     })
 })
 
-const nonBinaryRegex = /^[a-zA-Z\d\-_\:\s\.\,]+$/gm
 if (require.main === module) {
     const containerName = getEnvVar('CONTACT_DATA_STORAGE_CONTAINER')
     const canarySubnetPrefix = getEnvVar('AKS_POD_SUBNET_ADDR_PREFIX')
@@ -137,11 +137,12 @@ if (require.main === module) {
                             0,
                             Math.min(
                                 maxBlobSizeInBytesToInspectContent,
-                                data.length
+                                data.length,
+                                linePrefix.length
                             )
                         )
                         .toString()
-                    isText = nonBinaryRegex.test(slice)
+                    isText = slice.startsWith(linePrefix)
                     filename = `${filename}${isText ? '.txt' : '.bin'}`
                     logger.extendContext({
                         filename,
