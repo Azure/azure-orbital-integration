@@ -10,16 +10,19 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 
 ## Prerequisites
 
-- NodeJS LTS (16 or later)
+- Mac OR Unix-like environment
+- NodeJS LTS (16 or later) - Type `node version` to check version.
 - [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
-  uses `yarn`
+  uses `yarn` - Type `yarn` into shell to see if it is installed
+    *If you get Error: "No such file directory: 'install'" when trying to run [yarn install], start troubleshooting [here](https://stackoverflow.com/questions/46013544/yarn-install-command-error-no-such-file-or-directory-install). Secifically, start at the answer the begins with, "I had the same issue on Ubuntu 17.04..." This worked while using Ubuntu 20.04.05 LTS
 - Azure subscription access
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI.
-- Docker
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) - Type `az` or `az -h` for Azure info.
+- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. - Type `kubectl` for information.
+  -If a warning/error shows up that looks like the PATH variable isn't set correctly, try [Install and Set Up kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
+- Docker - Type `docker` for information
 - Virtual Machine or personal environment for execution
 
-## High level components
+## High level components - Informational
 
 - Vnet with subnets including:
   - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
@@ -31,7 +34,7 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 - Orbital Contact profile configured with the appropriate endpoint and subnet for TCP to BLOB service.
 - ADO Dashboard providing temporal view of TCP to BLOB activity and AKS cluster health.
 
-## TCP to BLOB Service event lifecycle
+## TCP to BLOB Service event lifecycle - Informational
 
 1. `server-init`: Server starting up.
 2. `socket-connect`: Client socket connected to server. (1 per socket)
@@ -41,11 +44,6 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 6. `socket-close`: All data has been received and written to file if applicable. Attempt uploading to BLOB. (1 per
    socket)
 7. `complete`: Final event providing success/failure summary. (1 per socket)
-
-## Install NodeJS dependencies
-
-From `azure-orbital-integration` project root directory, run:
-`yarn install && yarn compile`
 
 ## New to NodeJS?
 
@@ -57,11 +55,16 @@ package.json to determine what script are available.
 If for some reason you prefer to not run the with `yarn` or `npm`, you can consider the `scripts` in package.json as
 examples.
 
+## Install NodeJS dependencies
+
+From `azure-orbital-integration` project root directory, run:
+`yarn install && yarn compile`
+
 ## Create environment file
 
 1. `cd tcp-to-blob && mkdir .env`
 2. `cp ./deploy/env-template.sh .env/env-<name_prefix>.sh`
-3. Edit your env file as needed. See: "Environment variables" section above.
+3. Edit your env file as needed. See: "Environment variables" section below.
 
 ## Environment variables
 
@@ -104,8 +107,6 @@ committing them to version control.
 
 ## Deploy environment to Azure Kubernetes Service (AKS)
 
-requires: Unix-like environment or Mac
-
 1. Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default
    subscription is set.
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
@@ -115,8 +116,8 @@ requires: Unix-like environment or Mac
 3. Ensure docker is running.
 4. `cd tcp-to-blob`
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
-6. `. .env/env-<name_prefix>.sh`
-7. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh`
+6. `source ./.env/env-<name_prefix>.sh` - It should look like nothing happened in the terminal; this is GOOD.
+7. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh` - If you receive an 'Authorization failed' error, you may not have proper access to the subscription.
 8. Set demodulation configuration for generated contact profile:
    1. Open Azure Portal and navigate to Orbital Service.
    2. Navigate to Contact Profiles (left-side panel).
@@ -191,6 +192,7 @@ Or run `yarn docker-kill-all` (instead of 1 & 2)
 2. Select the tenant where TCP to BLOB is deployed.
 3. Either navigate to Shared Dashboards or to your resource group (`AZ_RESOURCE_GROUP`).
 4. Open the dashboard named `${NAME_PREFIX}-dashboard`.
+5. Click 'go to dashboard'
 
 ## View AKS logs
 
