@@ -116,7 +116,7 @@ committing them to version control.
 3. Ensure docker is running.
 4. `cd tcp-to-blob`
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
-6. `. .env/env-<name_prefix>.sh` - It should look like nothing happened in the termimal; this is GOOD.
+6. `source ./.env/env-<name_prefix>.sh` - It should look like nothing happened in the terminal; this is GOOD.
 7. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh` - If you receive an 'Authorization failed' error, you may not have proper access to the subscription.
 8. Set demodulation configuration for generated contact profile:
    1. Open Azure Portal and navigate to Orbital Service.
