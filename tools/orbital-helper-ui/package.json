@@ -19,7 +19,7 @@
         "prettier": "npx prettier . -w"
     },
     "devDependencies": {
-        "electron": "^21.0.1",
+        "electron": "22.0.0-alpha.3",
         "esbuild": "^0.15.7",
         "prettier": "^2.7.1",
         "ts-loader": "^9.3.1",
