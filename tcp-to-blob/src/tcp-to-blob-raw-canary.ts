@@ -2,19 +2,28 @@
 // Software is licensed under the MIT License. See LICENSE in the project
 // root for license information.
 
-import * as fs from 'fs'
-import { logger } from '@azure/storage-blob'
 import { makeContainerClient } from './blobWriter'
 import { makeSocket } from './tcpClient'
 import { makeLogger } from './utils'
 import { getEnvVar } from '@azure/orbital-integration-common'
+import { v4 as uuid } from 'uuid'
 
 const runJob = async () => {
+    const startMillis = Date.now()
+    const makeDuration = () => ({
+        durationInSeconds: (Date.now() - startMillis) / 1_000,
+    })
+    const storageContainer = getEnvVar('CONTACT_DATA_STORAGE_CONTAINER')
     const blobName = getEnvVar('RAW_DATA_BLOB_NAME')
     const host = getEnvVar('LB_IP')
     const port = +getEnvVar('PORT')
     const logger = makeLogger({
         subsystem: 'tcp-to-blob-raw-canary',
+        containerName: storageContainer,
+        filename: blobName,
+        host,
+        port,
+        resolutionId: uuid(),
     })
 
     try {
@@ -24,55 +33,62 @@ const runJob = async () => {
             )
         }
 
-        const socket = makeSocket({ host, port, logger })
-        const containerClient = makeContainerClient().containerClient
+        const { containerClient } = makeContainerClient()
+
         const blobClient = await containerClient.getBlobClient(blobName)
+        if (!(await blobClient.exists())) {
+            logger.error({
+                event: 'complete',
+                message: '⚠️ BLOB not found.',
+                ...makeDuration(),
+            })
+            return
+        }
+        const socket = makeSocket({ host, port, logger })
 
-        console.log('properties below')
-        console.log(await blobClient.getProperties())
-
+        logger.info({
+            event: 'client-create',
+            message: 'BLOB Client created successfully.',
+            ...makeDuration(),
+        })
         const downloadResponse = await blobClient.download(0)
 
-        downloadResponse.readableStreamBody?.pipe(socket)
-        console.log(`download of ${blobName} succeeded`)
+        logger.info({
+            event: 'read-stream-create',
+            message: 'BLOB Client readable stream created.',
+            ...makeDuration(),
+        })
+        await new Promise<void>((resolve, reject) => {
+            downloadResponse.readableStreamBody
+                ?.pipe(socket)
+                .on('finish', () => {
+                    logger.info({
+                        event: 'complete',
+                        message: '✅ BLOB written successfully to TCP socket.',
+                        ...makeDuration(),
+                    })
+                    resolve()
+                })
+                .on('error', (err) => {
+                    reject(err)
+                })
+        })
     } catch (err) {
-        const message =
-            `Failed to create records (params: ${JSON.stringify({
-                blobName,
-                host,
-                port,
-            })}): ` + (err as Error)?.message ?? (err as any)?.toString()
+        const message = `⚠️ Failed to stream BLOB to TCP socket. ${
+            (err as Error)?.message
+        }`.trim()
         logger.error({
-            event: 'canary-error',
+            event: 'complete',
             message,
             error: err as Error,
+            ...makeDuration(),
         })
         throw err
     }
 }
+
 if (require.main === module) {
-    runJob().catch((err) => {
-        logger.error({
-            event: 'canary-error',
-            message: err.message,
-            error: err as Error,
-        })
-        throw err
+    runJob().then(() => {
+        // We've already handled the error as needed. Nothing else to do.
     })
-}
-
-const downloadBlobAsStream = async (
-    blobName: string,
-    writableStream: fs.WriteStream
-) => {
-    const containerClient = makeContainerClient().containerClient
-    const blobClient = await containerClient.getBlobClient(blobName)
-
-    console.log('properties below')
-    console.log(await blobClient.getProperties())
-
-    const downloadResponse = await blobClient.download(0)
-
-    downloadResponse.readableStreamBody?.pipe(writableStream)
-    console.log(`download of ${blobName} succeeded`)
 }
