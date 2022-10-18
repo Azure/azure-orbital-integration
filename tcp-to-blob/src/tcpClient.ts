@@ -4,13 +4,39 @@
 
 import { Socket } from 'net'
 import { LogParams, makeLogger } from './utils'
-import { EventLogger, sleep } from '@azure/orbital-integration-common'
+import {
+    EventLogger,
+    sleep,
+    BaseLogParams,
+} from '@azure/orbital-integration-common'
 
+export const linePrefix = 'Hello from Client'
 export interface SendDataParams {
     numLines: number
     host: string
     port: number
     logger: EventLogger<LogParams>
+}
+
+export interface MakeSocketParams {
+    host: string
+    port: number
+    logger: EventLogger<BaseLogParams>
+}
+
+export const makeSocket = ({ host, port, logger }: MakeSocketParams) => {
+    const client = new Socket({
+        allowHalfOpen: true,
+    })
+
+    logger.info({
+        event: 'init',
+        message: 'Establishing connection.',
+    })
+
+    client.setTimeout(30_000)
+    const socket = client.connect(port, host)
+    return socket
 }
 
 export const sendData = async ({
@@ -19,10 +45,7 @@ export const sendData = async ({
     port,
     logger,
 }: SendDataParams) => {
-    const client = new Socket({
-        allowHalfOpen: true,
-    })
-
+    let isOkToWrite = true
     let linesWritten = 0
     const baseParams = {
         host,
@@ -31,16 +54,11 @@ export const sendData = async ({
         numLines,
     }
 
-    logger.info({
-        event: 'init',
-        message: 'Establishing connection.',
-        ...baseParams,
+    const socket = makeSocket({
+        host,
+        port,
+        logger,
     })
-
-    let isOkToWrite = true
-
-    client.setTimeout(30_000)
-    const socket = client.connect(port, host)
 
     const asyncWrite = (): Promise<void> => {
         return new Promise((resolve, reject) => {
@@ -115,8 +133,8 @@ export const sendData = async ({
             if (linesWritten >= numLines) {
                 break
             }
-            str += `Hello from Client ${(++linesWritten).toLocaleString()} ${new Date().toISOString()}\n`
-            if (linesWritten % 10_000 === 0) {
+            str += `${linePrefix} ${(++linesWritten).toLocaleString()} ${new Date().toISOString()}\n`
+            if (linesWritten % 50_000 === 0) {
                 logger.info({
                     event: 'checkpoint',
                     message: `Client sent ${linesWritten.toLocaleString()} of ${numLines.toLocaleString()} lines.`,

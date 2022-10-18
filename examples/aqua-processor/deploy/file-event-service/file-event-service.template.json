@@ -23,7 +23,7 @@
       "type": "LocalFileSystem",
       "name": "contact-data-downloaded",
       "pathToWatch": "${AZ_VM_USER_HOME_FOLDER}/raw-contact-data",
-      "includeSubDirectories": false,
+      "includeSubDirectories": true,
       "filters": [
         "*.*"
       ],
