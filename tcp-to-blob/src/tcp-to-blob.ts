@@ -88,7 +88,7 @@ if (require.main === module) {
             socket.setTimeout(1_000 * socketTimeoutSeconds, () => {
                 logger.warn({
                     event: 'socket-timeout',
-                    message: 'Contact connection timeout',
+                    message: '⚠️ Contact connection timeout',
                     ...makeMsgData(),
                 })
                 socket.destroy(new Error('Socket timed out.'))
@@ -167,14 +167,14 @@ if (require.main === module) {
                             if (error) {
                                 logger.error({
                                     event: 'socket-write-notification',
-                                    message: 'Error writing to socket.',
+                                    message: '⚠️ Error writing to socket.',
                                     ...makeMsgData(),
                                     error: error as Error,
                                 })
                             }
                         })
                     } catch (error) {
-                        const message = 'Error creating file appender.'
+                        const message = '⚠️ Error creating file appender.'
                         logger.error({
                             event: 'socket-data',
                             message,
@@ -206,7 +206,7 @@ if (require.main === module) {
                     }
                     numActiveBlockProcessors--
                 } catch (error) {
-                    const message = `Error appending block to file. ${
+                    const message = `⚠️ Error appending block to file. ${
                         (error as unknown as any).message ?? ''
                     }`.trim()
                     logger.error({
@@ -228,7 +228,7 @@ if (require.main === module) {
             socket.on('error', (error) => {
                 logger.error({
                     event: 'socket-error',
-                    message: error.message,
+                    message: `⚠️ ${error.message}`,
                     numBlocks,
                     ...makeMsgData(),
                 })

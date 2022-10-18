@@ -10,7 +10,7 @@ export interface BaseLogParams {
     [key: string]: any
 }
 
-export interface EventLogger<LogParams extends BaseLogParams> {
+export interface EventLogger<LogParams extends BaseLogParams = BaseLogParams> {
     info(params: LogParams): void
 
     warn(params: LogParams): void

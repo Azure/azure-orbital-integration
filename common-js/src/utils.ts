@@ -4,8 +4,8 @@
 
 const roundToHundredths = (num: number) => Math.round(100 * num) / 100
 
-export const getEnvVar = (key: string) => {
-    const val = process.env[key]
+export const getEnvVar = (name: string) => {
+    const val = process.env[name]
     if (!val) {
         throw new Error(`Must set "${name}" env variable.`)
     }

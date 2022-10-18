@@ -28,6 +28,7 @@
     "docker-push": "yarn docker-build && yarn docker-tag && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob:latest",
     "docker-push-text-canary": "yarn docker-build-text-canary && yarn docker-tag-text-canary && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob-text-canary:latest",
     "docker-push-raw-canary": "yarn docker-build-raw-canary && yarn docker-tag-raw-canary && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob-raw-canary:latest",
+    "upload-raw-reference-data": "echo 'Uploading raw reference data to BLOB' && ts-node ./src/uploadSampleRawDataFileToBlob.ts",
     "compile-watch": "npx tsc -w",
     "compile": "yarn prettier && npx tsc",
     "test": "ts-mocha -p tsconfig.json tests/*.ts",
