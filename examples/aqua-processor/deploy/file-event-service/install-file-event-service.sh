@@ -19,6 +19,8 @@ mkdir -p ${LOCAL_ARTIFACTS_FOLDER}
 tar -zvxf ./file-event-service-artifacts.tar.gz -C ${LOCAL_ARTIFACTS_FOLDER}
 
 # Install FileEventService
+yum install -y epel-release
+yum update -y
 yum install -y libicu
 yum install -y jq
 mkdir -p ${FES_INSTALL_FOLDER}
