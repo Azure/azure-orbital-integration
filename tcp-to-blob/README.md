@@ -177,14 +177,14 @@ If you wish to utilize an existing ACR and Storage container:
 
 1. Login/switch environments (once every few hours or per env session).
 2. `cd tcp-to-blob`
-5. `node ./dist/src/tcp-to-blob.js`
+3. `node ./dist/src/tcp-to-blob.js`
 
 ## Run service locally with Docker
 
 1. Ensure docker is running.
 2. Login/switch environments (once every few hours or per env session).
-4. Build image: `yarn docker-build`
-5. Start container: `yarn docker-run`
+3. Build image: `yarn docker-build`
+4. Start container: `yarn docker-run`
 
 ## Stop local docker service
 
