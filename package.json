@@ -6,7 +6,7 @@
     "build-orbital-helper": "npx yarn compile && yarn --cwd orbital-helper build",
     "build-tcp-to-blob": "npx yarn compile && yarn --cwd tcp-to-blob build",
     "build-tools": "npx yarn compile && yarn --cwd tools/orbital-helper-ui build",
-    "clean": "rm -rf ./node_modules && for dir_name in common-js orbital-helper tcp-to-blob tools/orbital-helper-ui; do echo \"cleaning ${dir_name}\"; npx yarn --cwd  ${dir_name} clean; done",
+    "clean": "for dir_name in common-js orbital-helper tcp-to-blob tools/orbital-helper-ui; do echo \"cleaning ${dir_name}\"; npx yarn --cwd  ${dir_name} clean; done && rm -rf ./node_modules",
     "compile-common-js": "npx yarn --cwd common-js compile",
     "compile-orbital-helper": "npx yarn --cwd ornital-helper compile",
     "compile-tools": "npx yarn compile-common-js && npx yarn compile-orbital-helper && npx yarn --cwd tools/orbital-helper-ui compile",
