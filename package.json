@@ -2,21 +2,24 @@
   "private": true,
   "name": "azure-orbital-integration",
   "scripts": {
-    "build": "yarn compile && for dir_name in orbital-helper tcp-to-blob; do echo \"building ${dir_name}\"; npx yarn --cwd  ${dir_name} build; done",
-    "build-orbital-helper": "yarn compile && yarn --cwd orbital-helper build",
-    "build-tcp-to-blob": "yarn compile && yarn --cwd tcp-to-blob build",
-    "build-tools": "yarn compile && yarn --cwd tools/orbital-helper-ui build",
+    "build": "npx yarn compile && for dir_name in orbital-helper tcp-to-blob; do echo \"building ${dir_name}\"; npx yarn --cwd  ${dir_name} build; done",
+    "build-orbital-helper": "npx yarn compile && yarn --cwd orbital-helper build",
+    "build-tcp-to-blob": "npx yarn compile && yarn --cwd tcp-to-blob build",
+    "build-tools": "npx yarn compile && yarn --cwd tools/orbital-helper-ui build",
     "clean": "rm -rf ./node_modules && for dir_name in common-js orbital-helper tcp-to-blob tools/orbital-helper-ui; do echo \"cleaning ${dir_name}\"; npx yarn --cwd  ${dir_name} clean; done",
-    "compile-common-js": "yarn --cwd common-js compile",
-    "compile-orbital-helper": "yarn --cwd ornital-helper compile",
-    "compile-tools": "yarn compile-common-js && yarn compile-orbital-helper && yarn --cwd tools/orbital-helper-ui compile",
+    "compile-common-js": "npx yarn --cwd common-js compile",
+    "compile-orbital-helper": "npx yarn --cwd ornital-helper compile",
+    "compile-tools": "npx yarn compile-common-js && npx yarn compile-orbital-helper && npx yarn --cwd tools/orbital-helper-ui compile",
     "compile": "for dir_name in common-js orbital-helper tcp-to-blob; do echo \"compiling ${dir_name}\"; npx yarn --cwd  ${dir_name} compile; done",
-    "start-ui": "yarn --cwd tools/orbital-helper-ui start"
+    "start-ui": "npx yarn --cwd tools/orbital-helper-ui start"
   },
   "workspaces": [
     "common-js",
     "orbital-helper",
     "tcp-to-blob",
     "tools/orbital-helper-ui"
-  ]
+  ],
+  "devDependencies": {
+    "yarn": "^1.22.19"
+  }
 }

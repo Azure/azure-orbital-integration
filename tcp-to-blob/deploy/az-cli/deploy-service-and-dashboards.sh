@@ -19,8 +19,7 @@ az aks get-credentials --resource-group "${AZ_RESOURCE_GROUP}" --name "${AKS_NAM
 
 # Login to
 echo "Logging into \"${ACR_NAME}\" ACR."
-az acr login --name "${ACR_NAME}"
-# az acr login -n "${ACR_NAME}" --expose-token # or this
+az acr login -n "${ACR_NAME}" --expose-token
 
 # Create storage connection string secret
 echo "Checking for AKS storage secret: \"${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_KEY}\""
@@ -36,30 +35,30 @@ kubectl create secret generic "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_K
 set -euo pipefail
 
 echo "Installing dependencies"
-yarn install
+npx yarn install
 
 echo "Running build"
-yarn build
+npx yarn build
 
 # Build & deploy TCP to BLOB
 echo "Deploying TCP to BLOB service to \"${AKS_NAME}\"."
-yarn deploy
+npx yarn deploy
 
 echo "Creating dashboard."
-yarn deploy-dashboard
+npx yarn deploy-dashboard
 
 # Build & deploy canary
 echo "Publishing canary image."
-yarn docker-push-text-canary
+npx yarn docker-push-text-canary
 
-yarn make-contact-profile
+npx yarn make-contact-profile
 
 SLEEP_SECONDS_BEFORE_CANARY=60
 echo "Waiting ${SLEEP_SECONDS_BEFORE_CANARY} seconds for service to initialize before running canary."
 sleep $SLEEP_SECONDS_BEFORE_CANARY;
 # TODO: Experiment with wait that works best or better way to run upon service initialization.
 echo "Running Canary Kubernetes Job."
-yarn run-text-canary
+npx yarn run-text-canary
 
 # If deployed to different cluster, you can use --context:
 # e.g. `kubectl --context tcp-to-blob-canary-dev delete -f ./.env/tcp-to-blob-canary.yaml

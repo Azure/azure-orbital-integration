@@ -19,7 +19,7 @@ do
 done
 
 # Check if Docker daemon is running
-if ! docker info > /dev/null 2>&1; then
-  echo "The Docker daemon is required. Please start Docker and try again."
-  exit 1
-fi
+#if ! docker info > /dev/null 2>&1; then
+#  echo "The Docker daemon is required. Please start Docker and try again."
+#  exit 1
+#fi

@@ -24,10 +24,10 @@
     "docker-tag": "docker tag tcp-to-blob:latest ${ACR_NAME}.azurecr.io/tcp-to-blob:latest",
     "docker-tag-text-canary": "docker tag tcp-to-blob-text-canary:latest $ACR_NAME.azurecr.io/tcp-to-blob-text-canary:latest",
     "docker-tag-raw-canary": "docker tag tcp-to-blob-raw-canary:latest $ACR_NAME.azurecr.io/tcp-to-blob-raw-canary:latest",
-    "az-login": "./deploy/check-required-env.sh && . ./deploy/env-defaults.sh && az aks get-credentials --resource-group ${AZ_RESOURCE_GROUP} --name ${AKS_NAME} && az acr login --name ${ACR_NAME}",
-    "docker-push": "yarn docker-build && yarn docker-tag && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob:latest",
-    "docker-push-text-canary": "yarn docker-build-text-canary && yarn docker-tag-text-canary && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob-text-canary:latest",
-    "docker-push-raw-canary": "yarn docker-build-raw-canary && yarn docker-tag-raw-canary && docker push ${ACR_NAME}.azurecr.io/tcp-to-blob-raw-canary:latest",
+    "az-login": "./deploy/check-required-env.sh && . ./deploy/env-defaults.sh && az aks get-credentials --resource-group ${AZ_RESOURCE_GROUP} --name ${AKS_NAME} && az acr login -n \"${ACR_NAME}\" --expose-token",
+    "docker-push": "DOCKER_TAG='tcp-to-blob:latest';DOCKER_FILE='./deploy/Dockerfile';. ./deploy/build_and_publish_image.sh;",
+    "docker-push-text-canary": "DOCKER_TAG='tcp-to-blob-text-canary:latest';DOCKER_FILE='deploy/Dockerfile-text-canary';. ./deploy/build_and_publish_image.sh;",
+    "docker-push-raw-canary": "DOCKER_TAG='tcp-to-blob-raw-canary:latest';DOCKER_FILE='deploy/Dockerfile-raw-canary';. ./deploy/build_and_publish_image.sh;",
     "upload-raw-reference-data": "echo 'Uploading raw reference data to BLOB' && ts-node ./src/uploadSampleRawDataFileToBlob.ts",
     "compile-watch": "npx tsc -w",
     "compile": "yarn prettier && npx tsc",
@@ -68,6 +68,7 @@
     "sinon": "^14.0.0",
     "sinon-chai": "^3.7.0",
     "ts-mocha": "^10.0.0",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.2",
+    "yarn": "^1.22.19"
   }
 }

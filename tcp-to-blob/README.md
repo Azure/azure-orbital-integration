@@ -58,7 +58,7 @@ examples.
 ## Install NodeJS dependencies
 
 From `azure-orbital-integration` project root directory, run:
-`yarn install && yarn compile`
+`yarn install --production=false && yarn compile`
 
 ## Create environment file
 
@@ -119,15 +119,10 @@ committing them to version control.
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
 6. `source ./.env/env-<name_prefix>.sh` - It should look like nothing happened in the terminal; this is GOOD.
 7. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh` - If you receive an 'Authorization failed' error, you may not have proper access to the subscription.
-8. Set demodulation configuration for generated contact profile:
+8. Update generated contact profile if desired. Defaults to Aqua with "aqua_direct_broadcast" named demodulation configuration.:
    1. Open Azure Portal and navigate to Orbital Service.
    2. Navigate to Contact Profiles (left-side panel).
    3. Select the generated contact profile (default name is `${NAME_PREFIX}-aks-cp`).
-   4. Navigate to Links (left-side panel).
-   5. Click "Edit Link".
-   6. Click "Edit Channel".
-   7. Enter the desired Demodulation Configuration.
-   8. Click the Submit button.
 
 ### Advanced deployment
 
