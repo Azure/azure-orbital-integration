@@ -96,7 +96,7 @@ export const sendData = async ({
         socket.end()
         logger.info({
             event: 'complete',
-            message: '✅ Finished sending.',
+            message: '✅ Finished sending text data to TCP socket.',
             ...baseParams,
         })
     })
