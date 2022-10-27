@@ -8,7 +8,7 @@ if [[ -z "$DOCKER_TAG" ]]; then
     exit 1
 fi
 if [[ -z "$DOCKER_FILE" ]]; then
-    echo "make_docker_image: Must provide docker file ($DOCKER_FILE)." 1>&2
+    echo "make_docker_image: Must provide docker file (DOCKER_FILE)." 1>&2
     exit 1
 fi
 echo "Adding \"${DOCKER_TAG}\" image to \"${ACR_NAME}\" ACR.";

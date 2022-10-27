@@ -10,6 +10,8 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 
 ## Prerequisites
 
+Consider using [Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/overview) which meets all prerequisites without the need to install anything on your computer.
+
 - Mac OR Unix-like environment
 - NodeJS LTS (16 or later) - Type `node version` to check version.
 - Azure subscription access
@@ -105,13 +107,13 @@ committing them to version control.
 
 ## Deploy environment to Azure Kubernetes Service (AKS)
 
-1. Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default
+1. `git clone https://github.com/Azure/azure-orbital-integration.git`
+2. If using Azure Cloud Shell, you are already logged in. Otherwise, Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default
    subscription is set.
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
    2. `az account set -s "${SUBSCRIPTION_ID}"` (
       see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
-2. From `azure-orbital-integration` directory: `npx yarn install --prod=false && npx yarn build`
-3. Ensure docker is running.
+3. From `azure-orbital-integration` directory: `npm install && npx yarn install --prod=false && npx yarn build`
 4. `cd tcp-to-blob`
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
 6. `source ./.env/env-<name_prefix>.sh` - It should look like nothing happened in the terminal; this is GOOD.
