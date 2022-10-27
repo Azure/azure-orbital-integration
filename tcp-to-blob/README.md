@@ -12,14 +12,11 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 
 - Mac OR Unix-like environment
 - NodeJS LTS (16 or later) - Type `node version` to check version.
-- [Yarn](https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable) (recommended) You can use `npm`, but README
-  uses `yarn` - Type `yarn` into shell to see if it is installed
-  \*If you get Error: "No such file directory: 'install'" when trying to run [yarn install], start troubleshooting [here](https://stackoverflow.com/questions/46013544/yarn-install-command-error-no-such-file-or-directory-install). Secifically, start at the answer the begins with, "I had the same issue on Ubuntu 17.04..." This worked while using Ubuntu 20.04.05 LTS
 - Azure subscription access
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) - Type `az` or `az -h` for Azure info.
 - [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. - Type `kubectl` for information.
   -If a warning/error shows up that looks like the PATH variable isn't set correctly, try [Install and Set Up kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
-- Docker - Type `docker` for information
+- (optional) Docker - Type `docker` for information
 - Virtual Machine or personal environment for execution
 
 ## High level components - Informational
@@ -55,10 +52,10 @@ package.json to determine what script are available.
 If for some reason you prefer to not run the with `yarn` or `npm`, you can consider the `scripts` in package.json as
 examples.
 
-## Install NodeJS dependencies
+## Install NodeJS dependencies & build project
 
 From `azure-orbital-integration` project root directory, run:
-`yarn install --production=false && yarn compile`
+`npm install && npx yarn install --production=false && npx yarn build`
 
 ## Create environment file
 
@@ -113,7 +110,7 @@ committing them to version control.
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
    2. `az account set -s "${SUBSCRIPTION_ID}"` (
       see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
-2. From `azure-orbital-integration` directory: `yarn install && yarn compile`
+2. From `azure-orbital-integration` directory: `npx yarn install --prod=false && npx yarn build`
 3. Ensure docker is running.
 4. `cd tcp-to-blob`
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
@@ -178,15 +175,12 @@ If you wish to utilize an existing ACR and Storage container:
 
 1. Login/switch environments (once every few hours or per env session).
 2. `cd tcp-to-blob`
-3. `yarn install`
-4. `yarn compile-watch`
 5. `node ./dist/src/tcp-to-blob.js`
 
 ## Run service locally with Docker
 
 1. Ensure docker is running.
 2. Login/switch environments (once every few hours or per env session).
-3. `yarn install`
 4. Build image: `yarn docker-build`
 5. Start container: `yarn docker-run`
 

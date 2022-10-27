@@ -34,12 +34,6 @@ kubectl create secret generic "${CONTACT_DATA_STORAGE_CONNECTION_STRING_SECRET_K
 
 set -euo pipefail
 
-echo "Installing dependencies"
-npx yarn install
-
-echo "Running build"
-npx yarn build
-
 # Build & deploy TCP to BLOB
 echo "Deploying TCP to BLOB service to \"${AKS_NAME}\"."
 npx yarn deploy
