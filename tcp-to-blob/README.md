@@ -10,16 +10,15 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 
 ## Prerequisites
 
-Consider using [Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/overview) which meets all prerequisites without the need to install anything on your computer.
+Consider using Bash on [Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/overview) which meets all prerequisites without the need to install anything on your computer.
 
-- Mac OR Unix-like environment
+- Mac OR Unix-like environment with Bash compatible shell.
 - NodeJS LTS (16 or later) - Type `node version` to check version.
-- Azure subscription access
+- Azure subscription access.
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) - Type `az` or `az -h` for Azure info.
 - [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. - Type `kubectl` for information.
-  -If a warning/error shows up that looks like the PATH variable isn't set correctly, try [Install and Set Up kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
-- (optional) Docker - Type `docker` for information
-- Virtual Machine or personal environment for execution
+  -If a warning/error shows up that looks like the PATH variable isn't set correctly, try [Install and Set Up kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
+- (optional) Docker - Type `docker` for information.\
 
 ## High level components - Informational
 
@@ -108,7 +107,7 @@ committing them to version control.
 ## Deploy environment to Azure Kubernetes Service (AKS)
 
 1. `git clone https://github.com/Azure/azure-orbital-integration.git`
-2. If using Azure Cloud Shell, you are already logged in. Otherwise, Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default
+2. If using [Azure Cloud Shell](https://learn.microsoft.com/en-us/azure/cloud-shell/overview), you are already logged in. Otherwise, Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI and default
    subscription is set.
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
    2. `az account set -s "${SUBSCRIPTION_ID}"` (
