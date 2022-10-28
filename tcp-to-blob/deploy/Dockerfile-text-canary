@@ -2,6 +2,7 @@
 # Software is licensed under the MIT License. See LICENSE in the project
 # root for license information.
 
+ARG BUNDLE_DIR
 ARG IMAGE_NAME=mcr.microsoft.com/mirror/docker/library/alpine
 ARG IMAGE_TAG=3.15
 
@@ -11,4 +12,4 @@ RUN apk add --update nodejs
 
 WORKDIR /app/
 
-COPY ./dist/bundle/tcp-to-blob-text-canary.js .
+COPY $BUNDLE_DIR/tcp-to-blob-text-canary.js .

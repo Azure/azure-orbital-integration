@@ -81,11 +81,6 @@ const runJob = async () => {
             numLines,
         }
         await sendData(sendParams)
-        logger.info({
-            event: 'complete',
-            message: '✅ Finished sending text data to TCP socket.',
-            ...makeDuration(),
-        })
     } catch (err) {
         const message = `⚠️ Failed to send text data to TCP socket. ${
             (err as Error)?.message
