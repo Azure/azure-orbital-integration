@@ -12,7 +12,6 @@ pushd "${PROJECT_DIR}"
 npx yarn build
 mkdir tcp-to-blob/.env
 echo "Creating \"tcp-to-blob/.env/env-template.sh\""
-echo "  • AZ_LOCATION=\"${AZ_LOCATION}\""
 echo "  • NAME_PREFIX=\"${NAME_PREFIX}\""
 envsubst < tcp-to-blob/deploy/env-template.sh > tcp-to-blob/.env/env-template.sh
 
