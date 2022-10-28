@@ -8,7 +8,7 @@ set -euo pipefail
 PROJECT_DIR="$(dirname -- "$0")/../.."
 echo "PROJECT_DIR: \"${PROJECT_DIR}\""
 pushd "${PROJECT_DIR}"
-
+./install-node-modules.sh
 npx yarn build
 mkdir tcp-to-blob/.env
 echo "Creating \"tcp-to-blob/.env/env-template.sh\""
