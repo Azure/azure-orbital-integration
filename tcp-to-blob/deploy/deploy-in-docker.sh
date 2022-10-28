@@ -5,6 +5,7 @@
 
 set -euo pipefail
 
+az account show # Fail fast if not logged in.
 PROJECT_DIR="$(dirname -- "$0")/../.."
 echo "PROJECT_DIR: \"${PROJECT_DIR}\""
 pushd "${PROJECT_DIR}"
