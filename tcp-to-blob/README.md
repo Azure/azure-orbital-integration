@@ -56,7 +56,7 @@ examples.
 ## Install NodeJS dependencies & build project
 
 From `azure-orbital-integration` project root directory, run:
-`npm install && npx yarn install --production=false && npx yarn build`
+`./install-node-modules.sh && npx yarn build`
 
 ## Create environment file
 
@@ -112,7 +112,7 @@ committing them to version control.
    1. `az login` (see [docs](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli))
    2. `az account set -s "${SUBSCRIPTION_ID}"` (
       see [docs](https://docs.microsoft.com/en-us/cli/azure/manage-azure-subscriptions-azure-cli#change-the-active-subscription))
-3. From `azure-orbital-integration` directory: `npm install && npx yarn install --prod=false && npx yarn build`
+3. From `azure-orbital-integration` directory: `./install-node-modules.sh && npx yarn build`
 4. `cd tcp-to-blob`
 5. Create `.env/env-<name_prefix>.sh` environment file as described above.
 6. `source ./.env/env-<name_prefix>.sh` - It should look like nothing happened in the terminal; this is GOOD.

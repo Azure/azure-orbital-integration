@@ -12,4 +12,4 @@ if [[ -z "$DOCKER_FILE" ]]; then
     exit 1
 fi
 echo "Adding \"${DOCKER_TAG}\" image to \"${ACR_NAME}\" ACR.";
-az acr build -t "${DOCKER_TAG}" -r "${ACR_NAME}" ./dist/bundle --file "${DOCKER_FILE}" --build-arg BUNDLE_DIR='.';
+az acr build -t "${DOCKER_TAG}" -r "${ACR_NAME}" --file "${DOCKER_FILE}" --build-arg BUNDLE_DIR='.' ./dist/bundle;

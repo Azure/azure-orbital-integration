@@ -1,0 +1,27 @@
+# Copyright (c) 2022 Microsoft Corporation. All rights reserved.
+# Software is licensed under the MIT License. See LICENSE in the project
+# root for license information.
+
+##############################################################################
+# Docker image for deploying tcp-to-blob without manually installing         #
+# dependencies dirfectly on your machine.                                    #
+##############################################################################
+ARG ACR_NAME
+ARG NAME_PREFIX
+ARG AZ_RESOURCE_GROUP=""
+ARG IMAGE_NAME="orbital-integration-deployer:latest"
+#ARG IMAGE_NAME="${ACR_NAME}.azurecr.io/orbital-integration-deployer:latest"
+
+FROM $IMAGE_NAME
+
+
+WORKDIR /home/azure-orbital-integration/
+
+#RUN git switch micholas/cloud-shell-prep
+#RUN git pull
+#
+RUN mkdir tcp-to-blob/.env
+RUN  envsubst < tcp-to-blob/deploy/env-template.sh > tcp-to-blob/.env/env-template.sh
+
+
+entrypoint /bin/zsh

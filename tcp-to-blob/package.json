@@ -17,6 +17,8 @@
     "deploy-raw-canary-cron": "yarn check-raw-blob-name && . ./deploy/env-defaults.sh && echo \"Deploying RAW canary cron to periodically send data to  ${AKS_NAME}.\" && yarn make-env-files && kubectl delete --ignore-not-found=true -f ./dist/env/${NAME_PREFIX}/tcp-to-blob-raw-canary-cron.yaml && kubectl apply -f ./dist/env/${NAME_PREFIX}/tcp-to-blob-raw-canary-cron.yaml",
     "re-deploy": "yarn docker-push && kubectl patch deployment tcp-to-blob-deployment -p \"{\\\"spec\\\":{\\\"template\\\":{\\\"metadata\\\":{\\\"labels\\\":{\\\"date\\\":\\\"`date +'%s'`\\\"}}}}}\"\n",
     "docker-build": "yarn build && docker build . -f deploy/Dockerfile -t tcp-to-blob --platform linux/amd64",
+    "docker-build-deployer": "docker build . -f deploy/Dockerfile_deployer -t orbital-integration-deployer",
+    "docker-build-deployer-t2b": "docker build . -f deploy/Dockerfile_deployer_tcp-to-blob -t orbital-integration-deployer-t2b --build-arg ACR_NAME=${ACR_NAME}",
     "docker-build-text-canary": "yarn build && docker build . -f deploy/Dockerfile-text-canary -t tcp-to-blob-text-canary --platform linux/amd64",
     "docker-build-raw-canary": "yarn build && docker build . -f deploy/Dockerfile-raw-canary -t tcp-to-blob-raw-canary --platform linux/amd64",
     "docker-run": ". ./deploy/env-defaults.sh && docker run --env CONTACT_DATA_STORAGE_CONNECTION_STRING --env HOST --env PORT --env CONTACT_DATA_STORAGE_CONTAINER  --env AKS_ORBITAL_SUBNET_ADDR_PREFIX --env AKS_POD_SUBNET_ADDR_PREFIX -p $PORT:$PORT tcp-to-blob",
@@ -45,7 +47,6 @@
   "dependencies": {
     "@azure/arm-orbital-helper": "^1.0.0",
     "@azure/storage-blob": "^12.10.0",
-    "@types/uuid": "^8.3.4",
     "ip": "^1.1.8",
     "uuid": "^9.0.0"
   },
@@ -58,6 +59,7 @@
     "@types/mocha": "^10.0.0",
     "@types/node": "^17.0.41",
     "@types/sinon": "^10.0.13",
+    "@types/uuid": "^8.3.4",
     "chai": "^4.3.6",
     "commander": "^9.4.0",
     "esbuild": "^0.14.42",
