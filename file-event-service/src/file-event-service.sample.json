@@ -5,7 +5,7 @@
       "type": "ServiceBus",
       "name": "MyServiceBusReceiver",
       "connectionString": "",
-      "queueName": "blob-created",
+      "topicOrQueueName": "blob-created",
       "actions": [
         {
           "type": "BlobDownload",

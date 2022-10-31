@@ -13,7 +13,8 @@ namespace FileEventService.Listeners.Options
         public EventListenerType Type { get; set; }
         public string Name { get; set; }
         public string ConnectionString { get; set; }
-        public string QueueName { get; set; }
+        public string TopicOrQueueName { get; set; }
+        public string SubscriptionName { get; set; } = string.Empty;
         public int MaxAutoLockRenewalSeconds { get; set; } = 1800;
         public int MaxConcurrentCalls { get; set; } = 5;
         public dynamic[] Actions { get; set; }
@@ -25,7 +26,8 @@ namespace FileEventService.Listeners.Options
             {
                 Name = Name,
                 ConnectionString = Constants.RedactedSecretMask,
-                QueueName = QueueName,
+                TopicOrQueueName = TopicOrQueueName,
+                SubscriptionName = SubscriptionName,
                 MaxAutoLockRenewalSeconds = MaxAutoLockRenewalSeconds,
                 MaxConcurrentCalls = MaxConcurrentCalls,
                 Actions = new string[] { Constants.RedactedSecretMask },

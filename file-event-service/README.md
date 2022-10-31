@@ -43,7 +43,8 @@ Provides functionality to receive Event Grid messages by way of Service Bus, spe
   "type": "string",
   "name": "string",
   "connectionString": "string",
-  "queueName": "string",
+  "topicOrQueueName": "string",
+  "subscriptionName": "string",
   "actions": [/* Array of action objects */],
   "allowedEventTypes": [/* Array of strings */]
 }
@@ -54,7 +55,8 @@ Provides functionality to receive Event Grid messages by way of Service Bus, spe
 |type|Specifies the event listener type, supported type `ServiceBus`|
 |name|A unique name that would help distinguish one event listener from another. This name is helpful for parsing logs.|
 |connectionString|The connection string used for authenticating with Service Bus.|
-|queueName|The Service Bus queue name where messages are received.|
+|topicOrQueueName|The Service Bus topic or queue name where messages are received. If subscriptionName is not specified, we assume queue.|
+|subscriptionName|The subscription name associated with a given topic.|
 |actions|A collection of actions to execute when an event is received. [See Event Actions](#event-actions)|
 |allowedEventTypes|A string collection of event types, i.e. Microsoft.Blob.Created. [See available event types](https://docs.microsoft.com/en-us/azure/event-grid/event-schema-blob-storage?tabs=event-grid-event-schema#available-event-types) for a complete list.|
 
