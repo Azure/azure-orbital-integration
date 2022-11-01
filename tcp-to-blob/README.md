@@ -111,10 +111,11 @@ We have prepared a docker file, `tcp-to-blob/deploy/Dockerfile_deployer`, with a
    1. `az login`
    2. `az account set -s <your_subscription>`
    3. `git pull`
-   4. `./tcp-to-blob/deploy/deploy-in-docker.sh`
-   5. If any commands ask to install extensions, type "y".
+   4. (optional) Update .env/env-template.sh if desired. See Environment Variables section above.
+   5. `./tcp-to-blob/deploy/deploy-in-docker.sh`
+   6. If any commands ask to install extensions, type "y".
 
-### Deploy locally of via Azure Cloud Shell
+### Deploy locally or via Azure Cloud Shell
 
 #### Prerequisites
 
