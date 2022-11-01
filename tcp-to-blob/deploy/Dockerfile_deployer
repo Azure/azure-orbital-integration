@@ -21,11 +21,10 @@ RUN git clone https://github.com/Azure/azure-orbital-integration.git
 
 WORKDIR /home/azure-orbital-integration/
 
-#RUN git switch micholas/cloud-shell-prep
+# If you want to deploy using another branch, uncomment the following and replace <desired-branch>.
+#RUN git fetch
+#RUN git switch <desired-branch>
 #RUN git pull
-#
-#RUN mkdir tcp-to-blob/.env
-#RUN  cp tcp-to-blob/deploy/env-template.sh  tcp-to-blob/.env/
 
 
 entrypoint /bin/zsh
