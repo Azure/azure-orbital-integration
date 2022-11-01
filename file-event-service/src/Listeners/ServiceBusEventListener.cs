@@ -46,8 +46,11 @@ namespace FileEventService.Listeners
 
             return new ServiceBusEventListener
             {
-                _processor = new ServiceBusClient(options.ConnectionString)
-                    .CreateProcessor(options.QueueName, serviceBusOptions),
+                _processor = String.IsNullOrWhiteSpace(options.SubscriptionName) ?
+                    new ServiceBusClient(options.ConnectionString)
+                        .CreateProcessor(options.TopicOrQueueName, serviceBusOptions) :
+                    new ServiceBusClient(options.ConnectionString)
+                        .CreateProcessor(options.TopicOrQueueName, options.SubscriptionName, serviceBusOptions),
                 _name = options.Name,
                 _options = options,
                 _allowedEventTypes = options.AllowedEventTypes,

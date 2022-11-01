@@ -8,12 +8,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Messaging.EventGrid;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using FileEventService.Logging;
 using FileEventService.Models;
 using FileEventService.Utilities;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace FileEventService.Actions
 {
@@ -61,17 +62,60 @@ namespace FileEventService.Actions
                 BlobServiceClient cli = new BlobServiceClient(_options.ConnectionString);
                 var conCli = cli.GetBlobContainerClient(lowerContainerName);
                 await conCli.CreateIfNotExistsAsync().ConfigureAwait(false);
-                var blobClient = conCli.GetBlobClient(filePath);
 
-                await blobClient.UploadAsync(data.FullFilePath, _options.Overwrite).ConfigureAwait(false);
+                var blobClient = conCli.GetBlobClient(filePath);
+                await blobClient.UploadAsync(data.FullFilePath, overwrite: _options.Overwrite).ConfigureAwait(false);
+                await SetBlobHttpHeaders(blobClient, data.FullFilePath, correlationId);
 
                 log.EventRuntimeMs = sw.ElapsedMilliseconds;
                 log.Message = $"Ending blob upload to, '{lowerContainerName}/{filePath}'.";
                 log.Write(_logger);
             }
+            catch (EventActionException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 var exception = new EventActionException($"Unable to upload blob, inner exception: {ex.Message}", ex);
+                log.Message = exception.Message;
+                log.LogLevel = LogLevel.Error;
+                log.Exception = exception;
+                log.Write(_logger);
+
+                throw exception;
+            }
+        }
+
+        private async Task SetBlobHttpHeaders(BlobClient blobClient, string filePath, Guid correlationId)
+        {
+            var evt = $"{_className}::{nameof(SetBlobHttpHeaders)}";
+            var msg = $"Starting setting blob headers.";
+            var sw = Stopwatch.StartNew();
+            var log = LogMessage.CreateNew(evt, msg, _name, correlationId);
+
+            try
+            {
+                log.Write(_logger);
+
+                string contentType;
+                new FileExtensionContentTypeProvider().TryGetContentType(filePath, out contentType);
+                contentType = contentType ?? "application/octet-stream";
+
+                BlobHttpHeaders headers = new BlobHttpHeaders
+                {
+                    ContentType = contentType
+                };
+
+                await blobClient.SetHttpHeadersAsync(headers).ConfigureAwait(false);
+
+                log.EventRuntimeMs = sw.ElapsedMilliseconds;
+                log.Message = $"Ending setting blob headers.";
+                log.Write(_logger);
+            }
+            catch (Exception ex)
+            {
+                var exception = new EventActionException($"Unable to set blob headers, inner exception: {ex.Message}", ex);
                 log.Message = exception.Message;
                 log.LogLevel = LogLevel.Error;
                 log.Exception = exception;
