@@ -104,7 +104,8 @@ We have prepared a docker file, `tcp-to-blob/deploy/Dockerfile_deployer`, with a
 #### Procedure
 
 1. `git clone https://github.com/Azure/azure-orbital-integration.git`
-2. `docker build . -f deploy/Dockerfile_deployer -t orbital-integration-deployer`
+2. `cd azure-orbital-integration/tcp-to-blob`
+3. `docker build . -f deploy/Dockerfile_deployer -t orbital-integration-deployer`
 3. `NAME_PREFIX=<desired_name_prefix>` Set prefix for names of resources to be deployed.
 4. `docker run -it -e NAME_PREFIX orbital-integration-deployer:latest`
 5. The command above will bring you to a container shell. In container shell:
