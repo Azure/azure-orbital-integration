@@ -5,13 +5,13 @@
 
 set -euo pipefail
 
+. tcp-to-blob/.env/env-template.sh || echo "Open a new shell window and run 'docker cp ./tcp-to-blob/.env/ t2b-deploy:/home/azure-orbital-integration/tcp-to-blob/'."
 az account show # Fail fast if not logged in.
 PROJECT_DIR="$(dirname -- "$0")/../.."
 echo "PROJECT_DIR: \"${PROJECT_DIR}\""
 pushd "${PROJECT_DIR}"
 ./install-node-modules.sh
 npx yarn build
-. tcp-to-blob/.env/env-template.sh
 tcp-to-blob/deploy/bicep/deploy.sh
 
 popd
