@@ -92,9 +92,10 @@ Optional:
 Recommend creating a `tcp-to-blob/.env/env-${stage}.sh` to set these and re-load env as needed without risking
 committing them to version control.
 
-## Deploy TCP to  BLOB and related resources
+## Deploy TCP to BLOB and related resources
 
 ### Deploy using docker
+
 We have prepared a docker file, `tcp-to-blob/deploy/Dockerfile_deployer`, with all prerequisites needed for deploying.
 
 #### Prerequisites
@@ -106,9 +107,9 @@ We have prepared a docker file, `tcp-to-blob/deploy/Dockerfile_deployer`, with a
 1. `git clone https://github.com/Azure/azure-orbital-integration.git`
 2. `cd azure-orbital-integration/tcp-to-blob`
 3. `docker build . -f deploy/Dockerfile_deployer -t orbital-integration-deployer`
-3. `NAME_PREFIX=<desired_name_prefix>` Set prefix for names of resources to be deployed.
-4. `docker run -it -e NAME_PREFIX orbital-integration-deployer:latest`
-5. The command above will bring you to a container shell. In container shell:
+4. `NAME_PREFIX=<desired_name_prefix>` Set prefix for names of resources to be deployed.
+5. `docker run -it -e NAME_PREFIX orbital-integration-deployer:latest`
+6. The command above will bring you to a container shell. In container shell:
    1. `az login`
    2. `az account set -s <your_subscription>`
    3. `git pull`
