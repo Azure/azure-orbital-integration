@@ -4,6 +4,10 @@
 # root for license information.
 
 echo "Loading prereq env defaults."
+
+export AZ_LOCATION=${AZ_LOCATION:-"westus2"}
+echo "AZ_LOCATION = \"${AZ_LOCATION}\""
+
 export AZ_SUBSCRIPTION="$(az account list --query "[?isDefault].id" -o tsv)"
 echo "AZ_SUBSCRIPTION = \"${AZ_SUBSCRIPTION}\""
 
