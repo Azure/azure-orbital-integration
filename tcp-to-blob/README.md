@@ -108,14 +108,15 @@ We have prepared a docker file, `tcp-to-blob/deploy/Dockerfile_deployer`, with a
 2. `cd azure-orbital-integration/tcp-to-blob`
 3. `docker build . -f deploy/Dockerfile_deployer -t orbital-integration-deployer`
 4. `NAME_PREFIX=<desired_name_prefix>` Set prefix for names of resources to be deployed.
-5. `docker run -it -e NAME_PREFIX orbital-integration-deployer:latest`
+5. `docker run -it -e NAME_PREFIX="$NAME_PREFIX" orbital-integration-deployer:latest`
 6. The command above will bring you to a container shell. In container shell:
    1. `az login`
    2. `az account set -s <your_subscription>`
    3. `git pull`
-   4. (optional) Update .env/env-template.sh if desired. See Environment Variables section above.
-   5. `./tcp-to-blob/deploy/deploy-in-docker.sh`
-   6. If any commands ask to install extensions, type "y".
+   4. (optional) Update and source .env/env-template.sh if desired. 
+      - See Environment Variables section above.
+      - You can choose between setting and passing env variables via `docker run -it -e` or running docker then creating and sourcing your env file in the running container.
+   5. `./tcp-to-blob/deploy/install-and-deploy.sh`
 
 ### Deploy locally or via Azure Cloud Shell
 
