@@ -60,7 +60,7 @@ Required:
 
 Optional:
 
-- `AZ_LOCATION`: Location where resources will be deployed. Should match space-craft location. default: `"westus2"`.
+- `AZ_LOCATION`: Location where resources will be deployed. Should match spacecraft location. default: `"westus2"`.
 - `AZ_RESOURCE_GROUP`: Resource group containing your AKS service.
 - `ACR_NAME`: Name of your Azure Container Registry.
 - `CONTACT_DATA_STORAGE_ACCT`: Name of storage account where BLOBs will be created (containing data sent to TCP
