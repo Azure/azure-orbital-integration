@@ -67,7 +67,7 @@ Optional:
   endpoint).
 - `CONTACT_DATA_STORAGE_CONTAINER`: Name of storage container for saving BLOBs. default: `"raw-contact-data"`
 - `RAW_DATA_FILE_PATH`: Path to local file containing sample raw data to be uploaded to a BLOB where it can be used by the raw data canary.
-- `RAW_DATA_BLOB_NAME`: Name of BLOB within `$CONTACT_DATA_STORAGE_CONTAINER` which will be streamed by raw data canary to TCP to BLOB endpoint. You may either upload this reference data using `yarn upload-raw-reference-data`, manually (consider using `reference-data/` prefix) or schedule a contact and reference the BLOB associated with the results.
+- `RAW_DATA_BLOB_NAME`: Name of BLOB within `$CONTACT_DATA_STORAGE_CONTAINER` which will be streamed by raw data canary to TCP to BLOB endpoint. You may either upload this reference data using `npx yarn upload-raw-reference-data`, manually (consider using `reference-data/` prefix) or schedule a contact and reference the BLOB associated with the results.
 - `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Connection string for contact data storage. Grants `tcp-to-blob` the ability to create the storage container if needed and create/write to BLOBs. This is stored as an AKS secret which is exposed as an environment variable in the `tcp-to-blob` container. You may use either:
   - [Storage BLOB connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string): (default) Long living credentials for accessing storage container. This gets populated automatically if `CONTACT_DATA_STORAGE_CONNECTION_STRING` is not already set.
   - [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner. Things to consider for SAS:
@@ -113,7 +113,7 @@ We have prepared a docker file, `tcp-to-blob/deploy/Dockerfile_deployer`, with a
    1. `az login`
    2. `az account set -s <your_subscription>`
    3. `git pull`
-   4. (optional) Update and source .env/env-template.sh if desired. 
+   4. (optional) Update and source .env/env-template.sh if desired.
       - See Environment Variables section above.
       - You can choose between setting and passing env variables via `docker run -it -e` or running docker then creating and sourcing your env file in the running container.
    5. `./tcp-to-blob/deploy/install-and-deploy.sh`
@@ -166,13 +166,13 @@ If you wish to utilize an existing ACR and Storage container:
 
 1. Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI.
 2. Open a new bash-like terminal shell.
-3. `. .env/env-<name_prefix>.sh && yarn az-login && . ./deploy/env-defaults.sh`
+3. `. .env/env-<name_prefix>.sh && npx yarn az-login && . ./deploy/env-defaults.sh`
 
 # Send _text data_ to TCP to BLOB endpoint
 
 1. Ensure docker is running.
 2. Login/switch environments (once every few hours or per env session).
-3. `yarn run-text-canary`
+3. `npx yarn run-text-canary`
 4. View AKS logs as described below.
 5. Verify BLOB matching `filename` was created in your storage container.
 
@@ -180,7 +180,7 @@ If you wish to utilize an existing ACR and Storage container:
 
 1. Ensure docker is running
 2. Login/switch environments (once every few hours or per env session).
-3. `yarn deploy-text-canary-cron`
+3. `npx yarn deploy-text-canary-cron`
 4. View AKS logs as described below.
 
 ### Send _raw contact data_ to TCP to BLOB endpoint for testing
@@ -188,7 +188,7 @@ If you wish to utilize an existing ACR and Storage container:
 1. See `RAW_DATA_BLOB_NAME` env variable above to make raw data available for canary to read and steam to TCP to BLOB.
 2. Ensure docker is running.
 3. Login/switch environments (once every few hours or per env session).
-4. `yarn run-raw-canary`
+4. `npx yarn run-raw-canary`
 5. View AKS logs as described below.
 6. Verify BLOB matching `filename` was created in your storage container.
 
@@ -197,7 +197,7 @@ If you wish to utilize an existing ACR and Storage container:
 1. See `RAW_DATA_BLOB_NAME` env variable above to make raw data available for canary to read and steam to TCP to BLOB.
 2. Ensure docker is running
 3. Login/switch environments (once every few hours or per env session).
-4. `yarn deploy-raw-canary-cron`
+4. `npx yarn deploy-raw-canary-cron`
 5. View AKS logs as described below.
 
 ## Run service locally _without_ containers
@@ -210,15 +210,15 @@ If you wish to utilize an existing ACR and Storage container:
 
 1. Ensure docker is running.
 2. Login/switch environments (once every few hours or per env session).
-3. Build image: `yarn docker-build`
-4. Start container: `yarn docker-run`
+3. Build image: `npx yarn docker-build`
+4. Start container: `npx yarn docker-run`
 
 ## Stop local docker service
 
 1. `docker ps` Note of Container ID.
 2. `docker kill <Conatiner ID>`
 
-Or run `yarn docker-kill-all` (instead of 1 & 2)
+Or run `npx yarn docker-kill-all` (instead of 1 & 2)
 
 ## View TCP to BLOB Shared Dashboard
 
