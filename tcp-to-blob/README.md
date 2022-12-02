@@ -36,10 +36,10 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 A NodeJS project is defined by [package.json](package.json).
 
 When you run `yarn <cmd>` (or alternatively `npm run <cmd>`), `yarn`/`npm` finds the <cmd> in the `scripts` of
-package.json to determine what script are available.
+package.json to determine what script are available. 
 
-If for some reason you prefer to not run the with `yarn` or `npm`, you can consider the `scripts` in package.json as
-examples.
+To avoid requiring yarn to be installed globally, `yarn` is installed with `npm` at the root level (`azure-orbital-integration`).
+When `npx yarn` is used throughout the examples, it uses the `yarn` installed in `azure-orbital-integration/node_modules`.
 
 ## Install NodeJS dependencies & build project
 
