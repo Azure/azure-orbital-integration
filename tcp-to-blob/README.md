@@ -56,11 +56,11 @@ From `azure-orbital-integration` project root directory, run:
 
 Required:
 
-- `AZ_LOCATION` e.g. "westus2"
 - `NAME_PREFIX`: Used to make name for resources to create. e.g AKS cluster, vnet, etc.
 
 Optional:
 
+- `AZ_LOCATION`: Location where resources will be deployed. Should match space-craft location. default: `"westus2"`.
 - `AZ_RESOURCE_GROUP`: Resource group containing your AKS service.
 - `ACR_NAME`: Name of your Azure Container Registry.
 - `CONTACT_DATA_STORAGE_ACCT`: Name of storage account where BLOBs will be created (containing data sent to TCP
