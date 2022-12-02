@@ -8,7 +8,7 @@
 
 TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and persists it in Azure BLOB Storage. This doc shows you how to deploy this architecture into Azure using the resources and code in this repository.
 
-## High level components - Informational
+## High level components
 
 - Vnet with subnets including:
   - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
@@ -20,7 +20,7 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 - Orbital Contact profile configured with the appropriate endpoint and subnet for TCP to BLOB service.
 - ADO Dashboard providing temporal view of TCP to BLOB activity and AKS cluster health.
 
-## TCP to BLOB Service event lifecycle - Informational
+## TCP to BLOB Service event lifecycle
 
 1. `server-init`: Server starting up.
 2. `socket-connect`: Client socket connected to server. (1 per socket)
@@ -36,7 +36,7 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 A NodeJS project is defined by [package.json](package.json).
 
 When you run `yarn <cmd>` (or alternatively `npm run <cmd>`), `yarn`/`npm` finds the <cmd> in the `scripts` of
-package.json to determine what script are available. 
+package.json to determine what script are available.
 
 To avoid requiring yarn to be installed globally, `yarn` is installed with `npm` at the root level (`azure-orbital-integration`).
 When `npx yarn` is used throughout the examples, it uses the `yarn` installed in `azure-orbital-integration/node_modules`.
@@ -128,8 +128,9 @@ Consider using Bash on [Azure Cloud Shell](https://learn.microsoft.com/en-us/azu
 - NodeJS LTS (16 or later) - Type `node version` to check version.
 - Azure subscription access.
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) - Type `az` or `az -h` for Azure info.
-- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. - Type `kubectl` for information.
-  -If a warning/error shows up that looks like the PATH variable isn't set correctly, try [Install and Set Up kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
+- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI.
+  - Type `kubectl` for information.
+  - If a warning/error shows up that looks like the PATH variable isn't set correctly, [install kubectl](https://kubernetes.io/docs/tasks/tools/).
 - (optional) Docker - Type `docker` for information.
 
 #### Procedure
@@ -144,8 +145,8 @@ Consider using Bash on [Azure Cloud Shell](https://learn.microsoft.com/en-us/azu
 10. `cd tcp-to-blob`
 11. Create `.env/env-<name_prefix>.sh` environment file as described above.
 12. `source ./.env/env-<name_prefix>.sh` - It should look like nothing happened in the terminal; this is GOOD.
-13. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh` - If you receive an 'Authorization failed' error, you may not have proper access to the subscription.
-14. Update generated contact profile if desired. Defaults to Aqua with "aqua_direct_broadcast" named demodulation configuration.:
+13. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh` If you receive an 'Authorization failed' error, you may not have proper access to the subscription.
+14. Update generated contact profile if desired. Defaults to Aqua with "aqua_direct_broadcast" named demodulation configuration.
     1. Open Azure Portal and navigate to Orbital Service.
     2. Navigate to Contact Profiles (left-side panel).
     3. Select the generated contact profile (default name is `${NAME_PREFIX}-aks-cp`).
