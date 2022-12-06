@@ -15,6 +15,7 @@ WORKDIR /home/
 RUN apk add --update nodejs npm zsh git vim gettext
 
 RUN az aks install-cli
+RUN az extension add --name portal
 RUN sh -c "$(wget https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)"
 
 RUN git clone https://github.com/Azure/azure-orbital-integration.git

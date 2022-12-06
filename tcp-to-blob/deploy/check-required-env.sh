@@ -7,7 +7,6 @@ set -eo pipefail
 
 echo "Checking required env vars."
 declare -a required_env_vars=(
-  "AZ_LOCATION"
   "NAME_PREFIX"
 )
 for var_name in "${required_env_vars[@]}"

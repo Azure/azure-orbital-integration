@@ -8,7 +8,7 @@
 
 TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azure Orbital Ground Station (AOGS)](https://docs.microsoft.com/en-us/azure/orbital/overview) satellite downlink data and persists it in Azure BLOB Storage. This doc shows you how to deploy this architecture into Azure using the resources and code in this repository.
 
-## High level components - Informational
+## High level components
 
 - Vnet with subnets including:
   - `pod-subnet`: Where AKS TCP to BLOB instances will listen for TCP connections.
@@ -20,7 +20,7 @@ TCP to BLOB is a kubernetes service that provides a TCP endpoint to receive [Azu
 - Orbital Contact profile configured with the appropriate endpoint and subnet for TCP to BLOB service.
 - ADO Dashboard providing temporal view of TCP to BLOB activity and AKS cluster health.
 
-## TCP to BLOB Service event lifecycle - Informational
+## TCP to BLOB Service event lifecycle
 
 1. `server-init`: Server starting up.
 2. `socket-connect`: Client socket connected to server. (1 per socket)
@@ -38,8 +38,8 @@ A NodeJS project is defined by [package.json](package.json).
 When you run `yarn <cmd>` (or alternatively `npm run <cmd>`), `yarn`/`npm` finds the <cmd> in the `scripts` of
 package.json to determine what script are available.
 
-If for some reason you prefer to not run the with `yarn` or `npm`, you can consider the `scripts` in package.json as
-examples.
+To avoid requiring yarn to be installed globally, `yarn` is installed with `npm` at the root level (`azure-orbital-integration`).
+When `npx yarn` is used throughout the examples, it uses the `yarn` installed in `azure-orbital-integration/node_modules`.
 
 ## Install NodeJS dependencies & build project
 
@@ -56,18 +56,18 @@ From `azure-orbital-integration` project root directory, run:
 
 Required:
 
-- `AZ_LOCATION` e.g. "westus2"
 - `NAME_PREFIX`: Used to make name for resources to create. e.g AKS cluster, vnet, etc.
 
 Optional:
 
+- `AZ_LOCATION`: Location where resources will be deployed. Should match spacecraft location. default: `"westus2"`.
 - `AZ_RESOURCE_GROUP`: Resource group containing your AKS service.
 - `ACR_NAME`: Name of your Azure Container Registry.
 - `CONTACT_DATA_STORAGE_ACCT`: Name of storage account where BLOBs will be created (containing data sent to TCP
   endpoint).
 - `CONTACT_DATA_STORAGE_CONTAINER`: Name of storage container for saving BLOBs. default: `"raw-contact-data"`
 - `RAW_DATA_FILE_PATH`: Path to local file containing sample raw data to be uploaded to a BLOB where it can be used by the raw data canary.
-- `RAW_DATA_BLOB_NAME`: Name of BLOB within `$CONTACT_DATA_STORAGE_CONTAINER` which will be streamed by raw data canary to TCP to BLOB endpoint. You may either upload this reference data using `yarn upload-raw-reference-data`, manually (consider using `reference-data/` prefix) or schedule a contact and reference the BLOB associated with the results.
+- `RAW_DATA_BLOB_NAME`: Name of BLOB within `$CONTACT_DATA_STORAGE_CONTAINER` which will be streamed by raw data canary to TCP to BLOB endpoint. You may either upload this reference data using `npx yarn upload-raw-reference-data`, manually (consider using `reference-data/` prefix) or schedule a contact and reference the BLOB associated with the results.
 - `CONTACT_DATA_STORAGE_CONNECTION_STRING`: (**Sensitive**) Connection string for contact data storage. Grants `tcp-to-blob` the ability to create the storage container if needed and create/write to BLOBs. This is stored as an AKS secret which is exposed as an environment variable in the `tcp-to-blob` container. You may use either:
   - [Storage BLOB connection string](https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string): (default) Long living credentials for accessing storage container. This gets populated automatically if `CONTACT_DATA_STORAGE_CONNECTION_STRING` is not already set.
   - [SAS connection string](https://docs.microsoft.com/en-us/azure/storage/blobs/sas-service-create?tabs=javascript): Enables you to or the party to which you are delivering contact data, to specify duration and other fine-grained access characteristics. Consider using this if the data recipient (team managing/owning storage account and processing data) is not the same team as the Orbital subscription owner. Things to consider for SAS:
@@ -108,14 +108,15 @@ We have prepared a docker file, `tcp-to-blob/deploy/Dockerfile_deployer`, with a
 2. `cd azure-orbital-integration/tcp-to-blob`
 3. `docker build . -f deploy/Dockerfile_deployer -t orbital-integration-deployer`
 4. `NAME_PREFIX=<desired_name_prefix>` Set prefix for names of resources to be deployed.
-5. `docker run -it -e NAME_PREFIX orbital-integration-deployer:latest`
+5. `docker run -it -e NAME_PREFIX="$NAME_PREFIX" orbital-integration-deployer:latest`
 6. The command above will bring you to a container shell. In container shell:
    1. `az login`
    2. `az account set -s <your_subscription>`
    3. `git pull`
-   4. (optional) Update .env/env-template.sh if desired. See Environment Variables section above.
-   5. `./tcp-to-blob/deploy/deploy-in-docker.sh`
-   6. If any commands ask to install extensions, type "y".
+   4. (optional) Update and source .env/env-template.sh if desired.
+      - See Environment Variables section above.
+      - You can choose between setting and passing env variables via `docker run -it -e` or running docker then creating and sourcing your env file in the running container.
+   5. `./tcp-to-blob/deploy/install-and-deploy.sh`
 
 ### Deploy locally or via Azure Cloud Shell
 
@@ -127,8 +128,9 @@ Consider using Bash on [Azure Cloud Shell](https://learn.microsoft.com/en-us/azu
 - NodeJS LTS (16 or later) - Type `node version` to check version.
 - Azure subscription access.
 - [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) - Type `az` or `az -h` for Azure info.
-- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI. - Type `kubectl` for information.
-  -If a warning/error shows up that looks like the PATH variable isn't set correctly, try [Install and Set Up kubectl on Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/).
+- [AKS CLI](https://docs.microsoft.com/en-us/azure/aks/learn/quick-kubernetes-deploy-cli): `az aks install-cli`. The deployment scripts use [kubectl](https://kubernetes.io/docs/tasks/tools/) (not AKS CLI) but it's probably safest to use the `kubectl` that comes with the AKS CLI.
+  - Type `kubectl` for information.
+  - If a warning/error shows up that looks like the PATH variable isn't set correctly, [install kubectl](https://kubernetes.io/docs/tasks/tools/).
 - (optional) Docker - Type `docker` for information.
 
 #### Procedure
@@ -143,8 +145,8 @@ Consider using Bash on [Azure Cloud Shell](https://learn.microsoft.com/en-us/azu
 10. `cd tcp-to-blob`
 11. Create `.env/env-<name_prefix>.sh` environment file as described above.
 12. `source ./.env/env-<name_prefix>.sh` - It should look like nothing happened in the terminal; this is GOOD.
-13. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh` - If you receive an 'Authorization failed' error, you may not have proper access to the subscription.
-14. Update generated contact profile if desired. Defaults to Aqua with "aqua_direct_broadcast" named demodulation configuration.:
+13. Deploy (to AZ CLI's current subscription): `./deploy/bicep/deploy.sh` If you receive an 'Authorization failed' error, you may not have proper access to the subscription.
+14. Update generated contact profile if desired. Defaults to Aqua with "aqua_direct_broadcast" named demodulation configuration.
     1. Open Azure Portal and navigate to Orbital Service.
     2. Navigate to Contact Profiles (left-side panel).
     3. Select the generated contact profile (default name is `${NAME_PREFIX}-aks-cp`).
@@ -165,13 +167,13 @@ If you wish to utilize an existing ACR and Storage container:
 
 1. Ensure [logged in](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) to Azure CLI.
 2. Open a new bash-like terminal shell.
-3. `. .env/env-<name_prefix>.sh && yarn az-login && . ./deploy/env-defaults.sh`
+3. `. .env/env-<name_prefix>.sh && npx yarn az-login && . ./deploy/env-defaults.sh`
 
 # Send _text data_ to TCP to BLOB endpoint
 
 1. Ensure docker is running.
 2. Login/switch environments (once every few hours or per env session).
-3. `yarn run-text-canary`
+3. `npx yarn run-text-canary`
 4. View AKS logs as described below.
 5. Verify BLOB matching `filename` was created in your storage container.
 
@@ -179,7 +181,7 @@ If you wish to utilize an existing ACR and Storage container:
 
 1. Ensure docker is running
 2. Login/switch environments (once every few hours or per env session).
-3. `yarn deploy-text-canary-cron`
+3. `npx yarn deploy-text-canary-cron`
 4. View AKS logs as described below.
 
 ### Send _raw contact data_ to TCP to BLOB endpoint for testing
@@ -187,7 +189,7 @@ If you wish to utilize an existing ACR and Storage container:
 1. See `RAW_DATA_BLOB_NAME` env variable above to make raw data available for canary to read and steam to TCP to BLOB.
 2. Ensure docker is running.
 3. Login/switch environments (once every few hours or per env session).
-4. `yarn run-raw-canary`
+4. `npx yarn run-raw-canary`
 5. View AKS logs as described below.
 6. Verify BLOB matching `filename` was created in your storage container.
 
@@ -196,7 +198,7 @@ If you wish to utilize an existing ACR and Storage container:
 1. See `RAW_DATA_BLOB_NAME` env variable above to make raw data available for canary to read and steam to TCP to BLOB.
 2. Ensure docker is running
 3. Login/switch environments (once every few hours or per env session).
-4. `yarn deploy-raw-canary-cron`
+4. `npx yarn deploy-raw-canary-cron`
 5. View AKS logs as described below.
 
 ## Run service locally _without_ containers
@@ -209,15 +211,15 @@ If you wish to utilize an existing ACR and Storage container:
 
 1. Ensure docker is running.
 2. Login/switch environments (once every few hours or per env session).
-3. Build image: `yarn docker-build`
-4. Start container: `yarn docker-run`
+3. Build image: `npx yarn docker-build`
+4. Start container: `npx yarn docker-run`
 
 ## Stop local docker service
 
 1. `docker ps` Note of Container ID.
 2. `docker kill <Conatiner ID>`
 
-Or run `yarn docker-kill-all` (instead of 1 & 2)
+Or run `npx yarn docker-kill-all` (instead of 1 & 2)
 
 ## View TCP to BLOB Shared Dashboard
 
