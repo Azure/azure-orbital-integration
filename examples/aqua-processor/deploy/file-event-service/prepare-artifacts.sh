@@ -42,4 +42,7 @@ cat ${WORKING_DIR}/file-event-service.template.json | \
 cp ${WORKING_DIR}/FileEventService.service ${ARTIFACTS_DIR}
 cp ${WORKING_DIR}/run-nasa-tools.sh ${ARTIFACTS_DIR}
 
-tar -czvf "${ARTIFACTS_DIR}/file-event-service-artifacts.tar.gz" -C ${ARTIFACTS_DIR} .
+tar -czvf /tmp/file-event-service-artifacts.tar.gz -C ${ARTIFACTS_DIR} .
+
+mv /tmp/file-event-service-artifacts.tar.gz ${ARTIFACTS_DIR}
+
