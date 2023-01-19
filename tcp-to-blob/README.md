@@ -186,12 +186,13 @@ If you wish to utilize an existing ACR and Storage container:
 
 ### Send _raw contact data_ to TCP to BLOB endpoint for testing
 
-1. See `RAW_DATA_BLOB_NAME` env variable above to make raw data available for canary to read and steam to TCP to BLOB.
+1. See `RAW_DATA_BLOB_NAME` env variable above to make raw data available for canary to read and stream to TCP to BLOB.
 2. Ensure docker is running.
 3. Login/switch environments (once every few hours or per env session).
-4. `npx yarn run-raw-canary`
-5. View AKS logs as described below.
-6. Verify BLOB matching `filename` was created in your storage container.
+4. Run `npx yarn docker-push-raw-canary` to push the image `tcp-to-blob-raw-canary` to ACR.
+5. `npx yarn run-raw-canary`
+6. View AKS logs as described below.
+7. Verify BLOB matching `filename` was created in your storage container.
 
 ### Set up ongoing _raw contact data_ heartbeat testing TCP to Blob endpoint
 
