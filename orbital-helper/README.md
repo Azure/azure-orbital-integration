@@ -81,12 +81,12 @@ Optional environment variables for overriding TLE provider:
 
 | Task                            | Command                                               |
 | :------------------------------ | :---------------------------------------------------- |
-| Create contact profile          | `node ./dist/samples/createContactProfile.js`         |
-| Get next available contact      | `node ./dist/samples/getNextAvailableContact.js`      |
-| Schedule contact                | `node ./dist/samples/scheduleContact.js`              |
-| Schedule next available contact | `node ./dist/samples/scheduleNextAvailableContact.js` |
-| Search scheduled contacts       | `node ./dist/samples/searchScheduledContacts.js`      |
-| Update spacecraft TLE           | `node ./dist/samples/updateSpacecraftTLE.js`          |
+| Create contact profile          | `node ./dist/src/samples/createContactProfile.js`         |
+| Get next available contact      | `node ./dist/src/samples/getNextAvailableContact.js`      |
+| Schedule contact                | `node ./dist/src/samples/scheduleContact.js`              |
+| Schedule next available contact | `node ./dist/src/samples/scheduleNextAvailableContact.js` |
+| Search scheduled contacts       | `node ./dist/src/samples/searchScheduledContacts.js`      |
+| Update spacecraft TLE           | `node ./dist/src/samples/updateSpacecraftTLE.js`          |
 
 ## License
 
