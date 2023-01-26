@@ -62,9 +62,9 @@ cd examples/aqua-processor
 source ./.env/env-template.sh`
 ./deploy/deploy.sh
 ```
-This will deploy the processor VM.
+- Note: This will deploy the processor VM, and by default, the SKU size will be `Standard D16ads v5 (16 vcpus, 64 GiB memory)`. If you choose to deploy a smaller-sized VM, you may run into memory related issues during IPOPP ingestion. If the deployment cannot provision this VM SKU due to reaching the quota limit for that region in the subscription, select another region or contact your subscription admin to increase the Total Regional vCPUs or increase the specific SKU quota. 
 
-Please note that in the following steps, the deployed processor VM is named `aoi-aqua-vm` based on a NAME_PREFIX chosen for illustration. Depending on the prefix you choose, the VM will be deployed with the name `{NAME_PREFIX}-vm`.
+The deployed processor VM is named `aoi-aqua-vm` based on a NAME_PREFIX chosen for illustration. Depending on the prefix you choose, the VM will be deployed with the name `{NAME_PREFIX}-vm`.
 
 ## Install NASA DRL tools
 
