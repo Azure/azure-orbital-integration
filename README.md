@@ -8,10 +8,10 @@ The diagram below shows an example of capturing and processing direct broadcast 
 
 ## Deployment Steps
 1. [Register and authorize a spacecraft](https://docs.microsoft.com/en-us/azure/orbital/register-spacecraft) - Creates a spacecraft resource containing the required information to identify the spacecraft and verifies that you are authorized to communicate with it. 
-2. Deploy [tcp-to-blob](/tcp-to-blob/README.md) - Deploys a TCP endpoint for receiving data from the ground station. 
+2. Deploy [tcp-to-blob](/tcp-to-blob/README.md) - Deploys a TCP endpoint for receiving data from the ground station. To reduce the cost and latency in moving data, it is recommended to deploy TCP to BLOB in the same Azure region the spacecraft has been deployed unless there is a quota issue.
 3. Deploy [aqua-processor](/examples/aqua-processor/README.md) - Creates an Azure VM for processing the downlinked satellite data.
 4. Deploy [central-logging](/central-logging/README.md) (Optional) Creates a single central store for logs, backed by Azure Data Explorer. 
-5. [Schedule a contact](https://docs.microsoft.com/en-us/azure/orbital/schedule-contact) Once the above components have been deployed, schedule a contact to downlink data from the spacecraft. 
+5. [Schedule a contact](https://docs.microsoft.com/en-us/azure/orbital/schedule-contact) Once the above components have been deployed, schedule a contact to downlink data from the spacecraft.
 
 ## Contributing
 
