@@ -68,12 +68,12 @@ The deployed processor VM is named `aoi-aqua-vm` based on a NAME_PREFIX chosen f
 
 ## Install NASA DRL tools
 
-To install NASA DRL tools, we first need to add support for GUI applications by installing desktop tools and a VNC server on `aoi-aqua-vm` to remotely run GUI applications. 
+To install NASA DRL tools, we first need to add support for GUI applications by installing desktop tools and a VNC server on `aoi-aqua-vm` to remotely run GUI applications. These pre requisites are installed by the deploy script and you can directly go ahead and start the VNC server. If you are deploying the VM manually, then follow the below installation steps.
 
 ### Install Desktop and VNC Server
 Please note that initial ssh authentication will only work from your local machine because the deployment script run in the previous step uses your local public key (id_rsa.pub) to set up passwordless authentication to the processor VM. 
 
-After loggin on from your local machine, you can add public keys to the ~/.ssh/authorized_keys file on the processor VM to allow authentication from differnet machines.  
+After logging on from your local machine, you can add public keys to the ~/.ssh/authorized_keys file on the processor VM to allow authentication from different machines.  
 
 Install desktop tools and vncserver on the `aoi-aqua-vm`.
 ```

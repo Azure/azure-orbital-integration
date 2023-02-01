@@ -32,3 +32,7 @@ cp ${WORKING_DIR}/${LOCAL_ARTIFACTS_FOLDER}/run-nasa-tools.sh ${FES_INSTALL_FOLD
 cp ${WORKING_DIR}/${LOCAL_ARTIFACTS_FOLDER}/FileEventService.service /etc/systemd/system/FileEventService.service
 
 sudo systemctl daemon-reload
+
+sudo systemctl enable FileEventService
+
+sudo systemctl start FileEventService
