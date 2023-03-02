@@ -120,7 +120,7 @@ ls -la ~/data/
 This completes the RT-STPS installation.
 
 ### Install IPOPP
-Run the dowloader script to download the IPOPP installation files. 
+Run the downloader script to download the IPOPP installation files. 
 ```
 cd ~/Downloads
 ./downloader_DRL-IPOPP_4.1.sh
@@ -146,7 +146,7 @@ Enable the following under the **EOS** tab:
 * MODISL1DB l1atob 
 * IMAPP
 
-Swith back to **Process Monitoring** mode using the menu option. 
+Switch back to **Process Monitoring** mode using the menu option. 
 
 Start IPOPP services:
 ```
@@ -155,6 +155,12 @@ Start IPOPP services:
 ```
 
 This completes the IPOPP installation and configuration. 
+
+### Level1 & Level2 products
+
+After installing IPOPP it produces Level0 data, however for Level1 & Level2 data, log on to the [NASA DRL](https://directreadout.sci.gsfc.nasa.gov/?id=dspContent&cid=325&type=software) website, download `BURNSCAR_SPA` and follow **Appendix E** in [IPOPP_4.1_Users_Guide.pdf](https://directreadout.sci.gsfc.nasa.gov/links/rsd_eosdb/PDF/IPOPP_4.1_Users_Guide.pdf) to install the SPA into the IPOPP framework. If there are any patches, install them too. 
+
+Installation of this SPA into the IPOPP framework produces Level1 & Level2 data. 
 
 ## Enable FileEventService.service
 
