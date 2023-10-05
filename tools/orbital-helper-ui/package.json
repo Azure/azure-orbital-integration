@@ -20,7 +20,7 @@
     },
     "devDependencies": {
         "@types/node": "^18.11.10",
-        "electron": "22.0.0-alpha.3",
+        "electron": "22.3.25",
         "esbuild": "^0.15.7",
         "prettier": "^2.7.1",
         "ts-loader": "^9.3.1",
